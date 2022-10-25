@@ -12,4 +12,5 @@ Slow library for slow gamedev
 * Do not use `namespace` in API. You can use it for internal things.
 * Do not use STL in API. You can use it for internal things.
 * Prefer C-style programming (c arrays, c strings)
-
+* Comment everything
+* Use code-guard and #pragma once. 

@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+build/slowlib.base/.vs
+build/slowlib.base/x64/Debug
+build/slowlib.base/x64/Release
+build/slowlib.base/x86/Debug
+build/slowlib.base/x86/Release
+*.idb
+*.pdb
