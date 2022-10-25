@@ -15,3 +15,4 @@ Slow library for slow gamedev
 * Comment everything
 * Use code-guard and `#pragma once`. 
 * You can use `goto`, just don't jump back, and don't use it in large function.
+* Use char* strings, not wchar* or other.

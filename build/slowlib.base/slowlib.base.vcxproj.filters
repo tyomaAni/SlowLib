@@ -13,10 +13,40 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\system">
+      <UniqueIdentifier>{73d3906c-5c4a-4ab4-93ec-1a334a1f5831}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{c6707a4b-674d-4108-89e0-c4309ee2c3e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\unicode">
+      <UniqueIdentifier>{a2691577-afd6-4b36-8ca1-cb1060016c18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\string">
+      <UniqueIdentifier>{6b063997-1efa-4f32-babe-086df9d9430b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\memory">
+      <UniqueIdentifier>{4a78b904-beae-4e71-9c69-001a915b2254}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.dll.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\common\slowlib.base.assert.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\unicode\slowlib.base.unicode.converter.cpp">
+      <Filter>Source Files\unicode</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp">
+      <Filter>Source Files\string</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\memory\slowlib.base.memory.cpp">
+      <Filter>Source Files\memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

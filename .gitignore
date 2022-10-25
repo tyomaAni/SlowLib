@@ -37,3 +37,7 @@ build/slowlib.base/x86/Debug
 build/slowlib.base/x86/Release
 *.idb
 *.pdb
+build/demo/Debug
+build/demo/Release
+build/slowlib.base/Debug
+build/slowlib.base/Release
