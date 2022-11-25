@@ -178,7 +178,6 @@
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.dll.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\unicode\slowlib.base.unicode.converter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

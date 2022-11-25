@@ -19,9 +19,6 @@
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{c6707a4b-674d-4108-89e0-c4309ee2c3e3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\unicode">
-      <UniqueIdentifier>{a2691577-afd6-4b36-8ca1-cb1060016c18}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\string">
       <UniqueIdentifier>{6b063997-1efa-4f32-babe-086df9d9430b}</UniqueIdentifier>
     </Filter>
@@ -38,9 +35,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\common\slowlib.base.assert.cpp">
       <Filter>Source Files\common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\unicode\slowlib.base.unicode.converter.cpp">
-      <Filter>Source Files\unicode</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp">
       <Filter>Source Files\string</Filter>
