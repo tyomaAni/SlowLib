@@ -42,5 +42,8 @@
     <ClCompile Include="..\..\src\slowlib.base\memory\slowlib.base.memory.cpp">
       <Filter>Source Files\memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.stacktracer.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

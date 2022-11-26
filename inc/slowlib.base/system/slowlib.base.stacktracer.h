@@ -26,27 +26,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEDLL_H__
-#define __SL_SLOWLIBBASEDLL_H__
+#ifndef __SL_SLOWLIBBASEST_H__
+#define __SL_SLOWLIBBASEST_H__
 
-typedef void* slDLLHandle;   // HMODULE in Windows
-typedef void* slDLLFunction;
-
-class SL_API slDLL
+class SL_API slStackTracer
 {
 public:
-	
-	// Load dynamic lybrary.
-	// Return pointer if library is loaded.
-	// Call free when you no need it.
-	static slDLLHandle load(const char* libraryName);
-
-	// Unload dynamic lybrary.
-	static void free(slDLLHandle* library);
-
-	// Get function from .dll
-	// Return NULL if there is some error.
-	static slDLLFunction get_proc(slDLLHandle* library, const char* functionName);
+	static void Print();
 };
 
 #endif

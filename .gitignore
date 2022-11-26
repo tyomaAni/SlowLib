@@ -43,3 +43,6 @@ build/slowlib.base/Debug
 build/slowlib.base/Release
 build/demo/x64/Debug
 build/demo/x64/Release
+*.exp
+build/demo/DLL
+build/slowlib.base/DLL
