@@ -260,6 +260,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\common\slowlib.base.assert.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\framework\slowlib.base.framework.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\memory\slowlib.base.memory.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp" />

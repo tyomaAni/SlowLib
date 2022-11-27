@@ -28,38 +28,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 
-SL_LINK_LIBRARY("slowlib.base");
-
 #include <stdio.h>
-#include <Windows.h>
 
-class FrameworkCallback : public slFrameworkCallback
+#ifdef SL_PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
+class slFrameworkImpl
 {
 public:
-	FrameworkCallback() {}
-	virtual ~FrameworkCallback() {}
-	
-	virtual void OnMessage() override
+	slFrameworkImpl() {}
+	~slFrameworkImpl() 
 	{
-		printf("OnMessage\n");
 	}
+
+	slFrameworkCallback* m_callback = 0;
+
+	void OnDestroy();
 };
+slFrameworkImpl* g_framework = 0;
 
-int main(int argc, char * argv[])
+void slFrameworkImpl::OnDestroy()
 {
-	FrameworkCallback frameworkCallback;
+}
 
-	slFramework::Start(&frameworkCallback);
 
-	bool isRun = true;
-	while (isRun)
+void slFramework::Start(slFrameworkCallback* cb)
+{
+	SL_ASSERT_ST(cb);
+	SL_ASSERT_ST(g_framework == 0);
+	if (!g_framework)
 	{
-		Sleep(1000);
-		//frameworkCallback.OnMessage();
+		g_framework = slCreate<slFrameworkImpl>();
+		g_framework->m_callback = cb;
 	}
+}
 
+void slFramework::Stop()
+{
+	SL_ASSERT_ST(g_framework);
+	if (g_framework)
+	{
+		g_framework->OnDestroy();
 
-	slFramework::Stop();
+		slDestroy(g_framework);
+		g_framework = 0;
+	}
+}
 
-	return EXIT_SUCCESS;
+void slFrameworkCallback::OnMessage()
+{
+	printf("ON MESSAGE\n");
 }

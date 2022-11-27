@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/common/slowlib.base.assert.h"
 #include "slowlib.base/system/slowlib.base.dll.h"
 #include "slowlib.base/system/slowlib.base.stacktracer.h"
+#include "slowlib.base/framework/slowlib.base.framework.h"
 
 
 

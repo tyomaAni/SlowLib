@@ -25,41 +25,24 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#pragma once
+#ifndef __SL_SLOWLIBBASEFWK_H__
+#define __SL_SLOWLIBBASEFWK_H__
 
-#include "slowlib.h"
-
-SL_LINK_LIBRARY("slowlib.base");
-
-#include <stdio.h>
-#include <Windows.h>
-
-class FrameworkCallback : public slFrameworkCallback
+class slFrameworkCallback
 {
 public:
-	FrameworkCallback() {}
-	virtual ~FrameworkCallback() {}
-	
-	virtual void OnMessage() override
-	{
-		printf("OnMessage\n");
-	}
+	slFrameworkCallback() {}
+	virtual ~slFrameworkCallback() {}
+
+	virtual void OnMessage();
 };
 
-int main(int argc, char * argv[])
+class SL_API slFramework
 {
-	FrameworkCallback frameworkCallback;
+public:
+	static void Start(slFrameworkCallback*);
+	static void Stop();
+};
 
-	slFramework::Start(&frameworkCallback);
-
-	bool isRun = true;
-	while (isRun)
-	{
-		Sleep(1000);
-		//frameworkCallback.OnMessage();
-	}
-
-
-	slFramework::Stop();
-
-	return EXIT_SUCCESS;
-}
+#endif

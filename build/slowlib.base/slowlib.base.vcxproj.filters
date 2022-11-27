@@ -25,6 +25,9 @@
     <Filter Include="Source Files\memory">
       <UniqueIdentifier>{4a78b904-beae-4e71-9c69-001a915b2254}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\framework">
+      <UniqueIdentifier>{0321ea20-4c44-4669-87cb-0c07d82a7cbb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
@@ -44,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.stacktracer.cpp">
       <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\framework\slowlib.base.framework.cpp">
+      <Filter>Source Files\framework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

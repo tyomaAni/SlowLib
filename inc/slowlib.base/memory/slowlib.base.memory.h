@@ -40,5 +40,41 @@ public:
 	static void* realloc(void*, size_t size);
 };
 
+template<typename _type>
+class slObjectCreator
+{
+public:
+
+	template<typename... Args>
+	static _type* create(Args&&... args)
+	{
+		_type* ptr = (_type*)slMemory::malloc(sizeof(_type));
+		if (ptr)
+			new(ptr) _type(std::forward<Args>(args)...);
+		return ptr;
+	}
+
+	static void destroy(_type* ptr)
+	{
+		assert(ptr);
+		ptr->~_type();
+		slMemory::free(ptr);
+	}
+};
+
+// Create object
+template<typename _type, typename... Args>
+_type* slCreate(Args&&... args)
+{
+	return slObjectCreator<_type>::create(std::forward<Args>(args)...);
+}
+
+template<typename _type>
+void slDestroy(_type* ptr)
+{
+	assert(ptr);
+	slObjectCreator<_type>::destroy(ptr);
+}
+
 
 #endif
