@@ -39,7 +39,7 @@ void* slMemory::malloc(size_t size)
 #ifdef SL_PLATFORM_WINDOWS
 	return HeapAlloc(g_processHeap, 0, size);
 #else
-	return malloc(size);
+	return ::malloc(size);
 #endif
 }
 
@@ -48,7 +48,7 @@ void* slMemory::calloc(size_t size)
 #ifdef SL_PLATFORM_WINDOWS
 	return HeapAlloc(g_processHeap, HEAP_ZERO_MEMORY, size);
 #else
-	return calloc(1, size);
+	return ::calloc(1, size);
 #endif
 }
 
@@ -57,7 +57,7 @@ void slMemory::free(void* ptr)
 #ifdef SL_PLATFORM_WINDOWS
 	HeapFree(g_processHeap, 0, ptr);
 #else
-	free(ptr);
+	::free(ptr);
 #endif
 }
 
@@ -66,6 +66,6 @@ void* slMemory::realloc(void* ptr, size_t size)
 #ifdef SL_PLATFORM_WINDOWS
 	return HeapReAlloc(g_processHeap, HEAP_ZERO_MEMORY, ptr, size);
 #else
-	return realloc(ptr, size);
+	return ::realloc(ptr, size);
 #endif
 }

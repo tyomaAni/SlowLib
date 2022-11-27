@@ -166,7 +166,6 @@ public:
 
 	void to_utf8(slStringA&);
 	void to_utf16(slStringW&);
-	void to_utf16be(slStringW&);
 };
 
 #endif

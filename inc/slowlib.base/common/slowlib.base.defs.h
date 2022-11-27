@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Some defines
 
-// I think this is unnecessary, I think this is old style thing, but I saw it in many
+// I think this is unnecessary, maybe this is old style thing, but I saw it in many
 // professional projects.
 // Just...`inline` will not guarantee that function will be inline
 #ifdef _MSC_VER
@@ -87,8 +87,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Show file name, line and function
 // printf("%s %i %s\n", SL_FILE, SL_LINE, SL_FUNCTION);
 #ifdef SL_PLATFORM_WINDOWS
-//#define WIN32_LEAN_AND_MEAN
-//#include <Windows.h>
 #define SL_FILE __FILE__
 #define SL_LINE __LINE__
 #define SL_FUNCTION __FUNCTION__
@@ -148,12 +146,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // You can get 0xAABB and 0xCCDD using this macros
 #define SL_LO32(l) ((uint16_t)(((uint32_t)(l)) & 0xffff))
 #define SL_HI32(l) ((uint16_t)((((uint32_t)(l)) >> 16) & 0xffff))
-
-
-
-extern "C"
-{
-	SL_API void SL_CDECL f();
-}
 
 #endif

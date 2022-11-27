@@ -59,17 +59,12 @@ public:
 
 	void ensureInitialized();
 
-
 	void dumpStackTrace(const size_t* trace, int numtrace);
 	int  getStackTrace(size_t* trace, int maxtrace, int framesToSkip = 0);
 
-	void refreshSymbols();
-	void getModuleInfo();
-
 	CRITICAL_SECTION m_lock;
-	bool m_lockInitialized;
-	bool m_needsSymInitialize;
-	bool m_initialized;
+	bool m_lockInitialized = false;
+	bool m_initialized = false;
 	HINSTANCE hDbgHelpDll;
 	HINSTANCE hKernel32Dll;
 	tSymInitialize pSymInitialize;
@@ -88,13 +83,11 @@ public:
 #define NATIVE_WARN_IF(A, T) if (A) { OutputDebugStringA("Havok StackTracer: " T "\r\n"); } else
 #define LOAD_FUNCTION(A) if(1) { p##A = (t##A) GetProcAddress(hDbgHelpDll, #A); } else
 #define LOAD_FUNCTION_WARN(A) if(1) { p##A = (t##A) GetProcAddress(hDbgHelpDll, #A); NATIVE_WARN_IF( p##A == NULL, "Could not load symbol " #A " from dbghelp.dll, version too old, but will continue without it."); } else
-extern const char* hkStackTracerDbghelpPath;
-const char* hkStackTracerDbghelpPath = "dbghelp.dll";
+extern const char* slStackTracerDbghelpPath;
+const char* slStackTracerDbghelpPath = "dbghelp.dll";
 
 
 slStackTracerImpl::slStackTracerImpl()
-		: m_needsSymInitialize(true)
-		, m_initialized(false)
 {
 	InitializeCriticalSection(&m_lock);
 	m_lockInitialized = true;
@@ -108,12 +101,12 @@ slStackTracerImpl::~slStackTracerImpl()
 
 void slStackTracerImpl::ensureInitialized()
 {
-	if (!m_initialized) // skip the lock if the instance is already initialized
+	if (!m_initialized)
 	{
 		EnterCriticalSection(&m_lock);
 		if (!m_initialized)
 		{
-			hDbgHelpDll = LoadLibraryA(hkStackTracerDbghelpPath);
+			hDbgHelpDll = LoadLibraryA(slStackTracerDbghelpPath);
 			NATIVE_WARN_IF(hDbgHelpDll == NULL, "slStackTracer: Unable to load dbghelp.dll");
 
 			if (hDbgHelpDll)
@@ -134,26 +127,20 @@ void slStackTracerImpl::ensureInitialized()
 				pRtlCaptureContext = (tRtlCaptureContext)GetProcAddress(hKernel32Dll, "RtlCaptureContext");
 				pRtlCaptureStackBackTrace = (tRtlCaptureStackBackTrace)GetProcAddress(hKernel32Dll, "RtlCaptureStackBackTrace");
 
-				if (m_needsSymInitialize)
-				{
-
-					DWORD symOptions = pSymGetOptions();
-					symOptions |= SYMOPT_LOAD_LINES | SYMOPT_DEBUG | SYMOPT_DEFERRED_LOADS;
-					pSymSetOptions(symOptions);
-
-					// Temporarily suppress message box in case of error
-#if (_WIN32_WINNT >= 0x0600)
-					UINT prevErrMode = GetErrorMode();
-					SetErrorMode(SEM_FAILCRITICALERRORS);
-#endif
-					// We cannot use the error singleton since it depends on the stack tracer
-					BOOL initsymbols = pSymInitialize(GetCurrentProcess(), NULL, TRUE);
-					NATIVE_WARN_IF(initsymbols == FALSE, "slStackTracer: No debug symbols found for current Process, stack trace may fail.");
+				DWORD symOptions = pSymGetOptions();
+				symOptions |= SYMOPT_LOAD_LINES | SYMOPT_DEBUG | SYMOPT_DEFERRED_LOADS;
+				pSymSetOptions(symOptions);
 
 #if (_WIN32_WINNT >= 0x0600)
-					SetErrorMode(prevErrMode);
+				UINT prevErrMode = GetErrorMode();
+				SetErrorMode(SEM_FAILCRITICALERRORS);
 #endif
-				}
+				BOOL initsymbols = pSymInitialize(GetCurrentProcess(), NULL, TRUE);
+				NATIVE_WARN_IF(initsymbols == FALSE, "slStackTracer: No debug symbols found for current Process, stack trace may fail.");
+
+#if (_WIN32_WINNT >= 0x0600)
+				SetErrorMode(prevErrMode);
+#endif
 
 				m_initialized = true;
 			}
@@ -174,11 +161,7 @@ void slStackTracerImpl::dumpStackTrace(const size_t* trace, int maxtrace)
 
 	for (int i = 0; i < maxtrace; ++i)
 	{
-		// Subtract 4 to try and get the calling symbol
-		// and not the address being returned to
 		uint64_t symaddress = trace[i];
-
-
 
 		DWORD64 displacement = 0;
 		BOOL ok_symbol = pSymFromAddr(
@@ -189,22 +172,7 @@ void slStackTracerImpl::dumpStackTrace(const size_t* trace, int maxtrace)
 
 
 		if (!ok_symbol)
-		{
-			static bool haveWarned;
-			if (!haveWarned)
-			{
-				OutputDebugStringA("**************************************************************\n" \
-					"* Cannot find symbol for an address\n" \
-					"* Either debug information was not found or your version of\n" \
-					"* dbghelp.dll may be too old to understand the debug format.\n" \
-					"* For more information, see comments in hkStackTracerWin32.cxx\n" \
-					"* " __FILE__ "\n" \
-					"**************************************************************");
-				haveWarned = 1;
-			}
-
-			::strcpy_s(sym.si.Name, 2000, "(unknown - see comments in hkStackTracerWin32.cxx)");
-		}
+			::strcpy_s(sym.si.Name, 2000, "(unknown)");
 		IMAGEHLP_LINE64 line;
 		::memset(&line, 0, sizeof(line));
 		line.SizeOfStruct = sizeof(line);
@@ -229,24 +197,6 @@ int slStackTracerImpl::getStackTrace(size_t* trace, int maxtrace, int framesToSk
 	return 0;
 }
 
-void slStackTracerImpl::refreshSymbols()
-{
-	ensureInitialized();
-	if (pSymRefreshModuleList)
-		pSymRefreshModuleList(GetCurrentProcess());
-}
-
-void slStackTracerImpl::getModuleInfo()
-{
-	ensureInitialized();
-	char module[1024];
-	if (GetModuleFileNameA(NULL, module, 1024) > 0)
-	{
-		char buf[1024];
-		snprintf(buf, 1024, "Win32 \"%s\"", module);
-		printf(buf);
-	}
-}
 
 static slStackTracerImpl g_stackTracer;
 

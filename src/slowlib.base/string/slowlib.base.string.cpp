@@ -1130,21 +1130,3 @@ void slString::to_utf16(slStringW& strw)
 		if (uc.shorts[0]) strw.push_back(uc.shorts[0]);
 	}
 }
-
-void slString::to_utf16be(slStringW& strw)
-{
-	UC uc;
-	auto ut = &g_UnicodeChars[0];
-	for (size_t i = 0; i < m_size; ++i)
-	{
-		char32_t c = m_data[i];
-		if (c >= 0x32000)
-			c = '?';
-
-		uc.integer = ut[c].m_utf16;
-
-		// ???????????????????????? now this is BE ?????
-		if (uc.shorts[0]) strw.push_back(uc.shorts[0]);
-		if (uc.shorts[1]) strw.push_back(uc.shorts[1]);
-	}
-}
