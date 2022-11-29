@@ -259,13 +259,15 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\slowlib.base\common\slowlib.base.assert.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\framework\slowlib.base.framework.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\memory\slowlib.base.memory.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\common\slAssert.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\input\slInput.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\memory\slMemory.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.dll.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.stacktracer.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\string\slString.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\system\slStacktracer.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\system\slWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

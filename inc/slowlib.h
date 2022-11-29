@@ -29,14 +29,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIB_H__
 #define __SL_SLOWLIB_H__
 
-#include "slowlib.base/common/slowlib.base.defs.h"
-#include "slowlib.base/common/slowlib.base.forward.h"
-#include "slowlib.base/memory/slowlib.base.memory.h"
-#include "slowlib.base/string/slowlib.base.string.h"
-#include "slowlib.base/common/slowlib.base.assert.h"
-#include "slowlib.base/system/slowlib.base.dll.h"
-#include "slowlib.base/system/slowlib.base.stacktracer.h"
-#include "slowlib.base/framework/slowlib.base.framework.h"
+#include "slowlib.base/common/slDefs.h"
+#include "slowlib.base/common/slForward.h"
+#include "slowlib.base/memory/slMemory.h"
+#include "slowlib.base/string/slString.h"
+#include "slowlib.base/common/slAssert.h"
+#include "slowlib.base/system/slDll.h"
+#include "slowlib.base/system/slStacktracer.h"
+#include "slowlib.base/framework/slFramework.h"
+#include "slowlib.base/system/slWindow.h"
 
 
 

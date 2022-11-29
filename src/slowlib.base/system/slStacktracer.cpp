@@ -80,7 +80,7 @@ public:
 	tRtlCaptureStackBackTrace pRtlCaptureStackBackTrace;
 };
 
-#define NATIVE_WARN_IF(A, T) if (A) { OutputDebugStringA("Havok StackTracer: " T "\r\n"); } else
+#define NATIVE_WARN_IF(A, T) if (A) { OutputDebugStringA("StackTracer: " T "\r\n"); } else
 #define LOAD_FUNCTION(A) if(1) { p##A = (t##A) GetProcAddress(hDbgHelpDll, #A); } else
 #define LOAD_FUNCTION_WARN(A) if(1) { p##A = (t##A) GetProcAddress(hDbgHelpDll, #A); NATIVE_WARN_IF( p##A == NULL, "Could not load symbol " #A " from dbghelp.dll, version too old, but will continue without it."); } else
 extern const char* slStackTracerDbghelpPath;

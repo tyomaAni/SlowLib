@@ -29,6 +29,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEFWK_H__
 #define __SL_SLOWLIBBASEFWK_H__
 
+// Simple typeswithout methods
+struct slPoint {
+	int32_t x = 0;
+	int32_t y = 0;
+};
+struct slRect {
+	int32_t left = 0;
+	int32_t top = 0;
+	int32_t right = 0;
+	int32_t bottom = 0;
+};
+struct slRectf {
+	float left = 0.f;
+	float top = 0.f;
+	float right = 0.f;
+	float bottom = 0.f;
+};
+
+#include "slowlib.base/input/slInput.h"
+
+// Some callbacks. Some information from framework will be here.
 class slFrameworkCallback
 {
 public:
@@ -38,11 +59,23 @@ public:
 	virtual void OnMessage();
 };
 
+// Main API for framework.
+// It will be static methods.
 class SL_API slFramework
 {
 public:
 	static void Start(slFrameworkCallback*);
 	static void Stop();
+	static void Update();
+
+	static slWindow* SummonWindow(slWindowCallback*);
+
+	static bool PointInRect(slRect* r, slPoint* p);
+	static void PointSet(slPoint* p, int32_t x, int32_t y);
+	static void RectSet(slRect* rct, int32_t l, int32_t t, int32_t r, int32_t b);
+	
+	// Need to test. can I use it like this? RectfSet(&r, {0.f,1.f,2.f,3.f});
+	static void RectfSet(slRectf* rct, float*);
 };
 
 #endif

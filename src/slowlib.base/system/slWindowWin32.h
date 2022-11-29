@@ -26,71 +26,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "slowlib.h"
-
-SL_LINK_LIBRARY("slowlib.base");
-
-#include <stdio.h>
-#include <Windows.h>
-
-bool g_isRun = true;
-
-class FrameworkCallback : public slFrameworkCallback
+struct slWindowWin32
 {
-public:
-	FrameworkCallback() {}
-	virtual ~FrameworkCallback() {}
-	
-	virtual void OnMessage() override
-	{
-		printf("OnMessage\n");
-	}
+	wchar_t m_className[20];
+	HWND m_hWnd = 0;
+	HRAWINPUT m_rawInputData[0xff];
+	//HKL m_kl = 0;
+	//int m_kic = 0;
 };
-
-class WindowCallback : public slWindowCallback
-{
-public:
-	WindowCallback() {}
-	virtual ~WindowCallback() {}
-	
-	virtual void OnClose(slWindow* w) override 
-	{
-		w->SetVisible(false);
-		g_isRun = false;
-	}
-};
-
-int main(int argc, char * argv[])
-{
-	FrameworkCallback frameworkCallback;
-	WindowCallback windowCallback;
-
-	slFramework::Start(&frameworkCallback);
-	slWindow * window = slFramework::SummonWindow(&windowCallback);
-	window->SetVisible(true);
-
-	auto inputData = slInput::GetData();
-
-	while (g_isRun)
-	{
-		slFramework::Update();
-
-		Sleep(1);
-		//frameworkCallback.OnMessage();
-
-	//	wprintf(L"%i %i %c[%u]\n", inputData->mousePosition.x, inputData->mousePosition.y, (wchar_t)inputData->character, (uint32_t)inputData->character);
-
-		if (slInput::IsKeyHit(slInputData::KEY_ESCAPE))
-			windowCallback.OnClose(window);
-
-		if (slInput::IsKeyRelease(slInputData::KEY_BACKSPACE))
-			windowCallback.OnClose(window);
-	}
-
-	if (window)
-		slDestroy(window);
-
-	slFramework::Stop();
-
-	return EXIT_SUCCESS;
-}

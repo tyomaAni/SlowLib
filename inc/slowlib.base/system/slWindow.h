@@ -25,59 +25,66 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#pragma once
+#ifndef __SL_SLOWLIBBASEWINDOW_H__
+#define __SL_SLOWLIBBASEWINDOW_H__
 
-#include "slowlib.h"
-
-#include <stdio.h>
-
-#ifdef SL_PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif
-
-class slFrameworkImpl
+class slWindowCallback
 {
 public:
-	slFrameworkImpl() {}
-	~slFrameworkImpl() 
-	{
-	}
+	slWindowCallback() {}
+	virtual ~slWindowCallback() {}
 
-	slFrameworkCallback* m_callback = 0;
-
-	void OnDestroy();
+	virtual void OnActivate(slWindow*) {}
+	virtual void OnDeactivate(slWindow*) {}
+	virtual void OnSize(slWindow*) {}
+	virtual void OnMinimize(slWindow*) {}
+	virtual void OnMaximize(slWindow*) {}
+	virtual void OnRestore(slWindow*) {}
+	virtual void OnDraw(slWindow*) {}
+	virtual void OnMove(slWindow*) {}
+	virtual void OnClose(slWindow*) {}
 };
-slFrameworkImpl* g_framework = 0;
 
-void slFrameworkImpl::OnDestroy()
+struct slWindowCommonData
 {
-}
+	slWindowCallback* m_cb = 0;
+	slPoint m_borderSize;
+	slPoint m_borderSizeCurrent;
+	slPoint m_sizeMinimum;
+	bool m_isVisible = false;
 
+	void* m_implementation = 0;
+};
 
-void slFramework::Start(slFrameworkCallback* cb)
+class SL_API slWindow
 {
-	SL_ASSERT_ST(cb);
-	SL_ASSERT_ST(g_framework == 0);
-	if (!g_framework)
-	{
-		g_framework = slCreate<slFrameworkImpl>();
-		g_framework->m_callback = cb;
-	}
-}
+	slWindowCommonData m_data;
+public:
+	slWindow(slWindowCallback* cb);
+	~slWindow();
 
-void slFramework::Stop()
-{
-	SL_ASSERT_ST(g_framework);
-	if (g_framework)
-	{
-		g_framework->OnDestroy();
+	void SetTitle(const char*);
+	void SetVisible(bool v);
+	bool IsVisible();
+	void Maximize();
+	void Minimize();
+	void Restore();
+	slPoint* GetSizeMinimum();
+	slPoint* GetBorderSize();
 
-		slDestroy(g_framework);
-		g_framework = 0;
-	}
-}
+	// it will call callback functions
+	void OnActivate();
+	void OnDeactivate();
+	void OnSize();
+	void OnMinimize();
+	void OnMaximize();
+	void OnRestore();
+	void OnDraw();
+	void OnMove();
+	void OnClose();
 
-void slFrameworkCallback::OnMessage()
-{
-	printf("ON MESSAGE\n");
-}
+	slWindowCommonData* GetData() { return &m_data; }
+};
+
+#endif

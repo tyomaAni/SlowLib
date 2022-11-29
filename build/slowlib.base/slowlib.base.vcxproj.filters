@@ -28,28 +28,37 @@
     <Filter Include="Source Files\framework">
       <UniqueIdentifier>{0321ea20-4c44-4669-87cb-0c07d82a7cbb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\input">
+      <UniqueIdentifier>{89a60085-c838-4516-a5af-53fe14f98f83}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.dll.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp">
       <Filter>Source Files\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\common\slowlib.base.assert.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\common\slAssert.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\string\slowlib.base.string.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\string\slString.cpp">
       <Filter>Source Files\string</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\memory\slowlib.base.memory.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\memory\slMemory.cpp">
       <Filter>Source Files\memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\system\slowlib.base.stacktracer.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\system\slStacktracer.cpp">
       <Filter>Source Files\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\framework\slowlib.base.framework.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp">
       <Filter>Source Files\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\system\slWindow.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\input\slInput.cpp">
+      <Filter>Source Files\input</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

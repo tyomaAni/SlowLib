@@ -26,11 +26,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef _SL_FRMIMPL_H_
+#define _SL_FRMIMPL_H_
 
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
+void slInputUpdatePre(slInputData* id);
+void slInputUpdatePost(slInputData* id);
+
+class slFrameworkImpl
+{
+public:
+	slFrameworkImpl() {}
+	~slFrameworkImpl() {}
+
+	slFrameworkCallback* m_callback = 0;
+	slInputData m_input;
+	void OnDestroy();
+};
 
 #endif
