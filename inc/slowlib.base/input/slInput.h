@@ -175,17 +175,16 @@ class SL_API slInput
 public:
 	static slInputData* GetData();
 	
+	//slInputData::KEY_
 	static void SetKeyHit(uint32_t, bool);
 	static void SetKeyHold(uint32_t, bool);
 	static void SetKeyRelease(uint32_t, bool);
 
+	//slInputData::KEY_
 	static bool IsKeyHit(uint32_t);
 	static bool IsKeyHold(uint32_t);
 	static bool IsKeyRelease(uint32_t);
 
-	//static void SetLMBDown(bool);
-	//static void SetLMBHold(bool);
-	//static void SetLMBUp(bool);
 	static void EnableLMBDown();
 	static void EnableLMBHold();
 	static void EnableLMBUp();
@@ -218,22 +217,21 @@ public:
 	static void DisableX2MBHold();
 	static void DisableX2MBUp();
 
-
-	/*static void SetRMBDown(bool);
-	static void SetRMBHold(bool);
-	static void SetRMBUp(bool);
-
-	static void SetMMBDown(bool);
-	static void SetMMBHold(bool);
-	static void SetMMBUp(bool);
-
-	static void SetX1MBDown(bool);
-	static void SetX1MBHold(bool);
-	static void SetX1MBUp(bool);
-
-	static void SetX2MBDown(bool);
-	static void SetX2MBHold(bool);
-	static void SetX2MBUp(bool);*/
+	static bool IsLMBHit();
+	static bool IsLMBHold();
+	static bool IsLMBRelease();
+	static bool IsRMBHit();
+	static bool IsRMBHold();
+	static bool IsRMBRelease();
+	static bool IsMMBHit();
+	static bool IsMMBHold();
+	static bool IsMMBRelease();
+	static bool IsX1MBHit();
+	static bool IsX1MBHold();
+	static bool IsX1MBRelease();
+	static bool IsX2MBHit();
+	static bool IsX2MBHold();
+	static bool IsX2MBRelease();
 };
 
 #endif

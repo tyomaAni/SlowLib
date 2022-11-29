@@ -78,7 +78,13 @@ int main(int argc, char * argv[])
 		Sleep(1);
 		//frameworkCallback.OnMessage();
 
-	//	wprintf(L"%i %i %c[%u]\n", inputData->mousePosition.x, inputData->mousePosition.y, (wchar_t)inputData->character, (uint32_t)inputData->character);
+		if(slInput::IsLMBHold())
+			wprintf(L"%i %i %c[%u]\n", inputData->mousePosition.x, inputData->mousePosition.y, (wchar_t)inputData->character, (uint32_t)inputData->character);
+
+		if (slInput::IsLMBHit())
+			Beep(400, 100);
+		if (slInput::IsLMBRelease())
+			Beep(600, 100);
 
 		if (slInput::IsKeyHit(slInputData::KEY_ESCAPE))
 			windowCallback.OnClose(window);
