@@ -31,4 +31,5 @@ struct slWindowWin32
 	wchar_t m_className[20];
 	HWND m_hWnd = 0;
 	HRAWINPUT m_rawInputData[0xff];
+	LONG m_style = 0;
 };

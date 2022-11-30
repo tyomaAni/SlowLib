@@ -89,8 +89,20 @@ int main(int argc, char * argv[])
 		if (slInput::IsKeyHit(slInputData::KEY_ESCAPE))
 			windowCallback.OnClose(window);
 
-		if (slInput::IsKeyRelease(slInputData::KEY_BACKSPACE))
-			windowCallback.OnClose(window);
+		if (slInput::IsKeyRelease(slInputData::KEY_HOME))
+			window->SetBorderless(true);
+		if (slInput::IsKeyRelease(slInputData::KEY_END))
+			window->SetBorderless(false);
+		
+		if (slInput::IsKeyRelease(slInputData::KEY_INSERT))
+			window->SetNoResize(true);
+		if (slInput::IsKeyRelease(slInputData::KEY_DELETE))
+			window->SetNoResize(false);
+
+		if (slInput::IsKeyRelease(slInputData::KEY_PGUP))
+			window->SetNoMinimize(true);
+		if (slInput::IsKeyRelease(slInputData::KEY_PGDOWN))
+			window->SetNoMinimize(false);
 	}
 
 	if (window)

@@ -70,6 +70,9 @@ public:
 	void Maximize();
 	void Minimize();
 	void Restore();
+	void SetBorderless(bool);
+	void SetNoResize(bool);
+	void SetNoMinimize(bool);
 	slPoint* GetSizeMinimum();
 	slPoint* GetBorderSize();
 

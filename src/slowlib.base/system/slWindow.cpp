@@ -39,8 +39,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 slWindow::slWindow(slWindowCallback* cb)
 {
 #ifdef SL_PLATFORM_WINDOWS
-	slWindowWin32* w32 = (slWindowWin32*)slMemory::malloc(sizeof(slWindowWin32));
-	m_data.m_implementation = w32;
+    slWindowWin32* w32 = (slWindowWin32*)slMemory::malloc(sizeof(slWindowWin32));
+    m_data.m_implementation = w32;
 
     WNDCLASSEXW wcex;
     wcex.cbSize = sizeof(WNDCLASSEX);
@@ -74,6 +74,8 @@ slWindow::slWindow(slWindowCallback* cb)
         wcex.hInstance,
         this
     );
+    
+    w32->m_style = GetWindowLongPtr(w32->m_hWnd, GWL_STYLE);
 
     //w32->m_kl = GetKeyboardLayout(0);
     //w32->m_kic = LocaleIdToCodepage(LOWORD(w32->m_kl));
@@ -96,8 +98,8 @@ slWindow::slWindow(slWindowCallback* cb)
 
 slWindow::~slWindow()
 {
-	if (m_data.m_implementation)
-	{
+    if (m_data.m_implementation)
+    {
 #ifdef SL_PLATFORM_WINDOWS
         slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
         if (w32->m_hWnd)
@@ -107,8 +109,8 @@ slWindow::~slWindow()
         }
 #endif
 
-		slMemory::free(m_data.m_implementation);
-	}
+        slMemory::free(m_data.m_implementation);
+    }
 }
 
 void slWindow::SetTitle(const char* s)
@@ -162,6 +164,64 @@ void slWindow::Restore()
 #ifdef SL_PLATFORM_WINDOWS
     slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
     ShowWindow(w32->m_hWnd, SW_RESTORE);
+#endif
+}
+
+void slWindow::SetBorderless(bool v)
+{
+    SL_ASSERT_ST(m_data.m_implementation);
+
+#ifdef SL_PLATFORM_WINDOWS
+    slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
+    if (v)
+    {
+        SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, WS_POPUP);
+        SetWindowPos(w32->m_hWnd, 0, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+        ShowWindow(w32->m_hWnd, SW_NORMAL);
+    }
+    else
+    {
+        SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, w32->m_style);
+        SetWindowPos(w32->m_hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+        ShowWindow(w32->m_hWnd, SW_NORMAL);
+    }
+#endif
+}
+
+void slWindow::SetNoResize(bool v)
+{
+    SL_ASSERT_ST(m_data.m_implementation);
+
+#ifdef SL_PLATFORM_WINDOWS
+    slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
+    if (v)
+    {
+        w32->m_style &= ~WS_THICKFRAME;
+        w32->m_style &= ~WS_MAXIMIZEBOX;
+    }
+    else
+        w32->m_style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
+    SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, w32->m_style);
+    SetWindowPos(w32->m_hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    ShowWindow(w32->m_hWnd, SW_NORMAL);
+#endif
+}
+
+void slWindow::SetNoMinimize(bool v)
+{
+    SL_ASSERT_ST(m_data.m_implementation);
+
+#ifdef SL_PLATFORM_WINDOWS
+    slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
+    if (v)
+    {
+        w32->m_style &= ~WS_MINIMIZEBOX;
+    }
+    else
+        w32->m_style |= WS_MINIMIZEBOX;
+    SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, w32->m_style);
+    SetWindowPos(w32->m_hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    ShowWindow(w32->m_hWnd, SW_NORMAL);
 #endif
 }
 
