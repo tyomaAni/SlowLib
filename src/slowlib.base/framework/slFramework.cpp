@@ -39,10 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 slFrameworkImpl* g_framework = 0;
 
-void slFrameworkImpl::OnDestroy()
-{
-}
-
+void slFrameworkImpl::OnDestroy(){}
 
 void slFramework::Start(slFrameworkCallback* cb)
 {

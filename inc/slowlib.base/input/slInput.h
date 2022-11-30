@@ -32,6 +32,94 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 struct slInputData
 {
+	slPoint mousePosition;
+	slPoint mousePositionOld; // for mouseMoveDelta
+
+	slPoint mouseMoveDelta;
+	//slPoint mouseMoveDeltaOld;
+
+	float   mouseWheelDelta = 0.f;
+	//float   mouseWheelDeltaOld = 0.f;
+
+	uint32_t mouseButtonFlags1;/*MBFL...*/
+	uint32_t mouseButtonFlags2;/*MBFL... HOLD, DOUBLE*/
+
+	//uint32_t LMBClickCount;
+
+	char32_t character = 0;
+
+	//uint8_t  keyFlags[256]; /**/
+	uint64_t keyFlagsHit[2];
+	uint64_t keyFlagsHold[2];
+	uint64_t keyFlagsRelease[2];
+
+	/*keyboardModifier == KBMOD_SHIFT*/
+	uint8_t keyboardModifier; /*KBMOD...*/
+};
+
+class SL_API slInput
+{
+public:
+	static slInputData* GetData();
+	
+	//slInputData::KEY_
+	static void SetKeyHit(uint32_t, bool);
+	static void SetKeyHold(uint32_t, bool);
+	static void SetKeyRelease(uint32_t, bool);
+
+	//slInputData::KEY_
+	static bool IsKeyHit(uint32_t);
+	static bool IsKeyHold(uint32_t);
+	static bool IsKeyRelease(uint32_t);
+
+	static void EnableLMBDown();
+	static void EnableLMBHold();
+	static void EnableLMBUp();
+	static void EnableRMBDown();
+	static void EnableRMBHold();
+	static void EnableRMBUp();
+	static void EnableMMBDown();
+	static void EnableMMBHold();
+	static void EnableMMBUp();
+	static void EnableX1MBDown();
+	static void EnableX1MBHold();
+	static void EnableX1MBUp();
+	static void EnableX2MBDown();
+	static void EnableX2MBHold();
+	static void EnableX2MBUp();
+
+	static void DisableLMBDown();
+	static void DisableLMBHold();
+	static void DisableLMBUp();
+	static void DisableRMBDown();
+	static void DisableRMBHold();
+	static void DisableRMBUp();
+	static void DisableMMBDown();
+	static void DisableMMBHold();
+	static void DisableMMBUp();
+	static void DisableX1MBDown();
+	static void DisableX1MBHold();
+	static void DisableX1MBUp();
+	static void DisableX2MBDown();
+	static void DisableX2MBHold();
+	static void DisableX2MBUp();
+
+	static bool IsLMBHit();
+	static bool IsLMBHold();
+	static bool IsLMBRelease();
+	static bool IsRMBHit();
+	static bool IsRMBHold();
+	static bool IsRMBRelease();
+	static bool IsMMBHit();
+	static bool IsMMBHold();
+	static bool IsMMBRelease();
+	static bool IsX1MBHit();
+	static bool IsX1MBHold();
+	static bool IsX1MBRelease();
+	static bool IsX2MBHit();
+	static bool IsX2MBHold();
+	static bool IsX2MBRelease();
+
 	// keyboard button code
 	enum : uint32_t {
 		KEY_NONE = 0,
@@ -144,94 +232,6 @@ struct slInputData
 		KEY_QUOTE = 222, //'"
 		KEY_end__,
 	};
-
-	slPoint mousePosition;
-	slPoint mousePositionOld; // for mouseMoveDelta
-
-	slPoint mouseMoveDelta;
-	//slPoint mouseMoveDeltaOld;
-
-	float   mouseWheelDelta = 0.f;
-	//float   mouseWheelDeltaOld = 0.f;
-
-	uint32_t mouseButtonFlags1;/*MBFL...*/
-	uint32_t mouseButtonFlags2;/*MBFL... HOLD, DOUBLE*/
-
-	//uint32_t LMBClickCount;
-
-	char32_t character = 0;
-
-	//uint8_t  keyFlags[256]; /**/
-	uint64_t keyFlagsHit[2];
-	uint64_t keyFlagsHold[2];
-	uint64_t keyFlagsRelease[2];
-
-	/*keyboardModifier == KBMOD_SHIFT*/
-	uint8_t keyboardModifier; /*KBMOD...*/
-};
-
-class SL_API slInput
-{
-public:
-	static slInputData* GetData();
-	
-	//slInputData::KEY_
-	static void SetKeyHit(uint32_t, bool);
-	static void SetKeyHold(uint32_t, bool);
-	static void SetKeyRelease(uint32_t, bool);
-
-	//slInputData::KEY_
-	static bool IsKeyHit(uint32_t);
-	static bool IsKeyHold(uint32_t);
-	static bool IsKeyRelease(uint32_t);
-
-	static void EnableLMBDown();
-	static void EnableLMBHold();
-	static void EnableLMBUp();
-	static void EnableRMBDown();
-	static void EnableRMBHold();
-	static void EnableRMBUp();
-	static void EnableMMBDown();
-	static void EnableMMBHold();
-	static void EnableMMBUp();
-	static void EnableX1MBDown();
-	static void EnableX1MBHold();
-	static void EnableX1MBUp();
-	static void EnableX2MBDown();
-	static void EnableX2MBHold();
-	static void EnableX2MBUp();
-
-	static void DisableLMBDown();
-	static void DisableLMBHold();
-	static void DisableLMBUp();
-	static void DisableRMBDown();
-	static void DisableRMBHold();
-	static void DisableRMBUp();
-	static void DisableMMBDown();
-	static void DisableMMBHold();
-	static void DisableMMBUp();
-	static void DisableX1MBDown();
-	static void DisableX1MBHold();
-	static void DisableX1MBUp();
-	static void DisableX2MBDown();
-	static void DisableX2MBHold();
-	static void DisableX2MBUp();
-
-	static bool IsLMBHit();
-	static bool IsLMBHold();
-	static bool IsLMBRelease();
-	static bool IsRMBHit();
-	static bool IsRMBHold();
-	static bool IsRMBRelease();
-	static bool IsMMBHit();
-	static bool IsMMBHold();
-	static bool IsMMBRelease();
-	static bool IsX1MBHit();
-	static bool IsX1MBHold();
-	static bool IsX1MBRelease();
-	static bool IsX2MBHit();
-	static bool IsX2MBHold();
-	static bool IsX2MBRelease();
 };
 
 #endif

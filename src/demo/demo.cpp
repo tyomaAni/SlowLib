@@ -86,22 +86,22 @@ int main(int argc, char * argv[])
 		if (slInput::IsLMBRelease())
 			Beep(600, 100);
 
-		if (slInput::IsKeyHit(slInputData::KEY_ESCAPE))
+		if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
 			windowCallback.OnClose(window);
 
-		if (slInput::IsKeyRelease(slInputData::KEY_HOME))
+		if (slInput::IsKeyRelease(slInput::KEY_HOME))
 			window->SetBorderless(true);
-		if (slInput::IsKeyRelease(slInputData::KEY_END))
+		if (slInput::IsKeyRelease(slInput::KEY_END))
 			window->SetBorderless(false);
 		
-		if (slInput::IsKeyRelease(slInputData::KEY_INSERT))
+		if (slInput::IsKeyRelease(slInput::KEY_INSERT))
 			window->SetNoResize(true);
-		if (slInput::IsKeyRelease(slInputData::KEY_DELETE))
+		if (slInput::IsKeyRelease(slInput::KEY_DELETE))
 			window->SetNoResize(false);
 
-		if (slInput::IsKeyRelease(slInputData::KEY_PGUP))
+		if (slInput::IsKeyRelease(slInput::KEY_PGUP))
 			window->SetNoMinimize(true);
-		if (slInput::IsKeyRelease(slInputData::KEY_PGDOWN))
+		if (slInput::IsKeyRelease(slInput::KEY_PGDOWN))
 			window->SetNoMinimize(false);
 	}
 

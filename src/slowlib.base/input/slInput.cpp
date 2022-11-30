@@ -35,7 +35,7 @@ extern slFrameworkImpl* g_framework;
 
 
 
-// 
+// masks
 enum : uint64_t {
 	KBIT_NONE = 0,
 	KBIT_BACKSPACE = 0x1,
@@ -337,13 +337,13 @@ void slInputUpdatePre(slInputData* id)
 void slInputUpdatePost(slInputData* id)
 {
 	unsigned int ctrl_shift_alt = 0;
-	if (slInput::IsKeyHold(slInputData::KEY_ALT) || slInput::IsKeyHold(slInputData::KEY_RALT))
+	if (slInput::IsKeyHold(slInput::KEY_ALT) || slInput::IsKeyHold(slInput::KEY_RALT))
 		ctrl_shift_alt |= 1;
 
-	if (slInput::IsKeyHold(slInputData::KEY_LSHIFT) || slInput::IsKeyHold(slInputData::KEY_RSHIFT))
+	if (slInput::IsKeyHold(slInput::KEY_LSHIFT) || slInput::IsKeyHold(slInput::KEY_RSHIFT))
 		ctrl_shift_alt |= 2;
 
-	if (slInput::IsKeyHold(slInputData::KEY_LCTRL) || slInput::IsKeyHold(slInputData::KEY_RCTRL))
+	if (slInput::IsKeyHold(slInput::KEY_LCTRL) || slInput::IsKeyHold(slInput::KEY_RCTRL))
 		ctrl_shift_alt |= 4;
 
 	switch (ctrl_shift_alt)
@@ -361,7 +361,6 @@ void slInputUpdatePost(slInputData* id)
 
 	id->mouseMoveDelta.x = id->mousePosition.x - id->mousePositionOld.x;
 	id->mouseMoveDelta.y = id->mousePosition.y - id->mousePositionOld.y;
-
 }
 
 slInputData* slInput::GetData()
@@ -376,29 +375,19 @@ void slInput::SetKeyHit(uint32_t k, bool v)
 
 	uint64_t bit = g_keyToBin[k];
 
-	if (k < slInputData::KEY_NUM_1)
+	if (k < slInput::KEY_NUM_1)
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsHit[0] |= bit;
-		}
 		else
-		{
-			if(g_framework->m_input.keyFlagsHit[0] & bit)
-				g_framework->m_input.keyFlagsHit[0] ^= bit;
-		}
+			g_framework->m_input.keyFlagsHit[0] &= ~bit;
 	}
 	else
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsHit[1] |= bit;
-		}
 		else
-		{
-			if (g_framework->m_input.keyFlagsHit[1] & bit)
-				g_framework->m_input.keyFlagsHit[1] ^= bit;
-		}
+			g_framework->m_input.keyFlagsHit[1] &= ~bit;
 	}
 }
 
@@ -408,29 +397,19 @@ void slInput::SetKeyHold(uint32_t k, bool v)
 
 	uint64_t bit = g_keyToBin[k];
 
-	if (k < slInputData::KEY_NUM_1)
+	if (k < slInput::KEY_NUM_1)
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsHold[0] |= bit;
-		}
 		else
-		{
-			if (g_framework->m_input.keyFlagsHold[0] & bit)
-				g_framework->m_input.keyFlagsHold[0] ^= bit;
-		}
+			g_framework->m_input.keyFlagsHold[0] &= ~bit;
 	}
 	else
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsHold[1] |= bit;
-		}
 		else
-		{
-			if (g_framework->m_input.keyFlagsHold[1] & bit)
-				g_framework->m_input.keyFlagsHold[1] ^= bit;
-		}
+			g_framework->m_input.keyFlagsHold[1] &= ~bit;
 	}
 }
 
@@ -440,29 +419,19 @@ void slInput::SetKeyRelease(uint32_t k, bool v)
 
 	uint64_t bit = g_keyToBin[k];
 
-	if (k < slInputData::KEY_NUM_1)
+	if (k < slInput::KEY_NUM_1)
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsRelease[0] |= bit;
-		}
 		else
-		{
-			if (g_framework->m_input.keyFlagsRelease[0] & bit)
-				g_framework->m_input.keyFlagsRelease[0] ^= bit;
-		}
+			g_framework->m_input.keyFlagsRelease[0] &= ~bit;
 	}
 	else
 	{
 		if (v)
-		{
 			g_framework->m_input.keyFlagsRelease[1] |= bit;
-		}
 		else
-		{
-			if (g_framework->m_input.keyFlagsRelease[1] & bit)
-				g_framework->m_input.keyFlagsRelease[1] ^= bit;
-		}
+			g_framework->m_input.keyFlagsRelease[1] &= ~bit;
 	}
 }
 
@@ -472,7 +441,7 @@ bool slInput::IsKeyHit(uint32_t i)
 
 	uint64_t bit = g_keyToBin[i];
 
-	if (i < slInputData::KEY_NUM_1) // первый uint64_t
+	if (i < slInput::KEY_NUM_1) // первый uint64_t
 		return (g_framework->m_input.keyFlagsHit[0] & bit);
 	else
 		return (g_framework->m_input.keyFlagsHit[1] & bit);
@@ -484,7 +453,7 @@ bool slInput::IsKeyHold(uint32_t i)
 
 	uint64_t bit = g_keyToBin[i];
 
-	if (i < slInputData::KEY_NUM_1) // первый uint64_t
+	if (i < slInput::KEY_NUM_1) // первый uint64_t
 		return (g_framework->m_input.keyFlagsHold[0] & bit);
 	else
 		return (g_framework->m_input.keyFlagsHold[1] & bit);
@@ -496,7 +465,7 @@ bool slInput::IsKeyRelease(uint32_t i)
 
 	uint64_t bit = g_keyToBin[i];
 
-	if (i < slInputData::KEY_NUM_1) // первый uint64_t
+	if (i < slInput::KEY_NUM_1) // первый uint64_t
 		return (g_framework->m_input.keyFlagsRelease[0] & bit);
 	else
 		return (g_framework->m_input.keyFlagsRelease[1] & bit);

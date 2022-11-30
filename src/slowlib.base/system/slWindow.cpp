@@ -77,8 +77,6 @@ slWindow::slWindow(slWindowCallback* cb)
     
     w32->m_style = GetWindowLongPtr(w32->m_hWnd, GWL_STYLE);
 
-    //w32->m_kl = GetKeyboardLayout(0);
-    //w32->m_kic = LocaleIdToCodepage(LOWORD(w32->m_kl));
     int padding = GetSystemMetrics(SM_CXPADDEDBORDER);
     m_data.m_borderSize.x = GetSystemMetrics(SM_CXFRAME) + padding;
     m_data.m_borderSize.y = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) + padding);
@@ -174,17 +172,11 @@ void slWindow::SetBorderless(bool v)
 #ifdef SL_PLATFORM_WINDOWS
     slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
     if (v)
-    {
         SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, WS_POPUP);
-        SetWindowPos(w32->m_hWnd, 0, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        ShowWindow(w32->m_hWnd, SW_NORMAL);
-    }
     else
-    {
         SetWindowLongPtr(w32->m_hWnd, GWL_STYLE, w32->m_style);
-        SetWindowPos(w32->m_hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-        ShowWindow(w32->m_hWnd, SW_NORMAL);
-    }
+    SetWindowPos(w32->m_hWnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    ShowWindow(w32->m_hWnd, SW_NORMAL);
 #endif
 }
 
@@ -256,18 +248,21 @@ void slWindow::OnSize()
 void slWindow::OnMinimize()
 {
     SL_ASSERT_ST(m_data.m_cb);
+    m_data.m_isVisible = false;
     m_data.m_cb->OnMinimize(this);
 }
 
 void slWindow::OnMaximize()
 {
     SL_ASSERT_ST(m_data.m_cb);
+    m_data.m_isVisible = true;
     m_data.m_cb->OnMaximize(this);
 }
 
 void slWindow::OnRestore()
 {
     SL_ASSERT_ST(m_data.m_cb);
+    m_data.m_isVisible = true;
     m_data.m_cb->OnRestore(this);
 }
 
@@ -328,9 +323,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             if (pW)
                 pW->OnActivate();
-
-            //  RECT title_bar_rect = win32_titlebar_rect(hWnd);
-          //    InvalidateRect(hWnd, &title_bar_rect, FALSE);
             return DefWindowProc(hWnd, message, wParam, lParam);
         }break;
         case WA_INACTIVE:
@@ -597,18 +589,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         const UINT MY_MAPVK_VSC_TO_VK_EX = 3;
 
-        if (key == slInputData::KEY_SHIFT)
+        if (key == slInput::KEY_SHIFT)
         { // shift -> lshift rshift
             key = static_cast<unsigned char>(MapVirtualKey((static_cast<UINT>(lParam >> 16) & 255u), MY_MAPVK_VSC_TO_VK_EX));
         }
-        if (key == slInputData::KEY_CTRL)
+        if (key == slInput::KEY_CTRL)
         { // ctrl -> lctrl rctrl
             key = static_cast<unsigned char>(MapVirtualKey((static_cast<UINT>(lParam >> 16) & 255), MY_MAPVK_VSC_TO_VK_EX));
             if (lParam & 0x1000000)
                 key = static_cast<unsigned char>(163);
         }
 
-        if (key == slInputData::KEY_ALT)
+        if (key == slInput::KEY_ALT)
         { // alt -> lalt ralt
             key = static_cast<unsigned char>(MapVirtualKey((static_cast<UINT>(lParam >> 16) & 255), MY_MAPVK_VSC_TO_VK_EX));
             if (lParam & 0x1000000)
@@ -648,10 +640,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         id->character = wParam;
     }break;
 
-    /*case WM_INPUTLANGCHANGE:
-        KEYBOARD_INPUT_HKL = GetKeyboardLayout(0);
-        KEYBOARD_INPUT_CODEPAGE = LocaleIdToCodepage(LOWORD(KEYBOARD_INPUT_HKL));
-        return 0;*/
     case WM_SYSCOMMAND:
         if ((wParam & 0xFFF0) == SC_SCREENSAVE ||
             (wParam & 0xFFF0) == SC_MONITORPOWER ||

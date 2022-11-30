@@ -64,10 +64,16 @@ public:
 class SL_API slFramework
 {
 public:
+	//allocate implementation
 	static void Start(slFrameworkCallback*);
+	
+	//deallocate implementation
 	static void Stop();
+	
+	//calculate deltatime, update input, update GUI, update window
 	static void Update();
 
+	//create window. CreateWindow is winapi function so I will use word `summon`
 	static slWindow* SummonWindow(slWindowCallback*);
 
 	static bool PointInRect(slRect* r, slPoint* p);
