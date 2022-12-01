@@ -185,7 +185,8 @@ void slStackTracerImpl::dumpStackTrace(const size_t* trace, int maxtrace)
 
 		char trace[2048];
 		_snprintf_s(trace, 2048, "%s(%i):'%s'\n", line.FileName, line.LineNumber, sym.si.Name);
-		printf(trace);
+		//printf(trace);
+		slLog::Print("%s\n", trace);
 	}
 }
 

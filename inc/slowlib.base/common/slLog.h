@@ -26,21 +26,26 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIB_H__
-#define __SL_SLOWLIB_H__
+#ifndef __SL_SLOWLIBBASELOG_H__
+#define __SL_SLOWLIBBASELOG_H__
 
-#include "slowlib.base/common/slDefs.h"
-#include "slowlib.base/common/slForward.h"
-#include "slowlib.base/common/slLog.h"
-#include "slowlib.base/memory/slMemory.h"
-#include "slowlib.base/string/slString.h"
-#include "slowlib.base/common/slAssert.h"
-#include "slowlib.base/system/slDll.h"
-#include "slowlib.base/system/slStacktracer.h"
-#include "slowlib.base/framework/slFramework.h"
-#include "slowlib.base/system/slWindow.h"
-#include "slowlib.base/math/slMath.h"
+class SL_API slLog
+{
+public:
+	static void Print(const char* s, ...);
+	static void Print(const wchar_t* s, ...);
 
+	static void PrintInfo(const char* s, ...);
+	static void PrintInfo(const wchar_t* s, ...);
 
+	static void PrintWarning(const char* s, ...);
+	static void PrintWarning(const wchar_t* s, ...);
+
+	static void PrintError(const char* s, ...);
+	static void PrintError(const wchar_t* s, ...);
+
+	static void SetCallbackA(void(*)(const char*));
+	static void SetCallbackW(void(*)(const wchar_t*));
+};
 
 #endif

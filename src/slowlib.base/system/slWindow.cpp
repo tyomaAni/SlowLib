@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 #endif
 
-slWindow::slWindow(slWindowCallback* cb)
+slWindow::slWindow(slWindowCallback* cb, int sx, int sy)
 {
 #ifdef SL_PLATFORM_WINDOWS
     slWindowWin32* w32 = (slWindowWin32*)slMemory::malloc(sizeof(slWindowWin32));
@@ -67,8 +67,8 @@ slWindow::slWindow(slWindowCallback* cb)
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        CW_USEDEFAULT,
-        CW_USEDEFAULT,
+        sx,
+        sy,
         0,
         0,
         wcex.hInstance,
@@ -81,6 +81,10 @@ slWindow::slWindow(slWindowCallback* cb)
     m_data.m_borderSize.x = GetSystemMetrics(SM_CXFRAME) + padding;
     m_data.m_borderSize.y = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) + padding);
     m_data.m_borderSizeCurrent = m_data.m_borderSize;
+
+    m_data.m_creationSize.x = sx;
+    m_data.m_creationSize.y = sy;
+    m_data.m_currentSize = m_data.m_creationSize;
 
     RAWINPUTDEVICE device;
     device.usUsagePage = 0x01;
@@ -217,6 +221,60 @@ void slWindow::SetNoMinimize(bool v)
 #endif
 }
 
+void slWindow::ToFullscreenMode()
+{
+    SL_ASSERT_ST(m_data.m_implementation);
+    if (m_data.m_isFullscreen)
+        return;
+
+#ifdef SL_PLATFORM_WINDOWS
+    slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
+    w32->m_stylePreFullscreen = GetWindowLong(w32->m_hWnd, GWL_STYLE);
+    MONITORINFO mi = { sizeof(mi) };
+    
+    if (GetWindowPlacement(w32->m_hWnd, &w32->m_wndPlcmnt) &&
+        GetMonitorInfo(MonitorFromWindow(w32->m_hWnd, MONITOR_DEFAULTTOPRIMARY), &mi))
+    {
+        m_data.m_sizePreFullscreen = m_data.m_currentSize;
+
+        m_data.m_currentSize.x = mi.rcMonitor.right - mi.rcMonitor.left;
+        m_data.m_currentSize.y = mi.rcMonitor.bottom - mi.rcMonitor.top;
+     //   _set_current_rect();
+
+        SetWindowLong(w32->m_hWnd, GWL_STYLE, WS_POPUP);
+        SetWindowPos(w32->m_hWnd, HWND_TOP,
+            mi.rcMonitor.left, mi.rcMonitor.top,
+            mi.rcMonitor.right - mi.rcMonitor.left,
+            mi.rcMonitor.bottom - mi.rcMonitor.top,
+            SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+        m_data.m_isFullscreen = true;
+        ShowWindow(w32->m_hWnd, SW_NORMAL);
+    }
+#endif
+}
+
+void slWindow::ToWindowMode()
+{
+    SL_ASSERT_ST(m_data.m_implementation);
+    if (!m_data.m_isFullscreen)
+        return;
+#ifdef SL_PLATFORM_WINDOWS
+    slWindowWin32* w32 = (slWindowWin32*)m_data.m_implementation;
+    SetWindowLong(w32->m_hWnd, GWL_STYLE, w32->m_stylePreFullscreen);
+    
+    m_data.m_currentSize = m_data.m_sizePreFullscreen;
+
+  //  _set_current_rect();
+
+    SetWindowPlacement(w32->m_hWnd, &w32->m_wndPlcmnt);
+    SetWindowPos(w32->m_hWnd, NULL, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+        SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+    m_data.m_isFullscreen = false;
+    ShowWindow(w32->m_hWnd, SW_NORMAL);
+#endif
+}
+
 void slWindow::OnActivate()
 {
     SL_ASSERT_ST(m_data.m_cb);
@@ -237,6 +295,11 @@ slPoint* slWindow::GetSizeMinimum()
 slPoint* slWindow::GetBorderSize()
 {
     return &m_data.m_borderSize;
+}
+
+slPoint* slWindow::GetCurrentSize()
+{
+    return &m_data.m_currentSize;
 }
 
 void slWindow::OnSize()
@@ -392,8 +455,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 pW->OnMaximize();
                 break;
             }
+        
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            pW->GetCurrentSize()->x = rc.right - rc.left;
+            pW->GetCurrentSize()->y = rc.bottom - rc.top;
         }
+
     }return DefWindowProc(hWnd, message, wParam, lParam);
+    /*case WM_SIZING:
+    {
+        if (pW)
+        {
+            pW->OnSize();
+            RECT rc;
+            GetClientRect(hWnd, &rc);
+            pW->GetCurrentSize()->x = rc.right - rc.left;
+            pW->GetCurrentSize()->y = rc.bottom - rc.top;
+        }
+    }break;*/
     case WM_COMMAND:
     {
         /*int wmId = LOWORD(wParam);

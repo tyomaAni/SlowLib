@@ -260,8 +260,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\common\slAssert.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\common\slLog.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\input\slInput.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\math\slMath.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\math\slVector.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\memory\slMemory.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\string\slString.cpp" />

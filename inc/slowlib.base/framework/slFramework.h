@@ -74,7 +74,9 @@ public:
 	static void Update();
 
 	//create window. CreateWindow is winapi function so I will use word `summon`
-	static slWindow* SummonWindow(slWindowCallback*);
+	static slWindow* SummonWindow(slWindowCallback*, int sx, int sy);
+
+	static float* GetDeltaTime();
 
 	static bool PointInRect(slRect* r, slPoint* p);
 	static void PointSet(slPoint* p, int32_t x, int32_t y);

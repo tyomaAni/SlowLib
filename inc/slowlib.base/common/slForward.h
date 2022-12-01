@@ -35,6 +35,10 @@ class SL_API slString;
 class SL_API slStringA;
 class SL_API slStringW;
 class SL_API slWindow;
+class SL_API slVec3;
+class SL_API slVec3f;
+class SL_API slVec4;
+class SL_API slVec4f;
 class slWindowCallback;
 
 #endif

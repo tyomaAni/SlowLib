@@ -66,10 +66,12 @@ int main(int argc, char * argv[])
 	WindowCallback windowCallback;
 
 	slFramework::Start(&frameworkCallback);
-	slWindow * window = slFramework::SummonWindow(&windowCallback);
+	slWindow * window = slFramework::SummonWindow(&windowCallback, 800, 600);
 	window->SetVisible(true);
 
 	auto inputData = slInput::GetData();
+
+	double dd = 0.0;
 
 	while (g_isRun)
 	{
@@ -103,6 +105,49 @@ int main(int argc, char * argv[])
 			window->SetNoMinimize(true);
 		if (slInput::IsKeyRelease(slInput::KEY_PGDOWN))
 			window->SetNoMinimize(false);
+
+		if (slInput::IsKeyRelease(slInput::KEY_F1))
+			window->ToFullscreenMode();
+		if (slInput::IsKeyRelease(slInput::KEY_F2))
+			window->ToWindowMode();
+
+		static double x = 0;
+		static double y = 0;
+		if (slInput::IsKeyRelease(slInput::KEY_A))
+		{
+			x += 0.1f;
+			printf("%f %f : %f\n",x, y, slMath::atan2(x, y));
+		}
+		if (slInput::IsKeyRelease(slInput::KEY_Z))
+		{
+			x -= 0.1f;
+			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+		}
+		if (slInput::IsKeyRelease(slInput::KEY_S))
+		{
+			y += 0.1f;
+			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+		}
+		if (slInput::IsKeyRelease(slInput::KEY_X))
+		{
+			y -= 0.1f;
+			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+		}
+
+		if (slInput::IsKeyRelease(slInput::KEY_Q))
+			printf("%f %f : %f\n", x, y, slMath::atan2(-1.0, -1.0));
+		if (slInput::IsKeyRelease(slInput::KEY_W))
+			printf("%f %f : %f\n", x, y, slMath::atan2(1.0, 1.0));
+			
+
+		printf("%f %f %f : %f %f %f\n", 
+			slMath::atan(2.0),
+			slMath::atan(0.11),
+			slMath::atan( 0.96),
+			slMath::atan( -1.0f),
+			slMath::atan( 1.63f),
+			slMath::atan( -0.26f)
+		);
 	}
 
 	if (window)

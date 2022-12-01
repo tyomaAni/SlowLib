@@ -60,7 +60,8 @@ void onAssert_default(const char* message, const char* file, uint32_t line, uint
     }
     else
     {
-        printf("%s %s %i\n", message, file, line);
+        //printf("%s %s %i\n", message, file, line);
+        slLog::PrintError("%s %s %i\n", message, file, line);
 #ifdef SL_PLATFORM_WINDOWS
         DebugBreak();
 #endif

@@ -52,7 +52,11 @@ struct slWindowCommonData
 	slPoint m_borderSize;
 	slPoint m_borderSizeCurrent;
 	slPoint m_sizeMinimum;
+	slPoint m_currentSize;
+	slPoint m_creationSize;
+	slPoint m_sizePreFullscreen;
 	bool m_isVisible = false;
+	bool m_isFullscreen = false;
 
 	void* m_implementation = 0;
 };
@@ -61,7 +65,7 @@ class SL_API slWindow
 {
 	slWindowCommonData m_data;
 public:
-	slWindow(slWindowCallback* cb);
+	slWindow(slWindowCallback* cb, int sx, int sy);
 	~slWindow();
 
 	void SetTitle(const char*);
@@ -75,6 +79,10 @@ public:
 	void SetNoMinimize(bool);
 	slPoint* GetSizeMinimum();
 	slPoint* GetBorderSize();
+	slPoint* GetCurrentSize();
+	
+	void ToFullscreenMode();
+	void ToWindowMode();
 
 	// it will call callback functions
 	void OnActivate();

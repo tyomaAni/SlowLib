@@ -32,4 +32,6 @@ struct slWindowWin32
 	HWND m_hWnd = 0;
 	HRAWINPUT m_rawInputData[0xff];
 	LONG m_style = 0;
+	LONG m_stylePreFullscreen = 0;
+	WINDOWPLACEMENT m_wndPlcmnt;
 };

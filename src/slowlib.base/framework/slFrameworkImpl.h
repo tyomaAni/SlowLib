@@ -40,6 +40,7 @@ public:
 
 	slFrameworkCallback* m_callback = 0;
 	slInputData m_input;
+	float m_deltaTime = 0.f;
 	void OnDestroy();
 };
 

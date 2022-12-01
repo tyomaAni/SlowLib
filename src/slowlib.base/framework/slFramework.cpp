@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 
 #include <stdio.h>
+#include <time.h>
 
 #ifdef SL_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -49,6 +50,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 	{
 		g_framework = slCreate<slFrameworkImpl>();
 		g_framework->m_callback = cb;
+		slLog::PrintInfo("Init SlowLib...\n");
 	}
 }
 
@@ -66,6 +68,7 @@ void slFramework::Stop()
 
 void slFramework::Update()
 {
+	SL_ASSERT_ST(g_framework);
 	slInputUpdatePre(&g_framework->m_input);
 
 #ifdef SL_PLATFORM_WINDOWS
@@ -79,6 +82,12 @@ void slFramework::Update()
 #endif
 
 	slInputUpdatePost(&g_framework->m_input);
+
+	static clock_t then = 0;
+	clock_t now = clock();
+
+	g_framework->m_deltaTime = (float)(now - then) / CLOCKS_PER_SEC;
+	then = now;
 }
 
 void slFrameworkCallback::OnMessage()
@@ -86,11 +95,17 @@ void slFrameworkCallback::OnMessage()
 	printf("ON MESSAGE\n");
 }
 
-slWindow* slFramework::SummonWindow(slWindowCallback* cb)
+slWindow* slFramework::SummonWindow(slWindowCallback* cb, int sx, int sy)
 {
 	SL_ASSERT_ST(cb);
 
-	return slCreate<slWindow>(cb);
+	return slCreate<slWindow>(cb, sx, sy);
+}
+
+float* slFramework::GetDeltaTime()
+{
+	SL_ASSERT_ST(g_framework);
+	return &g_framework->m_deltaTime;
 }
 
 bool slFramework::PointInRect(slRect* r, slPoint* p)

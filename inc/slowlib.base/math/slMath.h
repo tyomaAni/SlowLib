@@ -25,22 +25,49 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+
+
 #pragma once
-#ifndef __SL_SLOWLIB_H__
-#define __SL_SLOWLIB_H__
+#ifndef __SL_SLOWLIBBASEMATH_H__
+#define __SL_SLOWLIBBASEMATH_H__
 
-#include "slowlib.base/common/slDefs.h"
-#include "slowlib.base/common/slForward.h"
-#include "slowlib.base/common/slLog.h"
-#include "slowlib.base/memory/slMemory.h"
-#include "slowlib.base/string/slString.h"
-#include "slowlib.base/common/slAssert.h"
-#include "slowlib.base/system/slDll.h"
-#include "slowlib.base/system/slStacktracer.h"
-#include "slowlib.base/framework/slFramework.h"
-#include "slowlib.base/system/slWindow.h"
-#include "slowlib.base/math/slMath.h"
+const float PIf = static_cast<float>(3.14159265358979323846);
+const float PIfHalf = static_cast<float>(3.14159265358979323846 * 0.5);
+const float PIfPI = 6.2831853f;
+const double PI = 3.14159265358979323846;
+const double PIHalf = 3.14159265358979323846 * 0.5;
+const double PIPI = 6.283185307179586476925286766559;
 
+#include "slowlib.base/math/slVector.h"
 
+class SL_API slMath
+{
+public:
+	static float DegToRad(float degrees);
+	static double DegToRad(double degrees);
+	static float RadToDeg(float radians);
+	static double RadToDeg(double radians);
+
+	static float abs(float);
+	static double abs(double);
+	static int32_t abs(int32_t);
+
+	// Expect value form -1 to +1
+	static float acos(float);
+	static double acos(double);
+
+	// Expect value form -1 to +1
+	static float asin(float);
+	static double asin(double);
+
+	// Expect value form -2 to +2
+	static float atan(float);
+	static double atan(double);
+
+	// Expect value form -1 to +1
+	static float atan2(float y, float x);
+	static double atan2(double y, double x);
+};
 
 #endif
