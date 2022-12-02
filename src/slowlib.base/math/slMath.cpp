@@ -51,6 +51,27 @@ static double g_atan[] = {
 static double g_atan2[] = {
 #include "atan2.inl"
 };
+static float g_atan2f[] = {
+#include "atan2f.inl"
+};
+static double g_cos[] = {
+#include "cos.inl"
+};
+static float g_cosf[] = {
+#include "cosf.inl"
+};
+static double g_sin[] = {
+#include "sin.inl"
+};
+static float g_sinf[] = {
+#include "sinf.inl"
+};
+static double g_tan[] = {
+#include "tan.inl"
+};
+static float g_tanf[] = {
+#include "tanf.inl"
+};
 
 float slMath::DegToRad(float degrees)
 {
@@ -98,6 +119,7 @@ float slMath::acos(float v)
 	if (v >= -1.f && v <= 1.f)
 	{
 		uint32_t ind = (uint32_t)roundf((v + 1.f)*1000.f);
+		SL_ASSERT_ST(ind < 2001);
 		return g_acosf[ind];
 	}
 	return 0;
@@ -108,6 +130,7 @@ double slMath::acos(double v)
 	if (v >= -1.0 && v <= 1.0)
 	{
 		uint32_t ind = (uint32_t)round((v + 1.0) * 1000.0);
+		SL_ASSERT_ST(ind < 2001);
 		return g_acos[ind];
 	}
 	return 0;
@@ -118,6 +141,7 @@ float slMath::asin(float v)
 	if (v >= -1.f && v <= 1.f)
 	{
 		uint32_t ind = (uint32_t)roundf((v + 1.f) * 1000.f);
+		SL_ASSERT_ST(ind < 2001);
 		return g_asinf[ind];
 	}
 	return 0;
@@ -128,6 +152,7 @@ double slMath::asin(double v)
 	if (v >= -1.0 && v <= 1.0)
 	{
 		uint32_t ind = (uint32_t)round((v + 1.0) * 1000.0);
+		SL_ASSERT_ST(ind < 2001);
 		return g_asin[ind];
 	}
 	return 0;
@@ -138,6 +163,7 @@ float slMath::atan(float v)
 	if (v >= -2.f && v <= 2.f)
 	{
 		uint32_t ind = (uint32_t)roundf((v + 2.f) * 1000.f);
+		SL_ASSERT_ST(ind < 4001);
 		return g_atanf[ind];
 	}
 	return 0;
@@ -148,6 +174,7 @@ double slMath::atan(double v)
 	if (v >= -2.f && v <= 2.f)
 	{
 		uint32_t ind = (uint32_t)round((v + 2.0) * 1000.0);
+		SL_ASSERT_ST(ind < 4001);
 		return g_atan[ind];
 	}
 	return 0;
@@ -155,6 +182,24 @@ double slMath::atan(double v)
 
 float slMath::atan2(float y, float x)
 {
+	if (y >= -1.0f && y <= 1.0f)
+	{
+		if (x >= -1.0f && x <= 1.0f)
+		{
+			uint32_t ix = (uint32_t)roundf((x + 1.0f) * 100.0f);
+			uint32_t iy = (uint32_t)roundf((y + 1.0f) * 100.0f);
+			uint32_t ind = (uint32_t)(((float)iy * 201.f) + (float)ix);
+			SL_ASSERT_ST(ind < 40401);
+
+			if (ind > 40400)
+			{
+				slLog::PrintWarning("ind > 40400\n");
+				return 0.f;
+			}
+
+			return g_atan2f[ind];
+		}
+	}
 	return 0.f;
 }
 
@@ -167,9 +212,7 @@ double slMath::atan2(double y, double x)
 			uint32_t ix = (uint32_t)round((x + 1.0) * 100.0);
 			uint32_t iy = (uint32_t)round((y + 1.0) * 100.0);
 			uint32_t ind = (uint32_t)(((float)iy * 201.f) + (float)ix);
-
-
-			//printf("INDS: %i %i : %i\n", ix, iy, ind);
+			SL_ASSERT_ST(ind < 40401);
 
 			if (ind > 40400)
 			{
@@ -182,3 +225,120 @@ double slMath::atan2(double y, double x)
 	}
 	return 0.f;
 }
+
+float slMath::clamp(float v, float mn, float mx)
+{
+	if (v < mn)
+		return mn;
+	else if (v > mx)
+		return mx;
+	return v;
+}
+
+double slMath::clamp(double v, double mn, double mx)
+{
+	if (v < mn)
+		return mn;
+	else if (v > mx)
+		return mx;
+	return v;
+}
+
+float slMath::cos(float v)
+{
+	if (v < -3.141f) v = -3.141f;
+	if (v < 0.f) v = slMath::abs(v);
+	if (v > 3.141f) v = 3.141f;
+
+	uint32_t ind = (uint32_t)roundf(v * 1000.0f);
+
+	if(ind < 3143)
+		return g_cosf[ind];
+	return 0;
+}
+
+double slMath::cos(double v)
+{
+	if (v < -3.141) v = -3.141;
+	if (v < 0.) v = slMath::abs(v);
+	if (v > 3.141) v = 3.141;
+
+	uint32_t ind = (uint32_t)round(v * 1000.0);
+
+	if (ind < 3143)
+		return g_cos[ind];
+	return 0;
+}
+
+float slMath::sin(float v)
+{
+	bool neg = false;
+	if (v < -3.141f) v = -3.141f;
+	if (v < 0.f)
+	{
+		neg = true;
+		v = slMath::abs(v);
+	}
+	if (v > 3.141f) v = 3.141f;
+
+	uint32_t ind = (uint32_t)roundf(v * 1000.0f);
+
+	if (ind < 3143)
+		return neg ? -g_sinf[ind] : g_sinf[ind];
+	return 0;
+}
+
+double slMath::sin(double v)
+{
+	bool neg = false;
+	if (v < -3.141) v = -3.141;
+	if (v < 0.)
+	{
+		neg = true;
+		v = slMath::abs(v);
+	}
+	if (v > 3.141) v = 3.141;
+
+	uint32_t ind = (uint32_t)round(v * 1000.0);
+
+	if (ind < 3143)
+		return neg ? -g_sin[ind] : g_sin[ind];
+	return 0;
+}
+
+float slMath::tan(float v)
+{
+	bool neg = false;
+	if (v < -3.141f) v = -3.141f;
+	if (v < 0.f)
+	{
+		neg = true;
+		v = slMath::abs(v);
+	}
+	if (v > 3.141f) v = 3.141f;
+
+	uint32_t ind = (uint32_t)roundf(v * 1000.0f);
+
+	if (ind < 3143)
+		return neg ? -g_tanf[ind] : g_tanf[ind];
+	return 0;
+}
+
+double slMath::tan(double v)
+{
+	bool neg = false;
+	if (v < -3.141) v = -3.141;
+	if (v < 0.)
+	{
+		neg = true;
+		v = slMath::abs(v);
+	}
+	if (v > 3.141) v = 3.141;
+
+	uint32_t ind = (uint32_t)round(v * 1000.0);
+
+	if (ind < 3143)
+		return neg ? -g_tan[ind] : g_tan[ind];
+	return 0;
+}
+

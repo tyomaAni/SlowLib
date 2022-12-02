@@ -68,6 +68,20 @@ public:
 	// Expect value form -1 to +1
 	static float atan2(float y, float x);
 	static double atan2(double y, double x);
+	
+	static float clamp(float, float mn, float mx);
+	static double clamp(double, double mn, double mx);
+
+	// Expect value from -PI to +PI
+	// It will do this
+	// if (v > 3.141f) v = 3.141f;
+	// if (v < -3.141f) v = -3.141f;
+	static float cos(float);
+	static double cos(double);
+	static float sin(float);
+	static double sin(double);
+	static float tan(float);
+	static double tan(double);
 };
 
 #endif

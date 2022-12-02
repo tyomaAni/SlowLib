@@ -139,14 +139,14 @@ int main(int argc, char * argv[])
 		if (slInput::IsKeyRelease(slInput::KEY_W))
 			printf("%f %f : %f\n", x, y, slMath::atan2(1.0, 1.0));
 			
-
+		printf("%f\n",slMath::tan(3.141));
 		printf("%f %f %f : %f %f %f\n", 
-			slMath::atan(2.0),
-			slMath::atan(0.11),
-			slMath::atan( 0.96),
-			slMath::atan( -1.0f),
-			slMath::atan( 1.63f),
-			slMath::atan( -0.26f)
+			slMath::sin(1.0),
+			slMath::sin(0.11),
+			slMath::sin(3.141),
+			slMath::sin(-1.0f),
+			slMath::sin(0.63f),
+			slMath::sin(-3.140)
 		);
 	}
 
