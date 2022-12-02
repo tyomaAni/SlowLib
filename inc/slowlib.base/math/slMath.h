@@ -82,6 +82,61 @@ public:
 	static double sin(double);
 	static float tan(float);
 	static double tan(double);
+
+	static void cross(const slVec3& v1, const slVec3& v2, slVec3& r);
+	static void cross(const slVec3f& v1, const slVec3f& v2, slVec3f& r);
+	static void cross(const slVec4& v1, const slVec4& v2, slVec4& r);
+	static void cross(const slVec4f& v1, const slVec4f& v2, slVec4f& r);
+	static void cross(const slVec3& v1, const slVec4& v2, slVec3& r);
+	static void cross(const slVec3f& v1, const slVec4f& v2, slVec3f& r);
+	
+	static double distance(const slVec3& v1, const slVec3& v2);
+	static double distance(const slVec4& v1, const slVec4& v2);
+	static double distance(const slVec3& v1, const slVec4& v2);
+	static float distance(const slVec3f& v1, const slVec3f& v2);
+	static float distance(const slVec4f& v1, const slVec4f& v2);
+	static float distance(const slVec3f& v1, const slVec4f& v2);
+
+	static double dot(const slVec3& v1, const slVec3& v2);
+	static double dot(const slVec4& v1, const slVec4& v2);
+	static double dot(const slVec3& v1, const slVec4& v2);
+	static float dot(const slVec3f& v1, const slVec3f& v2);
+	static float dot(const slVec4f& v1, const slVec4f& v2);
+	static float dot(const slVec3f& v1, const slVec4f& v2);
+
+	static double length(const slVec3& v);
+	static double length(const slVec4& v);
+	static float length(const slVec3f& v);
+	static float length(const slVec4f& v);
+
+	// wikipedia:
+	// Imprecise method, which does not guarantee v = v1 when t = 1, due to floating-point arithmetic error.
+	// This method is monotonic. This form may be used when the hardware has a native fused multiply-add instruction.
+	static float lerp1(float x, float y, float t);
+	static double lerp1(double x, double y, double t);
+	static void lerp1(const slVec3& x, const slVec3& y, double t, slVec3& r);
+	static void lerp1(const slVec3& x, const slVec4& y, double t, slVec3& r);
+	static void lerp1(const slVec4& x, const slVec4& y, double t, slVec4& r);
+	static void lerp1(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
+	static void lerp1(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
+	static void lerp1(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
+
+	// wikipedia:
+	// Precise method, which guarantees v = v1 when t = 1. This method is monotonic only when v0 * v1 < 0.
+	// Lerping between same values might not produce the same value
+	static float lerp2(float x, float y, float t);
+	static double lerp2(double x, double y, double t);
+	static void lerp2(const slVec3& x, const slVec3& y, double t, slVec3& r);
+	static void lerp2(const slVec3& x, const slVec4& y, double t, slVec3& r);
+	static void lerp2(const slVec4& x, const slVec4& y, double t, slVec4& r);
+	static void lerp2(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
+	static void lerp2(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
+	static void lerp2(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
+	
+	static void normalize(slVec3& v);
+	static void normalize(slVec3f& v);
+	static void normalize(slVec4& v);
+	static void normalize(slVec4f& v);
 };
 
 #endif

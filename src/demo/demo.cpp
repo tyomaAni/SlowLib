@@ -116,22 +116,22 @@ int main(int argc, char * argv[])
 		if (slInput::IsKeyRelease(slInput::KEY_A))
 		{
 			x += 0.1f;
-			printf("%f %f : %f\n",x, y, slMath::atan2(x, y));
+			printf("%f %f : %f\n",x, y, slMath::distance(slVec3(x), slVec3(y)));
 		}
 		if (slInput::IsKeyRelease(slInput::KEY_Z))
 		{
 			x -= 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
 		}
 		if (slInput::IsKeyRelease(slInput::KEY_S))
 		{
 			y += 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
 		}
 		if (slInput::IsKeyRelease(slInput::KEY_X))
 		{
 			y -= 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::atan2(x, y));
+			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
 		}
 
 		if (slInput::IsKeyRelease(slInput::KEY_Q))
@@ -139,7 +139,7 @@ int main(int argc, char * argv[])
 		if (slInput::IsKeyRelease(slInput::KEY_W))
 			printf("%f %f : %f\n", x, y, slMath::atan2(1.0, 1.0));
 			
-		printf("%f\n",slMath::tan(3.141));
+		/*printf("%f\n",slMath::tan(3.141));
 		printf("%f %f %f : %f %f %f\n", 
 			slMath::sin(1.0),
 			slMath::sin(0.11),
@@ -147,7 +147,7 @@ int main(int argc, char * argv[])
 			slMath::sin(-1.0f),
 			slMath::sin(0.63f),
 			slMath::sin(-3.140)
-		);
+		);*/
 	}
 
 	if (window)

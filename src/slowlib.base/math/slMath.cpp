@@ -342,3 +342,299 @@ double slMath::tan(double v)
 	return 0;
 }
 
+void slMath::cross(const slVec3& v1, const slVec3& v2, slVec3& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+void slMath::cross(const slVec3f& v1, const slVec3f& v2, slVec3f& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+void slMath::cross(const slVec4& v1, const slVec4& v2, slVec4& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+void slMath::cross(const slVec4f& v1, const slVec4f& v2, slVec4f& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+void slMath::cross(const slVec3& v1, const slVec4& v2, slVec3& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+void slMath::cross(const slVec3f& v1, const slVec4f& v2, slVec3f& r)
+{
+	r.x = (v1.y * v2.z) - (v1.z * v2.y);
+	r.y = (v1.z * v2.x) - (v1.x * v2.z);
+	r.z = (v1.x * v2.y) - (v1.y * v2.x);
+}
+
+double slMath::distance(const slVec3& v1, const slVec3& v2)
+{
+	double xx = v2.x - v1.x;
+	double yy = v2.y - v1.y;
+	double zz = v2.z - v1.z;
+
+	return sqrt((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+double slMath::distance(const slVec4& v1, const slVec4& v2)
+{
+	double xx = v2.x - v1.x;
+	double yy = v2.y - v1.y;
+	double zz = v2.z - v1.z;
+
+	return sqrt((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+double slMath::distance(const slVec3& v1, const slVec4& v2)
+{
+	double xx = v2.x - v1.x;
+	double yy = v2.y - v1.y;
+	double zz = v2.z - v1.z;
+
+	return sqrt((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+float slMath::distance(const slVec3f& v1, const slVec3f& v2)
+{
+	float xx = v2.x - v1.x;
+	float yy = v2.y - v1.y;
+	float zz = v2.z - v1.z;
+
+	return sqrtf((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+float slMath::distance(const slVec4f& v1, const slVec4f& v2)
+{
+	float xx = v2.x - v1.x;
+	float yy = v2.y - v1.y;
+	float zz = v2.z - v1.z;
+
+	return sqrtf((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+float slMath::distance(const slVec3f& v1, const slVec4f& v2)
+{
+	float xx = v2.x - v1.x;
+	float yy = v2.y - v1.y;
+	float zz = v2.z - v1.z;
+
+	return sqrtf((xx * xx) + (yy * yy) + (zz * zz));
+}
+
+double slMath::dot(const slVec3& v1, const slVec3& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+double slMath::dot(const slVec4& v1, const slVec4& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+}
+
+double slMath::dot(const slVec3& v1, const slVec4& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+float slMath::dot(const slVec3f& v1, const slVec3f& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+float slMath::dot(const slVec4f& v1, const slVec4f& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+}
+
+float slMath::dot(const slVec3f& v1, const slVec4f& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
+}
+
+double slMath::length(const slVec3& v)
+{
+	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+double slMath::length(const slVec4& v)
+{
+	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+}
+
+float slMath::length(const slVec3f& v)
+{
+	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+float slMath::length(const slVec4f& v)
+{
+	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+}
+
+float slMath::lerp1(float x, float y, float t)
+{
+	return x + t * (y - x);
+}
+
+double slMath::lerp1(double x, double y, double t)
+{
+	return x + t * (y - x);
+}
+
+void slMath::lerp1(const slVec3& x, const slVec3& y, double t, slVec3& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+}
+
+void slMath::lerp1(const slVec3& x, const slVec4& y, double t, slVec3& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+}
+
+void slMath::lerp1(const slVec4& x, const slVec4& y, double t, slVec4& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+	r.w = x.w + t * (y.w - x.w);
+}
+
+void slMath::lerp1(const slVec3f& x, const slVec3f& y, float t, slVec3f& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+}
+
+void slMath::lerp1(const slVec3f& x, const slVec4f& y, float t, slVec3f& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+}
+
+void slMath::lerp1(const slVec4f& x, const slVec4f& y, float t, slVec4f& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+	r.w = x.w + t * (y.w - x.w);
+}
+
+float slMath::lerp2(float x, float y, float t)
+{
+	return (1.f - t) * x + t * y;
+}
+
+double slMath::lerp2(double x, double y, double t)
+{
+	return (1.0 - t) * x + t * y;
+}
+
+void slMath::lerp2(const slVec3& x, const slVec3& y, double t, slVec3& r)
+{
+	r.x = (1.0 - t) * x.x + t * y.x;
+	r.y = (1.0 - t) * x.y + t * y.y;
+	r.z = (1.0 - t) * x.z + t * y.z;
+}
+
+void slMath::lerp2(const slVec3& x, const slVec4& y, double t, slVec3& r)
+{
+	r.x = (1.0 - t) * x.x + t * y.x;
+	r.y = (1.0 - t) * x.y + t * y.y;
+	r.z = (1.0 - t) * x.z + t * y.z;
+}
+
+void slMath::lerp2(const slVec4& x, const slVec4& y, double t, slVec4& r)
+{
+	r.x = (1.0 - t) * x.x + t * y.x;
+	r.y = (1.0 - t) * x.y + t * y.y;
+	r.z = (1.0 - t) * x.z + t * y.z;
+	r.w = (1.0 - t) * x.w + t * y.w;
+}
+
+void slMath::lerp2(const slVec3f& x, const slVec3f& y, float t, slVec3f& r)
+{
+	r.x = (1.0f - t) * x.x + t * y.x;
+	r.y = (1.0f - t) * x.y + t * y.y;
+	r.z = (1.0f - t) * x.z + t * y.z;
+}
+
+void slMath::lerp2(const slVec3f& x, const slVec4f& y, float t, slVec3f& r)
+{
+	r.x = (1.0f - t) * x.x + t * y.x;
+	r.y = (1.0f - t) * x.y + t * y.y;
+	r.z = (1.0f - t) * x.z + t * y.z;
+}
+
+void slMath::lerp2(const slVec4f& x, const slVec4f& y, float t, slVec4f& r)
+{
+	r.x = (1.0f - t) * x.x + t * y.x;
+	r.y = (1.0f - t) * x.y + t * y.y;
+	r.z = (1.0f - t) * x.z + t * y.z;
+	r.w = (1.0f - t) * x.w + t * y.w;
+}
+
+void slMath::normalize(slVec3& v)
+{
+	double len = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+	if (len > 0)
+		len = 1.0f / len;
+	v.x *= len;
+	v.y *= len;
+	v.z *= len;
+}
+
+void slMath::normalize(slVec3f& v)
+{
+	float len = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+	if (len > 0)
+		len = 1.0f / len;
+	v.x *= len;
+	v.y *= len;
+	v.z *= len;
+}
+
+void slMath::normalize(slVec4& v)
+{
+	double len = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+	if (len > 0)
+		len = 1.0f / len;
+	v.x *= len;
+	v.y *= len;
+	v.z *= len;
+	v.w *= len;
+}
+
+void slMath::normalize(slVec4f& v)
+{
+	float len = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+	if (len > 0)
+		len = 1.0f / len;
+	v.x *= len;
+	v.y *= len;
+	v.z *= len;
+	v.w *= len;
+}
+
