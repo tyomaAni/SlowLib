@@ -38,6 +38,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slFrameworkImpl.h"
 
+slGS* SL_API slGSD3D11_create();
+SL_LINK_LIBRARY("slowlib.d3d11");
+
+
 slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy(){}
@@ -141,3 +145,35 @@ void slFramework::RectfSet(slRectf* rct, float* f)
 	rct->bottom = f[3];
 }
 
+// =========== GS
+uint32_t slFramework::GetGSCount()
+{
+	return 0;
+}
+
+slString slFramework::GetGSName(uint32_t)
+{
+	return slString("-");
+}
+
+slUID slFramework::GetGSUID(uint32_t)
+{
+	slUID s;
+	s.d1 = 0;
+	return s;
+}
+
+slGS* slFramework::SummonGS(slUID)
+{
+	return 0;
+}
+
+slGS* slFramework::SummonGS(const char*)
+{
+	return slGSD3D11_create();
+}
+
+slGS* slFramework::SummonGS(slUID, const char*)
+{
+	return 0;
+}

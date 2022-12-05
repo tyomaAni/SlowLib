@@ -76,6 +76,17 @@ public:
 	//create window. CreateWindow is winapi function so I will use word `summon`
 	static slWindow* SummonWindow(slWindowCallback*, int sx, int sy);
 
+	// Get number of Graphics Systems
+	static uint32_t GetGSCount();
+	static slString GetGSName(uint32_t);
+	static slUID GetGSUID(uint32_t);
+	// Create GS using slUID
+	static slGS* SummonGS(slUID);
+	// Create GS using it's name
+	static slGS* SummonGS(const char*);
+	// Both
+	static slGS* SummonGS(slUID, const char*);
+
 	static float* GetDeltaTime();
 
 	static bool PointInRect(slRect* r, slPoint* p);

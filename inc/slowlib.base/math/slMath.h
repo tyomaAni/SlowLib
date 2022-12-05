@@ -112,6 +112,8 @@ public:
 	// wikipedia:
 	// Imprecise method, which does not guarantee v = v1 when t = 1, due to floating-point arithmetic error.
 	// This method is monotonic. This form may be used when the hardware has a native fused multiply-add instruction.
+	// 
+	//  ... it has only 1 multiplication. lerp2 has 2 multiplications.
 	static float lerp1(float x, float y, float t);
 	static double lerp1(double x, double y, double t);
 	static void lerp1(const slVec3& x, const slVec3& y, double t, slVec3& r);

@@ -46,3 +46,5 @@ build/demo/x64/Release
 *.exp
 build/demo/DLL
 build/slowlib.base/DLL
+build/slowlib.d3d11/Debug
+build/slowlib.d3d11/Release

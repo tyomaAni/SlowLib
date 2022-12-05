@@ -25,21 +25,16 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
 
-struct slInputData;
-class SL_API slInput;
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
-class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class slWindowCallback;
-class slGS;
+#include "slowlib.h"
 
-#endif
+#include "slowlib.d3d11impl.h"
+
+slGS* SL_API slGSD3D11_create()
+{
+	slGSD3D11* gs = slCreate<slGSD3D11>();
+	return gs;
+}
+
+
+

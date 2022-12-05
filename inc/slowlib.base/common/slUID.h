@@ -26,20 +26,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef __SL_SLOWLIBBASEUID_H__
+#define __SL_SLOWLIBBASEUID_H__
 
-struct slInputData;
-class SL_API slInput;
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
-class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class slWindowCallback;
-class slGS;
+// Unique ID
+// Like a GUID
+struct slUID
+{
+	uint32_t d1;
+	uint16_t d2;
+	uint16_t d3;
+	uint16_t d4;
+	uint8_t  d5[6];
+};
+
+#define slDEFINE_UID(name, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10) \
+        const slUID name \
+                = { d1, d2, d3, d4, d5,  d6,  d7,  d8,  d9,  d10 }
 
 #endif

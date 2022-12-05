@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "slowlib.h"
+#include "slowlib.base/gs/slGS.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 
@@ -72,6 +73,13 @@ int main(int argc, char * argv[])
 	auto inputData = slInput::GetData();
 
 	double dd = 0.0;
+
+	slGS* gs = slFramework::SummonGS("as");
+	if (gs)
+	{
+		gs->Init(window, 0);
+		gs->SetClearColor(0.f, 0.f, 1.f, 1.f);
+	}
 
 	while (g_isRun)
 	{
@@ -148,7 +156,18 @@ int main(int argc, char * argv[])
 			slMath::sin(0.63f),
 			slMath::sin(-3.140)
 		);*/
+
+		if (gs)
+		{
+			gs->BeginDraw();
+			gs->ClearAll();
+			gs->EndDraw();
+			gs->SwapBuffers();
+		}
 	}
+
+	if (gs)
+		slDestroy(gs);
 
 	if (window)
 		slDestroy(window);

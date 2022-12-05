@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/common/slDefs.h"
 #include "slowlib.base/common/slForward.h"
 #include "slowlib.base/common/slLog.h"
+#include "slowlib.base/common/slUID.h"
 #include "slowlib.base/memory/slMemory.h"
 #include "slowlib.base/string/slString.h"
 #include "slowlib.base/common/slAssert.h"
@@ -40,7 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/framework/slFramework.h"
 #include "slowlib.base/system/slWindow.h"
 #include "slowlib.base/math/slMath.h"
-
 
 
 #endif
