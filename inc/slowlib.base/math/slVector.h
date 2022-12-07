@@ -34,7 +34,7 @@ class SL_API slVec3
 {
 public:
 	slVec3();
-	slVec3(double x, double y, double z);
+	slVec3(double X, double Y, double Z);
 	slVec3(float v);
 	slVec3(double v);
 	slVec3(int32_t v);
@@ -72,6 +72,8 @@ public:
 	double y = 0.0;
 	double z = 0.0;
 	double* data() { return &x; }
+	void set(double X, double Y, double Z) { x = X; y = Y; z = Z; }
+	void set(float X, float Y, float Z) { x = X; y = Y; z = Z; }
 };
 
 class SL_API slVec3f
@@ -116,6 +118,8 @@ public:
 	float y = 0.0;
 	float z = 0.0;
 	float* data() { return &x; }
+	void set(double X, double Y, double Z) { x = (float)X; y = (float)Y; z = (float)Z; }
+	void set(float X, float Y, float Z) { x = X; y = Y; z = Z; }
 };
 
 class SL_API slVec4
@@ -161,6 +165,8 @@ public:
 	double z = 0.0;
 	double w = 0.0;
 	double* data() { return &x; }
+	void set(double X, double Y, double Z, double W) { x = X; y = Y; z = Z; w = W; }
+	void set(float X, float Y, float Z, float W) { x = X; y = Y; z = Z; w = W; }
 };
 
 class SL_API slVec4f
@@ -206,6 +212,8 @@ public:
 	float z = 0.0;
 	float w = 0.0;
 	float* data() { return &x; }
+	void set(double X, double Y, double Z, double W) { x = (float)X; y = (float)Y; z = (float)Z; w = (float)W; }
+	void set(float X, float Y, float Z, float W) { x = X; y = Y; z = Z; w = W; }
 };
 
 #endif

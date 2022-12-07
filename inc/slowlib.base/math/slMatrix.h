@@ -47,6 +47,16 @@ public:
 
 	slVec3f m_data[3];
 	float* data() { return &m_data[0].x; }
+
+	void set(
+		float xx, float xy, float xz,
+		float yx, float yy, float yz,
+		float zx, float zy, float zz)
+	{
+		m_data[0].set(xx, xy, xz);
+		m_data[1].set(yx, yy, yz);
+		m_data[2].set(zx, zy, zz);
+	}
 };
 
 class SL_API slMatrix3
@@ -66,6 +76,16 @@ public:
 
 	slVec3 m_data[3];
 	double* data() { return &m_data[0].x; }
+	
+	void set(
+		double xx, double xy, double xz,
+		double yx, double yy, double yz,
+		double zx, double zy, double zz)
+	{
+		m_data[0].set(xx, xy, xz);
+		m_data[1].set(yx, yy, yz);
+		m_data[2].set(zx, zy, zz);
+	}
 };
 
 class SL_API slMatrix4f
@@ -87,6 +107,18 @@ public:
 
 	slVec4f m_data[4];
 	float* data() { return &m_data[0].x; }
+
+	void set(
+		float xx, float xy, float xz, float xw,
+		float yx, float yy, float yz, float yw,
+		float zx, float zy, float zz, float zw,
+		float wx, float wy, float wz, float ww)
+	{
+		m_data[0].set(xx, xy, xz, xw);
+		m_data[1].set(yx, yy, yz, yw);
+		m_data[2].set(zx, zy, zz, zw);
+		m_data[3].set(wx, wy, wz, ww);
+	}
 };
 
 class SL_API slMatrix4
@@ -108,6 +140,17 @@ public:
 
 	slVec4 m_data[4];
 	double* data() { return &m_data[0].x; }
+	void set(
+		double xx, double xy, double xz, double xw,
+		double yx, double yy, double yz, double yw,
+		double zx, double zy, double zz, double zw,
+		double wx, double wy, double wz, double ww)
+	{
+		m_data[0].set(xx, xy, xz, xw);
+		m_data[1].set(yx, yy, yz, yw);
+		m_data[2].set(zx, zy, zz, zw);
+		m_data[3].set(wx, wy, wz, ww);
+	}
 };
 
 

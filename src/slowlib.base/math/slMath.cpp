@@ -468,6 +468,11 @@ float slMath::dot(const slVec3f& v1, const slVec4f& v2)
 	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z);
 }
 
+float slMath::dot(const slQuaternion& v1, const slQuaternion& v2)
+{
+	return (v1.x * v2.x) + (v1.y * v2.y) + (v1.z * v2.z) + (v1.w * v2.w);
+}
+
 double slMath::length(const slVec3& v)
 {
 	return sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
@@ -484,6 +489,11 @@ float slMath::length(const slVec3f& v)
 }
 
 float slMath::length(const slVec4f& v)
+{
+	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+}
+
+float slMath::length(const slQuaternion& v)
 {
 	return sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
 }
@@ -535,6 +545,14 @@ void slMath::lerp1(const slVec3f& x, const slVec4f& y, float t, slVec3f& r)
 }
 
 void slMath::lerp1(const slVec4f& x, const slVec4f& y, float t, slVec4f& r)
+{
+	r.x = x.x + t * (y.x - x.x);
+	r.y = x.y + t * (y.y - x.y);
+	r.z = x.z + t * (y.z - x.z);
+	r.w = x.w + t * (y.w - x.w);
+}
+
+void slMath::lerp1(const slQuaternion& x, const slQuaternion& y, float t, slQuaternion& r)
 {
 	r.x = x.x + t * (y.x - x.x);
 	r.y = x.y + t * (y.y - x.y);
@@ -596,6 +614,14 @@ void slMath::lerp2(const slVec4f& x, const slVec4f& y, float t, slVec4f& r)
 	r.w = (1.0f - t) * x.w + t * y.w;
 }
 
+void slMath::lerp2(const slQuaternion& x, const slQuaternion& y, float t, slQuaternion& r)
+{
+	r.x = (1.0f - t) * x.x + t * y.x;
+	r.y = (1.0f - t) * x.y + t * y.y;
+	r.z = (1.0f - t) * x.z + t * y.z;
+	r.w = (1.0f - t) * x.w + t * y.w;
+}
+
 void slMath::normalize(slVec3& v)
 {
 	double len = sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
@@ -636,5 +662,299 @@ void slMath::normalize(slVec4f& v)
 	v.y *= len;
 	v.z *= len;
 	v.w *= len;
+}
+
+void slMath::normalize(slQuaternion& v)
+{
+	float len = sqrtf((v.x * v.x) + (v.y * v.y) + (v.z * v.z) + (v.w * v.w));
+	if (len > 0)
+		len = 1.0f / len;
+	v.x *= len;
+	v.y *= len;
+	v.z *= len;
+	v.w *= len;
+}
+
+void slMath::set_rotation(slQuaternion& q, float x, float y, float z)
+{
+	x *= 0.5f;
+	y *= 0.5f;
+	z *= 0.5f;
+	float c1 = ::cosf(x);
+	float c2 = ::cosf(y);
+	float c3 = ::cosf(z);
+	float s1 = ::sinf(x);
+	float s2 = ::sinf(y);
+	float s3 = ::sinf(z);
+	q.w = (c1 * c2 * c3) + (s1 * s2 * s3);
+	q.x = (s1 * c2 * c3) - (c1 * s2 * s3);
+	q.y = (c1 * s2 * c3) + (s1 * c2 * s3);
+	q.z = (c1 * c2 * s3) - (s1 * s2 * c3);
+}
+
+void slMath::set_rotation(slQuaternion& q, const slVec3& axis, const float& _angle)
+{
+	float d = (float)length(axis);
+	float s = ::sinf(_angle * 0.5f) / d;
+	q.x = (float)axis.x * s;
+	q.y = (float)axis.y * s;
+	q.z = (float)axis.z * s;
+	q.w = ::cosf(_angle * 0.5f);
+}
+
+void slMath::set_rotation(slQuaternion& q, const slVec3f& axis, const float& _angle)
+{
+	float d = length(axis);
+	float s = ::sinf(_angle * 0.5f) / d;
+	q.x = axis.x * s;
+	q.y = axis.y * s;
+	q.z = axis.z * s;
+	q.w = ::cosf(_angle * 0.5f);
+}
+
+void slMath::set_rotation(slQuaternion& q, const slVec4& axis, const float& _angle)
+{
+	float d = (float)length(axis);
+	float s = ::sinf(_angle * 0.5f) / d;
+	q.x = (float)axis.x * s;
+	q.y = (float)axis.y * s;
+	q.z = (float)axis.z * s;
+	q.w = ::cosf(_angle * 0.5f);
+}
+
+void slMath::set_rotation(slQuaternion& q, const slVec4f& axis, const float& _angle)
+{
+	float d = length(axis);
+	float s = ::sinf(_angle * 0.5f) / d;
+	q.x = axis.x * s;
+	q.y = axis.y * s;
+	q.z = axis.z * s;
+	q.w = ::cosf(_angle * 0.5f);
+}
+
+void slMath::set_rotation(slMatrix3& m, const slQuaternion& q)
+{
+	float d = length(q);
+	float s = 2.0f / d;
+	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	m.set(
+		1.0f - (yy + zz), xy - wz, xz + wy,
+		xy + wz, 1.0f - (xx + zz), yz - wx,
+		xz - wy, yz + wx, 1.0f - (xx + yy));
+}
+
+void slMath::set_rotation(slMatrix3f& m, const slQuaternion& q)
+{
+	float d = length(q);
+	float s = 2.0f / d;
+	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	m.set(
+		1.0f - (yy + zz), xy - wz, xz + wy,
+		xy + wz, 1.0f - (xx + zz), yz - wx,
+		xz - wy, yz + wx, 1.0f - (xx + yy));
+}
+
+void slMath::set_rotation(slMatrix4& m, const slQuaternion& q)
+{
+	float d = length(q);
+	float s = 2.0f / d;
+	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	m.set(
+		1.0f - (yy + zz), xy - wz, xz + wy, 0.f,
+		xy + wz, 1.0f - (xx + zz), yz - wx, 0.f,
+		xz - wy, yz + wx, 1.0f - (xx + yy), 0.f,
+		0.f,0.f,0.f,1.f);
+}
+
+void slMath::set_rotation(slMatrix4f& m, const slQuaternion& q)
+{
+	float d = length(q);
+	float s = 2.0f / d;
+	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
+	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	m.set(
+		1.0f - (yy + zz), xy - wz, xz + wy, 0.f,
+		xy + wz, 1.0f - (xx + zz), yz - wx, 0.f,
+		xz - wy, yz + wx, 1.0f - (xx + yy), 0.f,
+		0.f, 0.f, 0.f, 1.f);
+}
+
+
+// assimp?
+void slMath::slerp(slQuaternion& q1, slQuaternion& q2, float time, float threshold, slQuaternion& r)
+{
+	float angle = dot(q1, q2);
+	// make sure we use the short rotation
+	if (angle < 0.0f)
+	{
+		q1 = q1 * -1.0f;
+		angle *= -1.0f;
+	}
+
+	if (angle <= (1 - threshold)) // spherical interpolation
+	{
+		const float theta = ::acosf(angle);
+		const float invsintheta = 1.f / (::sinf(theta));
+		const float scale = ::sinf(theta * (1.0f - time)) * invsintheta;
+		const float invscale = ::sinf(theta * time) * invsintheta;
+		r = (q1 * scale) + (q2 * invscale);
+	}
+	else // linear interploation
+		lerp1(q1, q2, time, r);
+}
+
+void slMath::mul(const slMatrix3& m1, const slMatrix3& m2, slMatrix3& r)
+{
+	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z;
+	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z;
+	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z;
+
+	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z;
+	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z;
+	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z;
+
+	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z;
+	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z;
+	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z;
+
+	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z;
+	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z;
+	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z;
+}
+
+void slMath::mul(const slMatrix3f& m1, const slMatrix3f& m2, slMatrix3f& r)
+{
+	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z;
+	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z;
+	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z;
+
+	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z;
+	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z;
+	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z;
+
+	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z;
+	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z;
+	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z;
+
+	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z;
+	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z;
+	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z;
+}
+
+void slMath::mul(const slMatrix4& m1, const slMatrix4& m2, slMatrix4& r)
+{
+	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z + m1.m_data[3].x * m2.m_data[0].w;
+	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z + m1.m_data[3].y * m2.m_data[0].w;
+	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z + m1.m_data[3].z * m2.m_data[0].w;
+	r.m_data[0].w = m1.m_data[0].w * m2.m_data[0].x + m1.m_data[1].w * m2.m_data[0].y + m1.m_data[2].w * m2.m_data[0].z + m1.m_data[3].w * m2.m_data[0].w;
+
+	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z + m1.m_data[3].x * m2.m_data[1].w;
+	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z + m1.m_data[3].y * m2.m_data[1].w;
+	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z + m1.m_data[3].z * m2.m_data[1].w;
+	r.m_data[1].w = m1.m_data[0].w * m2.m_data[1].x + m1.m_data[1].w * m2.m_data[1].y + m1.m_data[2].w * m2.m_data[1].z + m1.m_data[3].w * m2.m_data[1].w;
+
+	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z + m1.m_data[3].x * m2.m_data[2].w;
+	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z + m1.m_data[3].y * m2.m_data[2].w;
+	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z + m1.m_data[3].z * m2.m_data[2].w;
+	r.m_data[2].w = m1.m_data[0].w * m2.m_data[2].x + m1.m_data[1].w * m2.m_data[2].y + m1.m_data[2].w * m2.m_data[2].z + m1.m_data[3].w * m2.m_data[2].w;
+
+	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z + m1.m_data[3].x * m2.m_data[3].w;
+	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z + m1.m_data[3].y * m2.m_data[3].w;
+	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z + m1.m_data[3].z * m2.m_data[3].w;
+	r.m_data[3].w = m1.m_data[0].w * m2.m_data[3].x + m1.m_data[1].w * m2.m_data[3].y + m1.m_data[2].w * m2.m_data[3].z + m1.m_data[3].w * m2.m_data[3].w;
+}
+
+void slMath::mul(const slMatrix4f& m1, const slMatrix4f& m2, slMatrix4f& r)
+{
+	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z + m1.m_data[3].x * m2.m_data[0].w;
+	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z + m1.m_data[3].y * m2.m_data[0].w;
+	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z + m1.m_data[3].z * m2.m_data[0].w;
+	r.m_data[0].w = m1.m_data[0].w * m2.m_data[0].x + m1.m_data[1].w * m2.m_data[0].y + m1.m_data[2].w * m2.m_data[0].z + m1.m_data[3].w * m2.m_data[0].w;
+
+	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z + m1.m_data[3].x * m2.m_data[1].w;
+	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z + m1.m_data[3].y * m2.m_data[1].w;
+	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z + m1.m_data[3].z * m2.m_data[1].w;
+	r.m_data[1].w = m1.m_data[0].w * m2.m_data[1].x + m1.m_data[1].w * m2.m_data[1].y + m1.m_data[2].w * m2.m_data[1].z + m1.m_data[3].w * m2.m_data[1].w;
+
+	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z + m1.m_data[3].x * m2.m_data[2].w;
+	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z + m1.m_data[3].y * m2.m_data[2].w;
+	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z + m1.m_data[3].z * m2.m_data[2].w;
+	r.m_data[2].w = m1.m_data[0].w * m2.m_data[2].x + m1.m_data[1].w * m2.m_data[2].y + m1.m_data[2].w * m2.m_data[2].z + m1.m_data[3].w * m2.m_data[2].w;
+
+	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z + m1.m_data[3].x * m2.m_data[3].w;
+	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z + m1.m_data[3].y * m2.m_data[3].w;
+	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z + m1.m_data[3].z * m2.m_data[3].w;
+	r.m_data[3].w = m1.m_data[0].w * m2.m_data[3].x + m1.m_data[1].w * m2.m_data[3].y + m1.m_data[2].w * m2.m_data[3].z + m1.m_data[3].w * m2.m_data[3].w;
+}
+
+void slMath::mul(const slMatrix3f& m, const slVec3f& v, slVec3f& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+}
+
+void slMath::mul(const slMatrix3& m, const slVec3& v, slVec3& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+}
+
+void slMath::mul(const slMatrix3f& m, const slVec4f& v, slVec4f& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+	r.w = 0.f;
+}
+
+void slMath::mul(const slMatrix3& m, const slVec4& v, slVec4& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+	r.w = 0.f;
+}
+
+void slMath::mul(const slMatrix4f& m, const slVec3f& v, slVec3f& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+}
+
+void slMath::mul(const slMatrix4& m, const slVec3& v, slVec3& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
+}
+
+void slMath::mul(const slMatrix4f& m, const slVec4f& v, slVec4f& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x + v.w * m.m_data[3].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y + v.w * m.m_data[3].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z + v.w * m.m_data[3].z;
+	r.w = v.x * m.m_data[0].w + v.y * m.m_data[1].w + v.z * m.m_data[2].w + v.w * m.m_data[3].w;
+}
+
+void slMath::mul(const slMatrix4& m, const slVec4& v, slVec4& r)
+{
+	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x + v.w * m.m_data[3].x;
+	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y + v.w * m.m_data[3].y;
+	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z + v.w * m.m_data[3].z;
+	r.w = v.x * m.m_data[0].w + v.y * m.m_data[1].w + v.z * m.m_data[2].w + v.w * m.m_data[3].w;
 }
 

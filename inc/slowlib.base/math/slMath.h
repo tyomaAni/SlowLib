@@ -41,6 +41,7 @@ const double PIPI = 6.283185307179586476925286766559;
 
 #include "slowlib.base/math/slVector.h"
 #include "slowlib.base/math/slMatrix.h"
+#include "slowlib.base/math/slQuaternion.h"
 
 class SL_API slMath
 {
@@ -104,11 +105,13 @@ public:
 	static float dot(const slVec3f& v1, const slVec3f& v2);
 	static float dot(const slVec4f& v1, const slVec4f& v2);
 	static float dot(const slVec3f& v1, const slVec4f& v2);
+	static float dot(const slQuaternion& v1, const slQuaternion& v2);
 
 	static double length(const slVec3& v);
 	static double length(const slVec4& v);
 	static float length(const slVec3f& v);
 	static float length(const slVec4f& v);
+	static float length(const slQuaternion& v);
 
 	// wikipedia:
 	// Imprecise method, which does not guarantee v = v1 when t = 1, due to floating-point arithmetic error.
@@ -123,6 +126,7 @@ public:
 	static void lerp1(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
 	static void lerp1(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
 	static void lerp1(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
+	static void lerp1(const slQuaternion& x, const slQuaternion& y, float t, slQuaternion& r);
 
 	// wikipedia:
 	// Precise method, which guarantees v = v1 when t = 1. This method is monotonic only when v0 * v1 < 0.
@@ -135,11 +139,38 @@ public:
 	static void lerp2(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
 	static void lerp2(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
 	static void lerp2(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
+	static void lerp2(const slQuaternion& x, const slQuaternion& y, float t, slQuaternion& r);
 	
 	static void normalize(slVec3& v);
 	static void normalize(slVec3f& v);
 	static void normalize(slVec4& v);
 	static void normalize(slVec4f& v);
+	static void normalize(slQuaternion& v);
+
+	static void set_rotation(slQuaternion&, float x, float y, float z);
+	static void set_rotation(slQuaternion&, const slVec3& axis, const float& _angle);
+	static void set_rotation(slQuaternion&, const slVec3f& axis, const float& _angle);
+	static void set_rotation(slQuaternion&, const slVec4& axis, const float& _angle);
+	static void set_rotation(slQuaternion&, const slVec4f& axis, const float& _angle);
+	static void set_rotation(slMatrix3&, const slQuaternion&);
+	static void set_rotation(slMatrix3f&, const slQuaternion&);
+	static void set_rotation(slMatrix4&, const slQuaternion&);
+	static void set_rotation(slMatrix4f&, const slQuaternion&);
+	// from assimp?
+	static void slerp(slQuaternion& q1, slQuaternion& q2, float time, float threshold, slQuaternion& r);
+
+	static void mul(const slMatrix3&, const slMatrix3&, slMatrix3&);
+	static void mul(const slMatrix3f&, const slMatrix3f&, slMatrix3f&);
+	static void mul(const slMatrix4&, const slMatrix4&, slMatrix4&);
+	static void mul(const slMatrix4f&, const slMatrix4f&, slMatrix4f&);
+	static void mul(const slMatrix3f&, const slVec3f&, slVec3f&);
+	static void mul(const slMatrix3&, const slVec3&, slVec3&);
+	static void mul(const slMatrix3f&, const slVec4f&, slVec4f&);
+	static void mul(const slMatrix3&, const slVec4&, slVec4&);
+	static void mul(const slMatrix4f&, const slVec3f&, slVec3f&);
+	static void mul(const slMatrix4&, const slVec3&, slVec3&);
+	static void mul(const slMatrix4f&, const slVec4f&, slVec4f&);
+	static void mul(const slMatrix4&, const slVec4&, slVec4&);
 };
 
 #endif

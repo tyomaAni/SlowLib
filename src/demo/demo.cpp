@@ -70,6 +70,26 @@ int main(int argc, char * argv[])
 	slWindow * window = slFramework::SummonWindow(&windowCallback, 800, 600);
 	window->SetVisible(true);
 
+	slQuaternion qX40;
+	slMath::set_rotation(qX40, slMath::DegToRad(40.f), 0.f, 0.f);
+
+	slQuaternion qY20;
+	slMath::set_rotation(qY20, 0.f, slMath::DegToRad(20.f), 0.f);
+
+
+	slMatrix4 m1;
+	slMath::set_rotation(m1, qX40);
+
+	slMatrix4 m2;
+	slMath::set_rotation(m2, qY20);
+
+	slMatrix4 m3;
+	slMath::mul(m1, m2, m3);
+
+	slVec3 pos(0.f, 1.f, 0.f);
+	slVec3 posRotated;
+	slMath::mul(m3, pos, posRotated);
+
 	auto inputData = slInput::GetData();
 
 	double dd = 0.0;
