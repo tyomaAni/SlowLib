@@ -68,6 +68,7 @@ public:
 	virtual ~slGSD3D11();
 
 	virtual bool Init(slWindow*, const char* parameters) final;
+	virtual void Shutdown() final;
 	virtual bool InitWindow(slWindow*) final;
 	virtual void SetActiveWindow(slWindow*) final;
 	virtual slString GetName() final;

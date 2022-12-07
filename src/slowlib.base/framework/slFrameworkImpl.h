@@ -29,6 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SL_FRMIMPL_H_
 #define _SL_FRMIMPL_H_
 
+#include <vector>
+
 void slInputUpdatePre(slInputData* id);
 void slInputUpdatePost(slInputData* id);
 
@@ -37,6 +39,11 @@ class slFrameworkImpl
 public:
 	slFrameworkImpl() {}
 	~slFrameworkImpl() {}
+
+	slString m_appPath;
+	
+	std::vector<slDLLHandle> m_dlls;
+	std::vector<slGS*> m_gss;
 
 	slFrameworkCallback* m_callback = 0;
 	slInputData m_input;

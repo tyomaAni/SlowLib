@@ -27,9 +27,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "slowlib.h"
+#include "slowlib.base/gs/slGS.h"
 
 #include <stdio.h>
 #include <time.h>
+#include <filesystem>
 
 #ifdef SL_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -38,13 +40,65 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slFrameworkImpl.h"
 
-slGS* SL_API slGSD3D11_create();
+#ifdef SL_LIB_STATIC
+extern "C"
+{
+	SL_API slGS* SL_CDECL slGSD3D11_create();
+}
 SL_LINK_LIBRARY("slowlib.d3d11");
+#endif
 
 
 slFrameworkImpl* g_framework = 0;
 
-void slFrameworkImpl::OnDestroy(){}
+#ifndef SL_LIB_STATIC
+void LoadLib(std::filesystem::path p)
+{
+	std::string path = p.generic_string();
+	slDLLHandle dll_handle = slDLL::load(path.c_str());
+	if (dll_handle)
+	{
+		bool isGood = false;
+
+		slSummonGS_t f_summon_gs = (slSummonGS_t)slDLL::get_proc(dll_handle, "slSummonGS");
+		if (f_summon_gs)
+		{
+			slGS* gs = f_summon_gs();
+			if (gs)
+			{
+				g_framework->m_gss.push_back(gs);
+				isGood = true;
+			}
+		}
+
+		if (isGood)
+			g_framework->m_dlls.push_back(dll_handle);
+		else
+			slDLL::free(dll_handle);
+	}
+}
+#endif
+
+void slFrameworkImpl::OnDestroy()
+{
+	if (g_framework->m_gss.size())
+	{
+		for (auto o : g_framework->m_gss)
+		{
+			o->Shutdown();
+			slDestroy(o);
+		}
+		g_framework->m_gss.clear();
+	}
+	if (g_framework->m_dlls.size())
+	{
+		for (auto o : g_framework->m_dlls)
+		{
+			slDLL::free(o);
+		}
+		g_framework->m_dlls.clear();
+	}
+}
 
 void slFramework::Start(slFrameworkCallback* cb)
 {
@@ -52,9 +106,39 @@ void slFramework::Start(slFrameworkCallback* cb)
 	SL_ASSERT_ST(g_framework == 0);
 	if (!g_framework)
 	{
+		slLog::PrintInfo("Init SlowLib...\n");
+
 		g_framework = slCreate<slFrameworkImpl>();
 		g_framework->m_callback = cb;
-		slLog::PrintInfo("Init SlowLib...\n");
+		
+#ifdef SL_PLATFORM_WINDOWS
+		wchar_t pth[1000];
+		GetModuleFileName(0, pth, 1000);
+		g_framework->m_appPath = pth;
+		g_framework->m_appPath.pop_back_before(U'\\');
+#else
+#error OMG
+#endif
+
+#ifndef SL_LIB_STATIC
+		slStringA utf8apppath;
+		g_framework->m_appPath.to_utf8(utf8apppath);
+		for (auto& entry : std::filesystem::directory_iterator(utf8apppath.m_data))
+		{
+			auto path = entry.path();
+			if (path.has_extension())
+			{
+				auto ex = path.extension();
+				if (ex == ".dll" || ex == ".DLL")
+				{
+					slLog::PrintInfo("[%s]\n", path.generic_string().c_str());
+					LoadLib(path);
+				}
+			}
+		}
+#else
+		g_framework->m_gss.push_back(slGSD3D11_create());
+#endif
 	}
 }
 
@@ -64,7 +148,6 @@ void slFramework::Stop()
 	if (g_framework)
 	{
 		g_framework->OnDestroy();
-
 		slDestroy(g_framework);
 		g_framework = 0;
 	}
@@ -145,35 +228,68 @@ void slFramework::RectfSet(slRectf* rct, float* f)
 	rct->bottom = f[3];
 }
 
+bool slFramework::CompareUIDs(const slUID& id1, const slUID& id2)
+{
+	const uint8_t* b1 = (const uint8_t*)&id1.d1;
+	const uint8_t* b2 = (const uint8_t*)&id2.d1;
+	for (int i = 0; i < 16; ++i)
+	{
+		if (b1[i] != b2[i])
+			return false;
+	}
+	return true;
+}
+
 // =========== GS
 uint32_t slFramework::GetGSCount()
 {
+	return (uint32_t)g_framework->m_gss.size();
+}
+
+slString slFramework::GetGSName(uint32_t i)
+{
+	return g_framework->m_gss[i]->GetName();
+}
+
+slUID slFramework::GetGSUID(uint32_t i)
+{
+	return g_framework->m_gss[i]->GetUID();
+}
+
+slGS* slFramework::SummonGS(slUID id)
+{
+	for (auto o : g_framework->m_gss)
+	{
+		if (CompareUIDs(o->GetUID(), id))
+			return o;
+	}
 	return 0;
 }
 
-slString slFramework::GetGSName(uint32_t)
+slGS* slFramework::SummonGS(const char* _name)
 {
-	return slString("-");
-}
-
-slUID slFramework::GetGSUID(uint32_t)
-{
-	slUID s;
-	s.d1 = 0;
-	return s;
-}
-
-slGS* slFramework::SummonGS(slUID)
-{
+	slString name(_name);
+	for (auto o : g_framework->m_gss)
+	{
+		slString o_name = o->GetName();
+		if (name == o_name)
+			return o;
+	}
 	return 0;
 }
 
-slGS* slFramework::SummonGS(const char*)
+slGS* slFramework::SummonGS(slUID id, const char* _name)
 {
-	return slGSD3D11_create();
-}
-
-slGS* slFramework::SummonGS(slUID, const char*)
-{
+	slString name(_name);
+	for (auto o : g_framework->m_gss)
+	{
+		if (CompareUIDs(o->GetUID(), id))
+		{
+			slString o_name = o->GetName();
+			if (name == o_name)
+				return o;
+		}
+	}
 	return 0;
 }
+

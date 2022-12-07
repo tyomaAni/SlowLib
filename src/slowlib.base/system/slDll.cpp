@@ -43,7 +43,7 @@ slDLLHandle slDLL::load(const char* libraryName)
 #endif
 }
 
-void slDLL::free(slDLLHandle* library)
+void slDLL::free(slDLLHandle library)
 {
 	SL_ASSERT_ST(library);
 #ifdef SL_PLATFORM_WINDOWS
@@ -53,7 +53,7 @@ void slDLL::free(slDLLHandle* library)
 #endif
 }
 
-slDLLFunction slDLL::get_proc(slDLLHandle* library, const char* functionName)
+slDLLFunction slDLL::get_proc(slDLLHandle library, const char* functionName)
 {
 	SL_ASSERT_ST(library);
 	SL_ASSERT_ST(functionName);

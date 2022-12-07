@@ -56,7 +56,7 @@ public:
 	slFrameworkCallback() {}
 	virtual ~slFrameworkCallback() {}
 
-	virtual void OnMessage();
+	virtual void OnMessage() = 0;
 };
 
 // Main API for framework.
@@ -95,6 +95,8 @@ public:
 	
 	// Need to test. can I use it like this? RectfSet(&r, {0.f,1.f,2.f,3.f});
 	static void RectfSet(slRectf* rct, float*);
+
+	static bool CompareUIDs(const slUID&, const slUID&);
 };
 
 #endif

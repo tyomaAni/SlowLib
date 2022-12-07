@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
 
 	double dd = 0.0;
 
-	slGS* gs = slFramework::SummonGS("as");
+	slGS* gs = slFramework::SummonGS(slFramework::GetGSUID(0));
 	if (gs)
 	{
 		gs->Init(window, 0);
@@ -166,13 +166,9 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	if (gs)
-		slDestroy(gs);
-
 	if (window)
 		slDestroy(window);
 
 	slFramework::Stop();
-
 	return EXIT_SUCCESS;
 }

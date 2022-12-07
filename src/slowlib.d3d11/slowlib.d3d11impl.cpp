@@ -38,27 +38,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // {0FE89B14-923C-4F2E-BA22-B18694D6F1ED}
 slDEFINE_UID(g_uid_d3d11, 0xfe89b14, 0x923c, 0x4f2e, 0xba22, 0xb1, 0x86, 0x94, 0xd6, 0xf1, 0xed);
 
+#define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
+
 slGSD3D11::slGSD3D11()
 {
-
+	
 }
 
 slGSD3D11::~slGSD3D11()
 {
-	if (m_depthStencilView)                     m_depthStencilView->Release();
-	if (m_blendStateAlphaDisabled)              m_blendStateAlphaDisabled->Release();
-	if (m_blendStateAlphaEnabled)               m_blendStateAlphaEnabled->Release();
-	if (m_RasterizerWireframeNoBackFaceCulling) m_RasterizerWireframeNoBackFaceCulling->Release();
-	if (m_RasterizerWireframe)                  m_RasterizerWireframe->Release();
-	if (m_RasterizerSolidNoBackFaceCulling)     m_RasterizerSolidNoBackFaceCulling->Release();
-	if (m_RasterizerSolid)                      m_RasterizerSolid->Release();
-	if (m_depthStencilStateDisabled)            m_depthStencilStateDisabled->Release();
-	if (m_depthStencilStateEnabled)             m_depthStencilStateEnabled->Release();
-	if (m_depthStencilBuffer)                   m_depthStencilBuffer->Release();
-	if (m_MainTargetView)                       m_MainTargetView->Release();
-	if (m_d3d11DevCon)                          m_d3d11DevCon->Release();
-	if (m_SwapChain)                            m_SwapChain->Release();
-	if (m_d3d11Device)                          m_d3d11Device->Release();
+	Shutdown();
+}
+
+void slGSD3D11::Shutdown()
+{
+	SLD3DSAFE_RELEASE(m_depthStencilView);
+	SLD3DSAFE_RELEASE(m_blendStateAlphaDisabled);
+	SLD3DSAFE_RELEASE(m_blendStateAlphaEnabled);
+	SLD3DSAFE_RELEASE(m_RasterizerWireframeNoBackFaceCulling);
+	SLD3DSAFE_RELEASE(m_RasterizerWireframe);
+	SLD3DSAFE_RELEASE(m_RasterizerSolidNoBackFaceCulling);
+	SLD3DSAFE_RELEASE(m_RasterizerSolid);
+	SLD3DSAFE_RELEASE(m_depthStencilStateDisabled);
+	SLD3DSAFE_RELEASE(m_depthStencilStateEnabled);
+	SLD3DSAFE_RELEASE(m_depthStencilBuffer);
+	SLD3DSAFE_RELEASE(m_MainTargetView);
+	SLD3DSAFE_RELEASE(m_d3d11DevCon);
+	SLD3DSAFE_RELEASE(m_SwapChain);
+	SLD3DSAFE_RELEASE(m_d3d11Device);
 }
 
 bool slGSD3D11::Init(slWindow* w, const char* parameters)

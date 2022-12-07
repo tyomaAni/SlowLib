@@ -42,6 +42,7 @@ public:
 	// Init GPU things.
 	// `parameters` is optional thing, it depends on library implementation.
 	virtual bool Init(slWindow*, const char* parameters) = 0;
+	virtual void Shutdown() = 0;
 
 	// Init more window. For drawing in many windows.
 	virtual bool InitWindow(slWindow*) = 0;

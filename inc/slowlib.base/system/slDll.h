@@ -42,11 +42,13 @@ public:
 	static slDLLHandle load(const char* libraryName);
 
 	// Unload dynamic lybrary.
-	static void free(slDLLHandle* library);
+	static void free(slDLLHandle library);
 
 	// Get function from .dll
 	// Return NULL if there is some error.
-	static slDLLFunction get_proc(slDLLHandle* library, const char* functionName);
+	static slDLLFunction get_proc(slDLLHandle library, const char* functionName);
 };
+
+typedef slGS* (SL_CDECL* slSummonGS_t)();
 
 #endif
