@@ -90,6 +90,9 @@ int main(int argc, char * argv[])
 	slVec3 posRotated;
 	slMath::mul(m3, pos, posRotated);
 
+	slMatrix3 m4(m3);
+	slMath::invert(m4);
+
 	auto inputData = slInput::GetData();
 
 	double dd = 0.0;

@@ -171,6 +171,17 @@ public:
 	static void mul(const slMatrix4&, const slVec3&, slVec3&);
 	static void mul(const slMatrix4f&, const slVec4f&, slVec4f&);
 	static void mul(const slMatrix4&, const slVec4&, slVec4&);
+	static void mul(const slQuaternion&, const slQuaternion&, slQuaternion&);
+	
+	static void transpose(slMatrix3&);
+	static void transpose(slMatrix3f&);
+	static void transpose(slMatrix4&);
+	static void transpose(slMatrix4f&);
+
+	static void invert(slMatrix3&);
+	static void invert(slMatrix3f&);
+	static void invert(slMatrix4&);
+	static void invert(slMatrix4f&);
 };
 
 #endif

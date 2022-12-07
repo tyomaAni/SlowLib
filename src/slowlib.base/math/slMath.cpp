@@ -958,3 +958,384 @@ void slMath::mul(const slMatrix4& m, const slVec4& v, slVec4& r)
 	r.w = v.x * m.m_data[0].w + v.y * m.m_data[1].w + v.z * m.m_data[2].w + v.w * m.m_data[3].w;
 }
 
+void slMath::mul(const slQuaternion& q1, const slQuaternion& q2, slQuaternion& r)
+{
+	r.x = q1.w * q2.x + q1.x * q2.w + q1.y * q2.z - q1.z * q2.y;
+	r.x = q1.w * q2.y + q1.y * q2.w + q1.z * q2.x - q1.x * q2.z;
+	r.x = q1.w * q2.z + q1.z * q2.w + q1.x * q2.y - q1.y * q2.x;
+	r.x = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+}
+
+void slMath::transpose(slMatrix3& m)
+{
+	slMatrix3 tmp;
+	tmp[0u].x = m.m_data[0u].x;
+	tmp[0u].y = m.m_data[1u].x;
+	tmp[0u].z = m.m_data[2u].x;
+
+	tmp[1u].x = m.m_data[0u].y;
+	tmp[1u].y = m.m_data[1u].y;
+	tmp[1u].z = m.m_data[2u].y;
+
+	tmp[2u].x = m.m_data[0u].z;
+	tmp[2u].y = m.m_data[1u].z;
+	tmp[2u].z = m.m_data[2u].z;
+
+	m.m_data[0u] = tmp[0u];
+	m.m_data[1u] = tmp[1u];
+	m.m_data[2u] = tmp[2u];
+}
+
+void slMath::transpose(slMatrix3f& m)
+{
+	slMatrix3f tmp;
+	tmp[0u].x = m.m_data[0u].x;
+	tmp[0u].y = m.m_data[1u].x;
+	tmp[0u].z = m.m_data[2u].x;
+
+	tmp[1u].x = m.m_data[0u].y;
+	tmp[1u].y = m.m_data[1u].y;
+	tmp[1u].z = m.m_data[2u].y;
+
+	tmp[2u].x = m.m_data[0u].z;
+	tmp[2u].y = m.m_data[1u].z;
+	tmp[2u].z = m.m_data[2u].z;
+
+	m.m_data[0u] = tmp[0u];
+	m.m_data[1u] = tmp[1u];
+	m.m_data[2u] = tmp[2u];
+}
+
+void slMath::transpose(slMatrix4& m)
+{
+	slMatrix4 tmp;
+	tmp[0u].x = m.m_data[0u].x;
+	tmp[0u].y = m.m_data[1u].x;
+	tmp[0u].z = m.m_data[2u].x;
+	tmp[0u].w = m.m_data[3u].x;
+
+	tmp[1u].x = m.m_data[0u].y;
+	tmp[1u].y = m.m_data[1u].y;
+	tmp[1u].z = m.m_data[2u].y;
+	tmp[1u].w = m.m_data[3u].y;
+
+	tmp[2u].x = m.m_data[0u].z;
+	tmp[2u].y = m.m_data[1u].z;
+	tmp[2u].z = m.m_data[2u].z;
+	tmp[2u].w = m.m_data[3u].z;
+
+	m.m_data[0u] = tmp[0u];
+	m.m_data[1u] = tmp[1u];
+	m.m_data[2u] = tmp[2u];
+	m.m_data[3u] = tmp[3u];
+}
+
+void slMath::transpose(slMatrix4f& m)
+{
+	slMatrix4f tmp;
+	tmp[0u].x = m.m_data[0u].x;
+	tmp[0u].y = m.m_data[1u].x;
+	tmp[0u].z = m.m_data[2u].x;
+	tmp[0u].w = m.m_data[3u].x;
+
+	tmp[1u].x = m.m_data[0u].y;
+	tmp[1u].y = m.m_data[1u].y;
+	tmp[1u].z = m.m_data[2u].y;
+	tmp[1u].w = m.m_data[3u].y;
+
+	tmp[2u].x = m.m_data[0u].z;
+	tmp[2u].y = m.m_data[1u].z;
+	tmp[2u].z = m.m_data[2u].z;
+	tmp[2u].w = m.m_data[3u].z;
+
+	m.m_data[0u] = tmp[0u];
+	m.m_data[1u] = tmp[1u];
+	m.m_data[2u] = tmp[2u];
+	m.m_data[3u] = tmp[3u];
+}
+
+//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
+// modified for matrix3x3
+void slMath::invert(slMatrix3& m)
+{
+	slMatrix3 mat;
+	auto ptr = m.data();
+	for (unsigned column = 0; column < 3; ++column)
+	{
+		// Swap row in case our pivot point is not working
+		auto column_data = m.m_data[column].data();
+		if (column_data[column] == 0)
+		{
+			unsigned big = column;
+			for (unsigned row = 0; row < 3; ++row)
+			{
+				auto row_data = m.m_data[row].data();
+				auto big_data = m.m_data[big].data();
+				if (fabs(row_data[column]) > fabs(big_data[column]))
+					big = row;
+			}
+			// Print this is a singular matrix, return identity ?
+			if (big == column)
+				fprintf(stderr, "Singular matrix\n");
+			// Swap rows                               
+			else for (unsigned j = 0; j < 3; ++j)
+			{
+				auto big_data = m.m_data[big].data();
+				std::swap(column_data[j], big_data[j]);
+
+				auto other_column_data = mat.m_data[column].data();
+				auto other_big_data = mat.m_data[big].data();
+				std::swap(other_column_data[j], other_big_data[j]);
+			}
+		}
+
+		// Set each row in the column to 0  
+		for (unsigned row = 0; row < 3; ++row)
+		{
+			if (row != column)
+			{
+				auto row_data = m.m_data[row].data();
+				double coeff = row_data[column] / column_data[column];
+				if (coeff != 0)
+				{
+					for (unsigned j = 0; j < 3; ++j)
+					{
+						row_data[j] -= coeff * column_data[j];
+
+						auto other_row_data = mat.m_data[row].data();
+						auto other_column_data = mat.m_data[column].data();
+						other_row_data[j] -= coeff * other_column_data[j];
+					}
+					// Set the element to 0 for safety
+					row_data[column] = 0;
+				}
+			}
+		}
+	}
+
+	// Set each element of the diagonal to 1
+	for (unsigned row = 0; row < 3; ++row)
+	{
+		for (unsigned column = 0; column < 3; ++column)
+		{
+			auto other_row_data = mat.m_data[row].data();
+			auto row_data = m.m_data[row].data();
+			other_row_data[column] /= row_data[row];
+		}
+	}
+	m = mat;
+}
+
+//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
+void slMath::invert(slMatrix3f& m)
+{
+	slMatrix3f mat;
+	auto ptr = m.data();
+	for (unsigned column = 0; column < 3; ++column)
+	{
+		// Swap row in case our pivot point is not working
+		auto column_data = m.m_data[column].data();
+		if (column_data[column] == 0)
+		{
+			unsigned big = column;
+			for (unsigned row = 0; row < 3; ++row)
+			{
+				auto row_data = m.m_data[row].data();
+				auto big_data = m.m_data[big].data();
+				if (fabs(row_data[column]) > fabs(big_data[column]))
+					big = row;
+			}
+			// Print this is a singular matrix, return identity ?
+			if (big == column)
+				fprintf(stderr, "Singular matrix\n");
+			// Swap rows                               
+			else for (unsigned j = 0; j < 3; ++j)
+			{
+				auto big_data = m.m_data[big].data();
+				std::swap(column_data[j], big_data[j]);
+
+				auto other_column_data = mat.m_data[column].data();
+				auto other_big_data = mat.m_data[big].data();
+				std::swap(other_column_data[j], other_big_data[j]);
+			}
+		}
+
+		// Set each row in the column to 0  
+		for (unsigned row = 0; row < 3; ++row)
+		{
+			if (row != column)
+			{
+				auto row_data = m.m_data[row].data();
+				float coeff = row_data[column] / column_data[column];
+				if (coeff != 0)
+				{
+					for (unsigned j = 0; j < 3; ++j)
+					{
+						row_data[j] -= coeff * column_data[j];
+
+						auto other_row_data = mat.m_data[row].data();
+						auto other_column_data = mat.m_data[column].data();
+						other_row_data[j] -= coeff * other_column_data[j];
+					}
+					// Set the element to 0 for safety
+					row_data[column] = 0;
+				}
+			}
+		}
+	}
+
+	// Set each element of the diagonal to 1
+	for (unsigned row = 0; row < 3; ++row)
+	{
+		for (unsigned column = 0; column < 3; ++column)
+		{
+			auto other_row_data = mat.m_data[row].data();
+			auto row_data = m.m_data[row].data();
+			other_row_data[column] /= row_data[row];
+		}
+	}
+	m = mat;
+}
+
+//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
+void slMath::invert(slMatrix4& m)
+{
+	slMatrix4 mat;
+	auto ptr = m.data();
+	for (unsigned column = 0; column < 4; ++column)
+	{
+		// Swap row in case our pivot point is not working
+		auto column_data = m.m_data[column].data();
+		if (column_data[column] == 0)
+		{
+			unsigned big = column;
+			for (unsigned row = 0; row < 4; ++row)
+			{
+				auto row_data = m.m_data[row].data();
+				auto big_data = m.m_data[big].data();
+				if (fabs(row_data[column]) > fabs(big_data[column]))
+					big = row;
+			}
+			// Print this is a singular matrix, return identity ?
+			if (big == column)
+				fprintf(stderr, "Singular matrix\n");
+			// Swap rows                               
+			else for (unsigned j = 0; j < 4; ++j)
+			{
+				auto big_data = m.m_data[big].data();
+				std::swap(column_data[j], big_data[j]);
+
+				auto other_column_data = mat.m_data[column].data();
+				auto other_big_data = mat.m_data[big].data();
+				std::swap(other_column_data[j], other_big_data[j]);
+			}
+		}
+
+		// Set each row in the column to 0  
+		for (unsigned row = 0; row < 4; ++row)
+		{
+			if (row != column)
+			{
+				auto row_data = m.m_data[row].data();
+				double coeff = row_data[column] / column_data[column];
+				if (coeff != 0)
+				{
+					for (unsigned j = 0; j < 4; ++j)
+					{
+						row_data[j] -= coeff * column_data[j];
+
+						auto other_row_data = mat.m_data[row].data();
+						auto other_column_data = mat.m_data[column].data();
+						other_row_data[j] -= coeff * other_column_data[j];
+					}
+					// Set the element to 0 for safety
+					row_data[column] = 0;
+				}
+			}
+		}
+	}
+
+	// Set each element of the diagonal to 1
+	for (unsigned row = 0; row < 4; ++row)
+	{
+		for (unsigned column = 0; column < 4; ++column)
+		{
+			auto other_row_data = mat.m_data[row].data();
+			auto row_data = m.m_data[row].data();
+			other_row_data[column] /= row_data[row];
+		}
+	}
+	m = mat;
+}
+
+//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
+void slMath::invert(slMatrix4f& m)
+{
+	slMatrix4f mat;
+	auto ptr = m.data();
+	for (unsigned column = 0; column < 4; ++column)
+	{
+		// Swap row in case our pivot point is not working
+		auto column_data = m.m_data[column].data();
+		if (column_data[column] == 0)
+		{
+			unsigned big = column;
+			for (unsigned row = 0; row < 4; ++row)
+			{
+				auto row_data = m.m_data[row].data();
+				auto big_data = m.m_data[big].data();
+				if (fabs(row_data[column]) > fabs(big_data[column]))
+					big = row;
+			}
+			// Print this is a singular matrix, return identity ?
+			if (big == column)
+				fprintf(stderr, "Singular matrix\n");
+			// Swap rows                               
+			else for (unsigned j = 0; j < 4; ++j)
+			{
+				auto big_data = m.m_data[big].data();
+				std::swap(column_data[j], big_data[j]);
+
+				auto other_column_data = mat.m_data[column].data();
+				auto other_big_data = mat.m_data[big].data();
+				std::swap(other_column_data[j], other_big_data[j]);
+			}
+		}
+
+		// Set each row in the column to 0  
+		for (unsigned row = 0; row < 4; ++row)
+		{
+			if (row != column)
+			{
+				auto row_data = m.m_data[row].data();
+				float coeff = row_data[column] / column_data[column];
+				if (coeff != 0)
+				{
+					for (unsigned j = 0; j < 4; ++j)
+					{
+						row_data[j] -= coeff * column_data[j];
+
+						auto other_row_data = mat.m_data[row].data();
+						auto other_column_data = mat.m_data[column].data();
+						other_row_data[j] -= coeff * other_column_data[j];
+					}
+					// Set the element to 0 for safety
+					row_data[column] = 0;
+				}
+			}
+		}
+	}
+
+	// Set each element of the diagonal to 1
+	for (unsigned row = 0; row < 4; ++row)
+	{
+		for (unsigned column = 0; column < 4; ++column)
+		{
+			auto other_row_data = mat.m_data[row].data();
+			auto row_data = m.m_data[row].data();
+			other_row_data[column] /= row_data[row];
+		}
+	}
+	m = mat;
+}
+
