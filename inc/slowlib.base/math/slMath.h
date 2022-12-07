@@ -40,6 +40,7 @@ const double PIHalf = 3.14159265358979323846 * 0.5;
 const double PIPI = 6.283185307179586476925286766559;
 
 #include "slowlib.base/math/slVector.h"
+#include "slowlib.base/math/slMatrix.h"
 
 class SL_API slMath
 {

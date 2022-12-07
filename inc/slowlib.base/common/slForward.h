@@ -39,6 +39,10 @@ class SL_API slVec3;
 class SL_API slVec3f;
 class SL_API slVec4;
 class SL_API slVec4f;
+class SL_API slMatrix3;
+class SL_API slMatrix3f;
+class SL_API slMatrix4;
+class SL_API slMatrix4f;
 class slWindowCallback;
 class slGS;
 

@@ -72,5 +72,8 @@
     <ClCompile Include="..\..\src\slowlib.base\math\slVector.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\math\slMatrix.cpp">
+      <Filter>Source Files\math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
