@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/scene/slCamera.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 
@@ -93,6 +94,9 @@ int main(int argc, char * argv[])
 	slMatrix3 m4(m3);
 	slMath::invert(m4);
 
+	slMatrix3f p;
+	slMath::perspectiveLH(p, 1.f, 800.f / 600.f, 0.1f, 60000.f);
+
 	auto inputData = slInput::GetData();
 
 	double dd = 0.0;
@@ -104,9 +108,21 @@ int main(int argc, char * argv[])
 		gs->SetClearColor(0.f, 0.f, 1.f, 1.f);
 	}
 
+	slVec3 globalPosition;
+	globalPosition.set(99990000.f, 0.f, 0.f);
+	
+	slCamera* camera = slFramework::SummonCamera();
+	camera->m_position = globalPosition + slVec3(10.f, 10.f, 10.f);
+	camera->m_target = globalPosition;
+	camera->Update();
+	slFramework::SetMatrix(slMatrixType::ViewProjection, &camera->m_viewProjectionMatrix);
+
+	float* dt = slFramework::GetDeltaTime();
+
 	while (g_isRun)
 	{
 		slFramework::Update();
+		camera->Update();
 
 		Sleep(1);
 		//frameworkCallback.OnMessage();
@@ -142,48 +158,48 @@ int main(int argc, char * argv[])
 		if (slInput::IsKeyRelease(slInput::KEY_F2))
 			window->ToWindowMode();
 
-		static double x = 0;
-		static double y = 0;
-		if (slInput::IsKeyRelease(slInput::KEY_A))
+		if (slInput::IsKeyHold(slInput::KEY_A))
 		{
-			x += 0.1f;
-			printf("%f %f : %f\n",x, y, slMath::distance(slVec3(x), slVec3(y)));
+			double d = 13.33 * (double)(*dt);
+			camera->m_position.x += d;
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
 		}
-		if (slInput::IsKeyRelease(slInput::KEY_Z))
+		if (slInput::IsKeyHold(slInput::KEY_D))
 		{
-			x -= 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
+			camera->m_position.x -= 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
 		}
-		if (slInput::IsKeyRelease(slInput::KEY_S))
+		if (slInput::IsKeyHold(slInput::KEY_W))
 		{
-			y += 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
+			camera->m_position.z += 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
 		}
-		if (slInput::IsKeyRelease(slInput::KEY_X))
+		if (slInput::IsKeyHold(slInput::KEY_S))
 		{
-			y -= 0.1f;
-			printf("%f %f : %f\n", x, y, slMath::distance(slVec3(x), slVec3(y)));
+			camera->m_position.z -= 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+		}
+		if (slInput::IsKeyHold(slInput::KEY_Q))
+		{
+			camera->m_position.y += 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+		}
+		if (slInput::IsKeyHold(slInput::KEY_E))
+		{
+			camera->m_position.y -= 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
 		}
 
-		if (slInput::IsKeyRelease(slInput::KEY_Q))
-			printf("%f %f : %f\n", x, y, slMath::atan2(-1.0, -1.0));
-		if (slInput::IsKeyRelease(slInput::KEY_W))
-			printf("%f %f : %f\n", x, y, slMath::atan2(1.0, 1.0));
-			
-		/*printf("%f\n",slMath::tan(3.141));
-		printf("%f %f %f : %f %f %f\n", 
-			slMath::sin(1.0),
-			slMath::sin(0.11),
-			slMath::sin(3.141),
-			slMath::sin(-1.0f),
-			slMath::sin(0.63f),
-			slMath::sin(-3.140)
-		);*/
 
 		if (gs)
 		{
 			gs->BeginDraw();
 			gs->ClearAll();
+
+			gs->DrawLine3D(slVec3(globalPosition.x + 1.f, globalPosition.y, globalPosition.z), slVec3(globalPosition.x -1.f, globalPosition.y, globalPosition.z), ColorRed);
+			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y + 1.f, globalPosition.z), slVec3(globalPosition.x, globalPosition .y -1.f, globalPosition.z), ColorYellow);
+			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y, globalPosition.z + 1.f), slVec3(globalPosition.x, globalPosition.y, globalPosition.z -1.f), ColorLime);
+
 			gs->EndDraw();
 			gs->SwapBuffers();
 		}

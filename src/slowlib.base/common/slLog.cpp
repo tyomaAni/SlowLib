@@ -58,14 +58,14 @@ public:
 };
 void slLogImpl::vprintf(const char* s, va_list vl)
 {
-	char buffer[1002];
-	vsnprintf_s(buffer, 1002, s, vl);
+	char buffer[0xFFFF];
+	vsnprintf_s(buffer, 0xFFFF, s, vl);
 	m_cba(buffer);
 }
 void slLogImpl::vwprintf(const wchar_t* s, va_list vl)
 {
-	wchar_t buffer[1002];
-	vswprintf_s(buffer, 1002, s, vl);
+	wchar_t buffer[0xFFFF];
+	vswprintf_s(buffer, 0xFFFF, s, vl);
 	m_cbw(buffer);
 }
 

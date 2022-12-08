@@ -156,7 +156,7 @@ public:
 	static void set_rotation(slMatrix3f&, const slQuaternion&);
 	static void set_rotation(slMatrix4&, const slQuaternion&);
 	static void set_rotation(slMatrix4f&, const slQuaternion&);
-	// from assimp?
+	// from irrlicht?
 	static void slerp(slQuaternion& q1, slQuaternion& q2, float time, float threshold, slQuaternion& r);
 
 	static void mul(const slMatrix3&, const slMatrix3&, slMatrix3&);
@@ -182,6 +182,16 @@ public:
 	static void invert(slMatrix3f&);
 	static void invert(slMatrix4&);
 	static void invert(slMatrix4f&);
+
+	static void perspectiveLH(slMatrix3&, double FOV, double aspect, double Near, double Far);
+	static void perspectiveLH(slMatrix3f&, float FOV, float aspect, float Near, float Far);
+	static void perspectiveLH(slMatrix4&, double FOV, double aspect, double Near, double Far);
+	static void perspectiveLH(slMatrix4f&, float FOV, float aspect, float Near, float Far);
+	
+	static void lookAtLH(slMatrix3&, const slVec3& eye, const slVec3& center, const slVec3& up);
+	static void lookAtLH(slMatrix3f&, const slVec3f& eye, const slVec3f& center, const slVec3f& up);
+	static void lookAtLH(slMatrix4&, const slVec4& eye, const slVec4& center, const slVec4& up);
+	static void lookAtLH(slMatrix4f&, const slVec4f& eye, const slVec4f& center, const slVec4f& up);
 };
 
 #endif

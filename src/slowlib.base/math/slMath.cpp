@@ -791,7 +791,7 @@ void slMath::set_rotation(slMatrix4f& m, const slQuaternion& q)
 }
 
 
-// assimp?
+// irrlicht?
 void slMath::slerp(slQuaternion& q1, slQuaternion& q2, float time, float threshold, slQuaternion& r)
 {
 	float angle = dot(q1, q2);
@@ -1339,3 +1339,146 @@ void slMath::invert(slMatrix4f& m)
 	m = mat;
 }
 
+void slMath::perspectiveLH(slMatrix3& m, double FOV, double aspect, double Near, double Far)
+{
+	double S = ::sin(0.5 * FOV);
+	double C = ::cos(0.5 * FOV);
+	double H = C / S;
+	double W = H / aspect;
+	m.m_data[0] = slVec3(W, 0.f, 0.f);
+	m.m_data[1] = slVec3(0.f, H, 0.f);
+	m.m_data[2] = slVec3(0.f, 0.f, Far / (Far - Near));
+}
+
+void slMath::perspectiveLH(slMatrix3f& m, float FOV, float aspect, float Near, float Far)
+{
+	float S = ::sinf(0.5f * FOV);
+	float C = ::cosf(0.5f * FOV);
+	float H = C / S;
+	float W = H / aspect;
+	m.m_data[0] = slVec3(W, 0.f, 0.f);
+	m.m_data[1] = slVec3(0.f, H, 0.f);
+	m.m_data[2] = slVec3(0.f, 0.f, Far / (Far - Near));
+}
+
+void slMath::perspectiveLH(slMatrix4& m, double FOV, double aspect, double Near, double Far)
+{
+	double S = ::sin(0.5 * FOV);
+	double C = ::cos(0.5 * FOV);
+	double H = C / S;
+	double W = H / aspect;
+	m.m_data[0] = slVec4(W, 0.f, 0.f,0.f);
+	m.m_data[1] = slVec4(0.f, H, 0.f,0.f);
+	m.m_data[2] = slVec4(0.f, 0.f, Far / (Far - Near), 1.f);
+	m.m_data[3] = slVec4(0.f, 0.f, -m.m_data[2].z * Near, 0.f);
+}
+
+void slMath::perspectiveLH(slMatrix4f& m, float FOV, float aspect, float Near, float Far)
+{
+	float S = ::sinf(0.5f * FOV);
+	float C = ::cosf(0.5f * FOV);
+	float H = C / S;
+	float W = H / aspect;
+	m.m_data[0] = slVec4(W, 0.f, 0.f, 0.f);
+	m.m_data[1] = slVec4(0.f, H, 0.f, 0.f);
+	m.m_data[2] = slVec4(0.f, 0.f, Far / (Far - Near), 1.f);
+	m.m_data[3] = slVec4(0.f, 0.f, -m.m_data[2].z * Near, 0.f);
+}
+
+void slMath::lookAtLH(slMatrix3& m, const slVec3& eye, const slVec3& center, const slVec3& up)
+{
+	slVec3 f(center - eye);
+	normalize(f);
+
+	slVec3 s;
+	cross(f, up, s);
+	normalize(s);
+
+	slVec3 u;
+	cross(s, f, u);
+
+	m.m_data[0].x = s.x;
+	m.m_data[1].x = s.y;
+	m.m_data[2].x = s.z;
+	m.m_data[0].y = u.x;
+	m.m_data[1].y = u.y;
+	m.m_data[2].y = u.z;
+	m.m_data[0].z = f.x;
+	m.m_data[1].z = f.y;
+	m.m_data[2].z = f.z;
+}
+
+void slMath::lookAtLH(slMatrix3f& m, const slVec3f& eye, const slVec3f& center, const slVec3f& up)
+{
+	slVec3f f(center - eye);
+	normalize(f);
+
+	slVec3f s;
+	cross(f, up, s);
+	normalize(s);
+
+	slVec3f u;
+	cross(s, f, u);
+
+	m.m_data[0].x = s.x;
+	m.m_data[1].x = s.y;
+	m.m_data[2].x = s.z;
+	m.m_data[0].y = u.x;
+	m.m_data[1].y = u.y;
+	m.m_data[2].y = u.z;
+	m.m_data[0].z = f.x;
+	m.m_data[1].z = f.y;
+	m.m_data[2].z = f.z;
+}
+
+void slMath::lookAtLH(slMatrix4& m, const slVec4& eye, const slVec4& center, const slVec4& up)
+{
+	slVec4 f(center - eye);
+	normalize(f);
+
+	slVec4 s;
+	cross(f, up, s);
+	normalize(s);
+
+	slVec4 u;
+	cross(s, f, u);
+
+	m.m_data[0].x = s.x;
+	m.m_data[1].x = s.y;
+	m.m_data[2].x = s.z;
+	m.m_data[0].y = u.x;
+	m.m_data[1].y = u.y;
+	m.m_data[2].y = u.z;
+	m.m_data[0].z = f.x;
+	m.m_data[1].z = f.y;
+	m.m_data[2].z = f.z;
+	m.m_data[3].x = -dot(s, eye);
+	m.m_data[3].y = -dot(u, eye);
+	m.m_data[3].z = -dot(f, eye);
+}
+
+void slMath::lookAtLH(slMatrix4f& m, const slVec4f& eye, const slVec4f& center, const slVec4f& up)
+{
+	slVec4f f(center - eye);
+	normalize(f);
+
+	slVec4f s;
+	cross(f, up, s);
+	normalize(s);
+
+	slVec4f u;
+	cross(s, f, u);
+
+	m.m_data[0].x = s.x;
+	m.m_data[1].x = s.y;
+	m.m_data[2].x = s.z;
+	m.m_data[0].y = u.x;
+	m.m_data[1].y = u.y;
+	m.m_data[2].y = u.z;
+	m.m_data[0].z = f.x;
+	m.m_data[1].z = f.y;
+	m.m_data[2].z = f.z;
+	m.m_data[3].x = -dot(s, eye);
+	m.m_data[3].y = -dot(u, eye);
+	m.m_data[3].z = -dot(f, eye);
+}

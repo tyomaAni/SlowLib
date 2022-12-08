@@ -59,6 +59,18 @@ public:
 	virtual void OnMessage() = 0;
 };
 
+enum class slMatrixType : uint32_t
+{
+	World,
+	View,
+	Projection,
+	ViewProjection, //For 3d line
+	WorldViewProjection,
+	ViewInvert,
+	//GUIProjection,
+	_count
+};
+
 // Main API for framework.
 // It will be static methods.
 class SL_API slFramework
@@ -97,6 +109,11 @@ public:
 	static void RectfSet(slRectf* rct, float*);
 
 	static bool CompareUIDs(const slUID&, const slUID&);
+	
+	static slMatrix4* GetMatrix(slMatrixType);
+	static void SetMatrix(slMatrixType, slMatrix4*);
+
+	static slCamera* SummonCamera();
 };
 
 #endif

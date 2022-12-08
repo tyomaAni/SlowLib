@@ -34,6 +34,9 @@
     <Filter Include="Source Files\math">
       <UniqueIdentifier>{92cccfd7-7649-4ed7-b233-926932ba8ec1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\scene">
+      <UniqueIdentifier>{7fca4673-012a-41d7-bc8a-5f80a9d84fd3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
@@ -77,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\math\slQuat.cpp">
       <Filter>Source Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\scene\slCamera.cpp">
+      <Filter>Source Files\scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

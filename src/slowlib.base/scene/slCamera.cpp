@@ -25,26 +25,40 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
 
-struct slInputData;
-class SL_API slInput;
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
-class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class SL_API slMatrix3;
-class SL_API slMatrix3f;
-class SL_API slMatrix4;
-class SL_API slMatrix4f;
-class SL_API slCamera;
-class slWindowCallback;
-class slGS;
+#include "slowlib.h"
+#include "slowlib.base/scene/slCamera.h"
 
-#endif
+slCamera::slCamera()
+{
+	m_near = 0.01f;
+	m_far = 2500.f;
+	m_fov = 0.683264f;
+	m_aspect = 1.3333333f;
+	m_up.set(0.f, 1.f, 0.f);
+}
+
+slCamera::~slCamera()
+{
+
+}
+
+void slCamera::Update()
+{
+	slMath::perspectiveLH(m_projectionMatrix, m_fov, m_aspect, m_near, m_far);
+	slMath::lookAtLH(m_viewMatrix, m_position, m_target, m_up);
+	
+	slMath::mul(m_projectionMatrix, m_viewMatrix, m_viewProjectionMatrix);
+	
+	/*m_viewMatrixInvert = m_viewMatrix;
+	slMath::invert(m_viewMatrixInvert);
+
+	auto pi = m_projectionMatrix;
+	slMath::invert(pi);
+	slMath::mul(m_viewMatrixInvert, pi, m_viewProjectionInvertMatrix);
+
+	m_frust.CalculateFrustum(m_projectionMatrix, m_viewMatrix);*/
+
+	//m_direction = Direction::NorthEast;
+}
+

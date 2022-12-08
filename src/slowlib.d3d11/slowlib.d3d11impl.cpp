@@ -34,6 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
+#pragma comment(lib, "d3dcompiler.lib")
+#include <d3dcompiler.h>
 
 // {0FE89B14-923C-4F2E-BA22-B18694D6F1ED}
 slDEFINE_UID(g_uid_d3d11, 0xfe89b14, 0x923c, 0x4f2e, 0xba22, 0xb1, 0x86, 0x94, 0xd6, 0xf1, 0xed);
@@ -48,6 +50,203 @@ slGSD3D11::slGSD3D11()
 slGSD3D11::~slGSD3D11()
 {
 	Shutdown();
+}
+
+void slGSD3D11::SetActiveShader(slGSD3D11ShaderBase* shader)
+{
+	m_activeShader = shader;
+	m_d3d11DevCon->IASetInputLayout(shader->m_vLayout);
+	m_d3d11DevCon->VSSetShader(shader->m_vShader, 0, 0);
+	m_d3d11DevCon->GSSetShader(shader->m_gShader, 0, 0);
+	m_d3d11DevCon->PSSetShader(shader->m_pShader, 0, 0);
+}
+
+bool slGSD3D11::CreateShaders()
+{
+	m_shaderLine3D = slCreate<slD3D11ShaderLine3D>(this);
+	if (!m_shaderLine3D->init())
+		return false;
+
+	return true;
+}
+
+bool slGSD3D11::createShaders(
+	const char* vertexTarget,
+	const char* pixelTarget,
+	const char* vertexShader,
+	const char* pixelShader,
+	const char* vertexEntryPoint,
+	const char* pixelEntryPoint,
+	slMeshVertexType vertexType,
+	ID3D11VertexShader** vs,
+	ID3D11PixelShader** ps,
+	ID3D11InputLayout** il)
+{
+	ID3D10Blob* m_VsBlob = nullptr;
+	ID3D10Blob* m_PsBlob = nullptr;
+	ID3D10Blob* m_errorBlob = nullptr;
+
+	HRESULT hr = D3DCompile(
+		vertexShader,
+		strlen(vertexShader),
+		0, 0, 0,
+		vertexEntryPoint,
+		vertexTarget,
+		0,
+		0,
+		&m_VsBlob,
+		&m_errorBlob
+	);
+
+	if (FAILED(hr))
+	{
+		char* message = (char*)m_errorBlob->GetBufferPointer();
+		slLog::PrintError("Vertex shader compile error: %s\n", message);
+		return false;
+	}
+
+	hr = D3DCompile(
+		pixelShader,
+		strlen(pixelShader),
+		0, 0, 0,
+		pixelEntryPoint,
+		pixelTarget,
+		0,
+		0,
+		&m_PsBlob,
+		&m_errorBlob
+	);
+
+	if (FAILED(hr))
+	{
+		char* message = (char*)m_errorBlob->GetBufferPointer();
+		slLog::PrintError("Pixel shader compile error: %s\n", message);
+		return false;
+	}
+
+	hr = m_d3d11Device->CreateVertexShader(
+		m_VsBlob->GetBufferPointer(),
+		m_VsBlob->GetBufferSize(),
+		0,
+		vs);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create vertex shader. Error code [%u]\n", hr);
+		return false;
+	}
+
+	hr = m_d3d11Device->CreatePixelShader(
+		m_PsBlob->GetBufferPointer(),
+		m_PsBlob->GetBufferSize(),
+		0,
+		ps);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create pixel shader. Error code [%u]\n", hr);
+		return false;
+	}
+
+	if (vertexType != slMeshVertexType::Null)
+	{
+		D3D11_INPUT_ELEMENT_DESC vertexLayout[8];
+		uint32_t vertexLayoutSize = 0;
+		/*
+		LPCSTR SemanticName;
+		UINT SemanticIndex;
+		DXGI_FORMAT Format;
+		UINT InputSlot;
+		UINT AlignedByteOffset;
+		D3D11_INPUT_CLASSIFICATION InputSlotClass;
+		UINT InstanceDataStepRate;
+		*/
+
+		int ind = 0;
+		/*switch (vertexType)
+		{
+		default:
+			slLog::PrintError("Unsupportex vertex type\n");
+			return false;
+		}*/
+		vertexLayoutSize = ind + 1;
+
+		hr = m_d3d11Device->CreateInputLayout(
+			vertexLayout,
+			vertexLayoutSize,
+			m_VsBlob->GetBufferPointer(),
+			m_VsBlob->GetBufferSize(),
+			il);
+		if (FAILED(hr))
+		{
+			slLog::PrintError("Can't create input layout. Error code [%u]\n", hr);
+			return false;
+		}
+	}
+
+
+	if (m_VsBlob)    m_VsBlob->Release();
+	if (m_PsBlob)    m_PsBlob->Release();
+	if (m_errorBlob) m_errorBlob->Release();
+
+	return true;
+}
+
+bool slGSD3D11::createConstantBuffer(uint32_t byteSize, ID3D11Buffer** cb)
+{
+	D3D11_BUFFER_DESC mbd;
+	memset(&mbd, 0, sizeof(mbd));
+	mbd.Usage = D3D11_USAGE_DYNAMIC;
+	mbd.ByteWidth = byteSize;
+	mbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	mbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	mbd.MiscFlags = 0;
+	mbd.StructureByteStride = 0;
+
+	HRESULT hr = m_d3d11Device->CreateBuffer(&mbd, 0, cb);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create constant buffer. Error code [%u]\n", hr);
+		return false;
+	}
+	return true;
+}
+
+bool slGSD3D11::createGeometryShaders(const char* target,
+	const char* shaderText,
+	const char* entryPoint,
+	ID3D11GeometryShader** gs)
+{
+	ID3D10Blob* m_GsBlob = nullptr;
+	ID3D10Blob* m_errorBlob = nullptr;
+	HRESULT hr = D3DCompile(
+		shaderText,
+		strlen(shaderText),
+		0, 0, 0,
+		entryPoint,
+		target,
+		0,
+		0,
+		&m_GsBlob,
+		&m_errorBlob
+	);
+	if (FAILED(hr))
+	{
+		char* message = (char*)m_errorBlob->GetBufferPointer();
+		slLog::PrintError("Geometry shader compile error: %s\n", message);
+		return false;
+	}
+
+	hr = m_d3d11Device->CreateGeometryShader(
+		m_GsBlob->GetBufferPointer(),
+		m_GsBlob->GetBufferSize(),
+		0,
+		gs);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create geometry shader. Error code [%u]\n", hr);
+		return false;
+	}
+
+	return true;
 }
 
 void slGSD3D11::Shutdown()
@@ -269,6 +468,12 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	// shaders here
 
 	m_d3d11DevCon->OMSetDepthStencilState(m_depthStencilStateEnabled, 0);
+
+	if (!CreateShaders())
+	{
+		slLog::PrintError("Can't create Direct3D 11 shader\n");
+		return false;
+	}
 
 	return true;
 }
@@ -513,4 +718,14 @@ void slGSD3D11::UpdateMainRenderTarget(const slVec3f& v)
 	updateMainTarget();
 }
 
+void slGSD3D11::DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c)
+{
+	m_d3d11DevCon->IASetInputLayout(NULL);
+	m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
+	SetActiveShader(m_shaderLine3D);
+	m_shaderLine3D->SetData(p1, p2, c, *slFramework::GetMatrix(slMatrixType::ViewProjection));
+	m_shaderLine3D->SetConstants(/*0*/);
+
+	m_d3d11DevCon->Draw(2, 0);
+}

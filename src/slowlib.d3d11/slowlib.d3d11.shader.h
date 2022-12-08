@@ -26,25 +26,34 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef _SL_D3D11SHDR_H_
+#define _SL_D3D11SHDR_H_
 
-struct slInputData;
-class SL_API slInput;
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
-class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class SL_API slMatrix3;
-class SL_API slMatrix3f;
-class SL_API slMatrix4;
-class SL_API slMatrix4f;
-class SL_API slCamera;
-class slWindowCallback;
-class slGS;
+class slGSD3D11ShaderBase
+{
+public:
+	slGSD3D11ShaderBase() :
+		m_vShader(0),
+		m_pShader(0),
+		m_gShader(0),
+		m_vLayout(0)
+	{}
+
+	virtual ~slGSD3D11ShaderBase()
+	{
+		if (m_vLayout) m_vLayout->Release();
+		if (m_gShader) m_gShader->Release();
+		if (m_vShader) m_vShader->Release();
+		if (m_pShader) m_pShader->Release();
+	}
+
+	ID3D11VertexShader* m_vShader;
+	ID3D11PixelShader* m_pShader;
+	ID3D11GeometryShader* m_gShader;
+	ID3D11InputLayout* m_vLayout;
+
+	virtual void SetConstants(/*slMaterial* material*/) = 0;
+};
+
 
 #endif

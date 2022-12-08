@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/scene/slCamera.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -293,3 +294,17 @@ slGS* slFramework::SummonGS(slUID id, const char* _name)
 	return 0;
 }
 
+slMatrix4* slFramework::GetMatrix(slMatrixType t)
+{
+	return g_framework->m_matrixPtrs[(uint32_t)t];
+}
+
+void slFramework::SetMatrix(slMatrixType t, slMatrix4* m)
+{
+	g_framework->m_matrixPtrs[(uint32_t)t] = m;
+}
+
+slCamera* slFramework::SummonCamera()
+{
+	return slCreate<slCamera>();
+}

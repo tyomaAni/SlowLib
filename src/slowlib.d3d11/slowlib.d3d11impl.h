@@ -31,10 +31,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <d3d11.h>
 
+#include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/gs/slGS.h"
+
+#include "slowlib.d3d11.shader.h"
+#include "slowlib.d3d11.shader.Line3D.h"
 
 class slGSD3D11 : public slGS
 {
+	friend class slD3D11ShaderLine3D;
+
 	slWindow* m_activeWindow = 0;
 	slPoint* m_activeWindowSize = 0;
 	
@@ -61,11 +67,18 @@ class slGSD3D11 : public slGS
 
 	bool m_vsync = false;
 
+	slD3D11ShaderLine3D* m_shaderLine3D = 0;
+	slGSD3D11ShaderBase* m_activeShader = 0;
+
 	bool createBackBuffer(float x, float y);
 	bool updateMainTarget();
+
 public:
 	slGSD3D11();
 	virtual ~slGSD3D11();
+
+	void SetActiveShader(slGSD3D11ShaderBase* shader);
+	bool CreateShaders();
 
 	virtual bool Init(slWindow*, const char* parameters) final;
 	virtual void Shutdown() final;
@@ -88,6 +101,24 @@ public:
 	virtual void UpdateMainRenderTarget(const slVec3f&) final;
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) final;
 	virtual void SetScissorRect(const slVec4f& rect, slVec4f* old) final;
+	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) final;
+
+	bool createShaders(
+		const char* vertexTarget,
+		const char* pixelTarget,
+		const char* vertexShader,
+		const char* pixelShader,
+		const char* vertexEntryPoint,
+		const char* pixelEntryPoint,
+		slMeshVertexType vertexType,
+		ID3D11VertexShader** vs,
+		ID3D11PixelShader** ps,
+		ID3D11InputLayout** il);
+	bool createConstantBuffer(uint32_t byteSize, ID3D11Buffer**);
+	bool createGeometryShaders(const char* target,
+		const char* shaderText,
+		const char* entryPoint,
+		ID3D11GeometryShader** gs);
 };
 
 #endif

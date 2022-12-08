@@ -25,26 +25,34 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
 
-struct slInputData;
-class SL_API slInput;
-class SL_API slString;
-class SL_API slStringA;
-class SL_API slStringW;
-class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class SL_API slMatrix3;
-class SL_API slMatrix3f;
-class SL_API slMatrix4;
-class SL_API slMatrix4f;
-class SL_API slCamera;
-class slWindowCallback;
-class slGS;
+
+#ifndef SL_D3D11_SHADER_LINE3D_H__
+#define SL_D3D11_SHADER_LINE3D_H__
+
+class slGSD3D11;
+class slD3D11ShaderLine3D : public slGSD3D11ShaderBase
+{
+public:
+	slD3D11ShaderLine3D(slGSD3D11* gs);
+	virtual ~slD3D11ShaderLine3D();
+
+	slGSD3D11* m_gs = 0;
+
+	ID3D11Buffer*		m_cb = 0;
+
+	struct cb
+	{
+		slMatrix4 VP;
+		slVec4  P1;
+		slVec4  P2;
+		slColor  Color;
+	}m_cbData;
+	virtual void SetConstants(/*slMaterial* material*/);
+
+	void SetData(const slVec3& p1, const slVec3& p2, const slColor& color, const slMatrix4& projMat);
+
+	bool init();
+};
 
 #endif
