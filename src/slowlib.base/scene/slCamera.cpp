@@ -50,15 +50,13 @@ void slCamera::Update()
 	
 	slMath::mul(m_projectionMatrix, m_viewMatrix, m_viewProjectionMatrix);
 	
-	/*m_viewMatrixInvert = m_viewMatrix;
+	m_viewMatrixInvert = m_viewMatrix;
 	slMath::invert(m_viewMatrixInvert);
 
 	auto pi = m_projectionMatrix;
 	slMath::invert(pi);
 	slMath::mul(m_viewMatrixInvert, pi, m_viewProjectionInvertMatrix);
 
-	m_frust.CalculateFrustum(m_projectionMatrix, m_viewMatrix);*/
-
-	//m_direction = Direction::NorthEast;
+	m_frust.CalculateFrustum(m_projectionMatrix, m_viewMatrix);
 }
 

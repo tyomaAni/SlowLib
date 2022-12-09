@@ -692,44 +692,44 @@ void slMath::set_rotation(slQuaternion& q, float x, float y, float z)
 	q.z = (c1 * c2 * s3) - (s1 * s2 * c3);
 }
 
-void slMath::set_rotation(slQuaternion& q, const slVec3& axis, const float& _angle)
+void slMath::set_rotation(slQuaternion& q, const slVec3& axis, const real_t& _angle)
 {
-	float d = (float)length(axis);
-	float s = ::sinf(_angle * 0.5f) / d;
-	q.x = (float)axis.x * s;
-	q.y = (float)axis.y * s;
-	q.z = (float)axis.z * s;
-	q.w = ::cosf(_angle * 0.5f);
+	real_t d = (real_t)length(axis);
+	real_t s = std::sin(_angle * 0.5f) / d;
+	q.x = (float)(axis.x * s);
+	q.y = (float)(axis.y * s);
+	q.z = (float)(axis.z * s);
+	q.w = (float)std::cos(_angle * 0.5);
 }
 
 void slMath::set_rotation(slQuaternion& q, const slVec3f& axis, const float& _angle)
 {
 	float d = length(axis);
-	float s = ::sinf(_angle * 0.5f) / d;
+	float s = std::sin(_angle * 0.5f) / d;
 	q.x = axis.x * s;
 	q.y = axis.y * s;
 	q.z = axis.z * s;
-	q.w = ::cosf(_angle * 0.5f);
+	q.w = std::cos(_angle * 0.5f);
 }
 
-void slMath::set_rotation(slQuaternion& q, const slVec4& axis, const float& _angle)
+void slMath::set_rotation(slQuaternion& q, const slVec4& axis, const real_t& _angle)
 {
-	float d = (float)length(axis);
-	float s = ::sinf(_angle * 0.5f) / d;
-	q.x = (float)axis.x * s;
-	q.y = (float)axis.y * s;
-	q.z = (float)axis.z * s;
-	q.w = ::cosf(_angle * 0.5f);
+	real_t d = (real_t)length(axis);
+	real_t s = std::sin(_angle * 0.5f) / d;
+	q.x = (float)(axis.x * s);
+	q.y = (float)(axis.y * s);
+	q.z = (float)(axis.z * s);
+	q.w = (float)std::cos(_angle * 0.5f);
 }
 
 void slMath::set_rotation(slQuaternion& q, const slVec4f& axis, const float& _angle)
 {
 	float d = length(axis);
-	float s = ::sinf(_angle * 0.5f) / d;
+	float s = std::sin(_angle * 0.5f) / d;
 	q.x = axis.x * s;
 	q.y = axis.y * s;
 	q.z = axis.z * s;
-	q.w = ::cosf(_angle * 0.5f);
+	q.w = std::cos(_angle * 0.5f);
 }
 
 void slMath::set_rotation(slMat4& m, const slQuaternion& q)

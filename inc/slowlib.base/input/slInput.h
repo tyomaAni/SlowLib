@@ -41,20 +41,20 @@ struct slInputData
 	float   mouseWheelDelta = 0.f;
 	//float   mouseWheelDeltaOld = 0.f;
 
-	uint32_t mouseButtonFlags1;/*MBFL...*/
-	uint32_t mouseButtonFlags2;/*MBFL... HOLD, DOUBLE*/
+	uint32_t mouseButtonFlags1 = 0;/*MBFL...*/
+	uint32_t mouseButtonFlags2 = 0;/*MBFL... HOLD, DOUBLE*/
 
 	//uint32_t LMBClickCount;
 
 	char32_t character = 0;
 
 	//uint8_t  keyFlags[256]; /**/
-	uint64_t keyFlagsHit[2];
-	uint64_t keyFlagsHold[2];
-	uint64_t keyFlagsRelease[2];
+	uint64_t keyFlagsHit[2] = {0,0};
+	uint64_t keyFlagsHold[2] = { 0,0 };
+	uint64_t keyFlagsRelease[2] = { 0,0 };
 
 	/*keyboardModifier == KBMOD_SHIFT*/
-	uint8_t keyboardModifier; /*KBMOD...*/
+	uint8_t keyboardModifier = 0; /*KBMOD...*/
 };
 
 class SL_API slInput

@@ -223,6 +223,8 @@ template<typename T>
 class slVec4_t
 {
 public:
+	typedef T this_type;
+
 	slVec4_t() {}
 
 	slVec4_t(T X, T Y, T Z, T W) :

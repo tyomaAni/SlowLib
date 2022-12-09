@@ -120,9 +120,9 @@ public:
 	//  ... it has only 1 multiplication. lerp2 has 2 multiplications.
 	static float lerp1(float x, float y, float t);
 	static double lerp1(double x, double y, double t);
-	static void lerp1(const slVec3& x, const slVec3& y, double t, slVec3& r);
-	static void lerp1(const slVec3& x, const slVec4& y, double t, slVec3& r);
-	static void lerp1(const slVec4& x, const slVec4& y, double t, slVec4& r);
+	static void lerp1(const slVec3& x, const slVec3& y, real_t t, slVec3& r);
+	static void lerp1(const slVec3& x, const slVec4& y, real_t t, slVec3& r);
+	static void lerp1(const slVec4& x, const slVec4& y, real_t t, slVec4& r);
 	static void lerp1(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
 	static void lerp1(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
 	static void lerp1(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
@@ -133,9 +133,9 @@ public:
 	// Lerping between same values might not produce the same value
 	static float lerp2(float x, float y, float t);
 	static double lerp2(double x, double y, double t);
-	static void lerp2(const slVec3& x, const slVec3& y, double t, slVec3& r);
-	static void lerp2(const slVec3& x, const slVec4& y, double t, slVec3& r);
-	static void lerp2(const slVec4& x, const slVec4& y, double t, slVec4& r);
+	static void lerp2(const slVec3& x, const slVec3& y, real_t t, slVec3& r);
+	static void lerp2(const slVec3& x, const slVec4& y, real_t t, slVec3& r);
+	static void lerp2(const slVec4& x, const slVec4& y, real_t t, slVec4& r);
 	static void lerp2(const slVec3f& x, const slVec3f& y, float t, slVec3f& r);
 	static void lerp2(const slVec3f& x, const slVec4f& y, float t, slVec3f& r);
 	static void lerp2(const slVec4f& x, const slVec4f& y, float t, slVec4f& r);
@@ -148,9 +148,9 @@ public:
 	static void normalize(slQuaternion& v);
 
 	static void set_rotation(slQuaternion&, float x, float y, float z);
-	static void set_rotation(slQuaternion&, const slVec3& axis, const float& _angle);
+	static void set_rotation(slQuaternion&, const slVec3& axis, const real_t& _angle);
 	static void set_rotation(slQuaternion&, const slVec3f& axis, const float& _angle);
-	static void set_rotation(slQuaternion&, const slVec4& axis, const float& _angle);
+	static void set_rotation(slQuaternion&, const slVec4& axis, const real_t& _angle);
 	static void set_rotation(slQuaternion&, const slVec4f& axis, const float& _angle);
 	static void set_rotation(slMat4&, const slQuaternion&);
 	// from irrlicht?
