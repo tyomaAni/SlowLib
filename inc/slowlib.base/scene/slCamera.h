@@ -66,7 +66,7 @@ struct slCameraFrustum
 	}
 
 	// I don't know original author. I saw this in NeHe tutorials.
-	void CalculateFrustum(slMatrix3& P, slMatrix3& V)
+	void CalculateFrustum(slMat4& P, slMat4& V)
 	{
 		double* proj = P.data();
 		double* modl = V.data();
@@ -156,13 +156,13 @@ public:
 		NorthWest
 	};*/
 
-	slMatrix4 m_projectionMatrix;
+	slMat4 m_projectionMatrix;
 
-	slMatrix4 m_viewMatrix;
-	slMatrix4 m_viewMatrixInvert;
+	slMat4 m_viewMatrix;
+	slMat4 m_viewMatrixInvert;
 
-	slMatrix4 m_viewProjectionMatrix;
-	slMatrix4 m_viewProjectionInvertMatrix;
+	slMat4 m_viewProjectionMatrix;
+	slMat4 m_viewProjectionInvertMatrix;
 
 	float m_near = 0.01f;
 	float m_far = 2500.f;

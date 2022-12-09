@@ -45,7 +45,7 @@ public:
 	std::vector<slDLLHandle> m_dlls;
 	std::vector<slGS*> m_gss;
 
-	slMatrix4* m_matrixPtrs[(uint32_t)slMatrixType::_count];
+	slMat4* m_matrixPtrs[(uint32_t)slMatrixType::_count];
 
 	slFrameworkCallback* m_callback = 0;
 	slInputData m_input;

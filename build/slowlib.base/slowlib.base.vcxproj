@@ -356,7 +356,6 @@
     <ClCompile Include="..\..\src\slowlib.base\math\slMath.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\math\slMatrix.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\math\slQuat.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\math\slVector.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\memory\slMemory.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\scene\slCamera.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />

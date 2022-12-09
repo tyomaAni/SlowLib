@@ -35,16 +35,21 @@ class SL_API slString;
 class SL_API slStringA;
 class SL_API slStringW;
 class SL_API slWindow;
-class SL_API slVec3;
-class SL_API slVec3f;
-class SL_API slVec4;
-class SL_API slVec4f;
-class SL_API slMatrix3;
-class SL_API slMatrix3f;
-class SL_API slMatrix4;
-class SL_API slMatrix4f;
 class SL_API slCamera;
 class slWindowCallback;
 class slGS;
+
+template<typename T>
+class slVec3_t;
+template<typename T>
+class slVec4_t;
+template<typename T>
+class slMatrix4_t;
+
+using slVec3 = slVec3_t<real_t>;
+using slVec3f = slVec3_t<float>;
+using slVec4 = slVec4_t<real_t>;
+using slVec4f = slVec4_t<float>;
+using slMat4 = slMatrix4_t<real_t>;
 
 #endif

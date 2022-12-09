@@ -78,23 +78,20 @@ int main(int argc, char * argv[])
 	slMath::set_rotation(qY20, 0.f, slMath::DegToRad(20.f), 0.f);
 
 
-	slMatrix4 m1;
+	slMat4 m1;
 	slMath::set_rotation(m1, qX40);
 
-	slMatrix4 m2;
+	slMat4 m2;
 	slMath::set_rotation(m2, qY20);
 
-	slMatrix4 m3;
+	slMat4 m3;
 	slMath::mul(m1, m2, m3);
 
 	slVec3 pos(0.f, 1.f, 0.f);
 	slVec3 posRotated;
 	slMath::mul(m3, pos, posRotated);
 
-	slMatrix3 m4(m3);
-	slMath::invert(m4);
-
-	slMatrix3f p;
+	slMat4 p;
 	slMath::perspectiveLH(p, 1.f, 800.f / 600.f, 0.1f, 60000.f);
 
 	auto inputData = slInput::GetData();

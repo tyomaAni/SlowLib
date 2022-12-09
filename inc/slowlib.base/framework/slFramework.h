@@ -110,8 +110,8 @@ public:
 
 	static bool CompareUIDs(const slUID&, const slUID&);
 	
-	static slMatrix4* GetMatrix(slMatrixType);
-	static void SetMatrix(slMatrixType, slMatrix4*);
+	static slMat4* GetMatrix(slMatrixType);
+	static void SetMatrix(slMatrixType, slMat4*);
 
 	static slCamera* SummonCamera();
 };

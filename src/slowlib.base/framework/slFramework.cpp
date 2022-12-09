@@ -294,12 +294,12 @@ slGS* slFramework::SummonGS(slUID id, const char* _name)
 	return 0;
 }
 
-slMatrix4* slFramework::GetMatrix(slMatrixType t)
+slMat4* slFramework::GetMatrix(slMatrixType t)
 {
 	return g_framework->m_matrixPtrs[(uint32_t)t];
 }
 
-void slFramework::SetMatrix(slMatrixType t, slMatrix4* m)
+void slFramework::SetMatrix(slMatrixType t, slMat4* m)
 {
 	g_framework->m_matrixPtrs[(uint32_t)t] = m;
 }

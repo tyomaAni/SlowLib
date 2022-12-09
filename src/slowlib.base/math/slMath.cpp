@@ -732,64 +732,19 @@ void slMath::set_rotation(slQuaternion& q, const slVec4f& axis, const float& _an
 	q.w = ::cosf(_angle * 0.5f);
 }
 
-void slMath::set_rotation(slMatrix3& m, const slQuaternion& q)
+void slMath::set_rotation(slMat4& m, const slQuaternion& q)
 {
-	float d = length(q);
-	float s = 2.0f / d;
-	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
+	real_t d = length(q);
+	real_t s = 2.0f / d;
+	real_t xs = q.x * s, ys = q.y * s, zs = q.z * s;
+	real_t wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
+	real_t xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
+	real_t yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
 	m.set(
 		1.0f - (yy + zz), xy - wz, xz + wy,
 		xy + wz, 1.0f - (xx + zz), yz - wx,
 		xz - wy, yz + wx, 1.0f - (xx + yy));
 }
-
-void slMath::set_rotation(slMatrix3f& m, const slQuaternion& q)
-{
-	float d = length(q);
-	float s = 2.0f / d;
-	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
-	m.set(
-		1.0f - (yy + zz), xy - wz, xz + wy,
-		xy + wz, 1.0f - (xx + zz), yz - wx,
-		xz - wy, yz + wx, 1.0f - (xx + yy));
-}
-
-void slMath::set_rotation(slMatrix4& m, const slQuaternion& q)
-{
-	float d = length(q);
-	float s = 2.0f / d;
-	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
-	m.set(
-		1.0f - (yy + zz), xy - wz, xz + wy, 0.f,
-		xy + wz, 1.0f - (xx + zz), yz - wx, 0.f,
-		xz - wy, yz + wx, 1.0f - (xx + yy), 0.f,
-		0.f,0.f,0.f,1.f);
-}
-
-void slMath::set_rotation(slMatrix4f& m, const slQuaternion& q)
-{
-	float d = length(q);
-	float s = 2.0f / d;
-	float xs = q.x * s, ys = q.y * s, zs = q.z * s;
-	float wx = q.w * xs, wy = q.w * ys, wz = q.w * zs;
-	float xx = q.x * xs, xy = q.x * ys, xz = q.x * zs;
-	float yy = q.y * ys, yz = q.y * zs, zz = q.z * zs;
-	m.set(
-		1.0f - (yy + zz), xy - wz, xz + wy, 0.f,
-		xy + wz, 1.0f - (xx + zz), yz - wx, 0.f,
-		xz - wy, yz + wx, 1.0f - (xx + yy), 0.f,
-		0.f, 0.f, 0.f, 1.f);
-}
-
 
 // irrlicht?
 void slMath::slerp(slQuaternion& q1, slQuaternion& q2, float time, float threshold, slQuaternion& r)
@@ -814,45 +769,7 @@ void slMath::slerp(slQuaternion& q1, slQuaternion& q2, float time, float thresho
 		lerp1(q1, q2, time, r);
 }
 
-void slMath::mul(const slMatrix3& m1, const slMatrix3& m2, slMatrix3& r)
-{
-	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z;
-	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z;
-	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z;
-
-	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z;
-	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z;
-	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z;
-
-	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z;
-	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z;
-	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z;
-
-	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z;
-	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z;
-	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z;
-}
-
-void slMath::mul(const slMatrix3f& m1, const slMatrix3f& m2, slMatrix3f& r)
-{
-	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z;
-	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z;
-	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z;
-
-	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z;
-	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z;
-	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z;
-
-	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z;
-	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z;
-	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z;
-
-	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z;
-	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z;
-	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z;
-}
-
-void slMath::mul(const slMatrix4& m1, const slMatrix4& m2, slMatrix4& r)
+void slMath::mul(const slMat4& m1, const slMat4& m2, slMat4& r)
 {
 	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z + m1.m_data[3].x * m2.m_data[0].w;
 	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z + m1.m_data[3].y * m2.m_data[0].w;
@@ -875,82 +792,14 @@ void slMath::mul(const slMatrix4& m1, const slMatrix4& m2, slMatrix4& r)
 	r.m_data[3].w = m1.m_data[0].w * m2.m_data[3].x + m1.m_data[1].w * m2.m_data[3].y + m1.m_data[2].w * m2.m_data[3].z + m1.m_data[3].w * m2.m_data[3].w;
 }
 
-void slMath::mul(const slMatrix4f& m1, const slMatrix4f& m2, slMatrix4f& r)
-{
-	r.m_data[0].x = m1.m_data[0].x * m2.m_data[0].x + m1.m_data[1].x * m2.m_data[0].y + m1.m_data[2].x * m2.m_data[0].z + m1.m_data[3].x * m2.m_data[0].w;
-	r.m_data[0].y = m1.m_data[0].y * m2.m_data[0].x + m1.m_data[1].y * m2.m_data[0].y + m1.m_data[2].y * m2.m_data[0].z + m1.m_data[3].y * m2.m_data[0].w;
-	r.m_data[0].z = m1.m_data[0].z * m2.m_data[0].x + m1.m_data[1].z * m2.m_data[0].y + m1.m_data[2].z * m2.m_data[0].z + m1.m_data[3].z * m2.m_data[0].w;
-	r.m_data[0].w = m1.m_data[0].w * m2.m_data[0].x + m1.m_data[1].w * m2.m_data[0].y + m1.m_data[2].w * m2.m_data[0].z + m1.m_data[3].w * m2.m_data[0].w;
-
-	r.m_data[1].x = m1.m_data[0].x * m2.m_data[1].x + m1.m_data[1].x * m2.m_data[1].y + m1.m_data[2].x * m2.m_data[1].z + m1.m_data[3].x * m2.m_data[1].w;
-	r.m_data[1].y = m1.m_data[0].y * m2.m_data[1].x + m1.m_data[1].y * m2.m_data[1].y + m1.m_data[2].y * m2.m_data[1].z + m1.m_data[3].y * m2.m_data[1].w;
-	r.m_data[1].z = m1.m_data[0].z * m2.m_data[1].x + m1.m_data[1].z * m2.m_data[1].y + m1.m_data[2].z * m2.m_data[1].z + m1.m_data[3].z * m2.m_data[1].w;
-	r.m_data[1].w = m1.m_data[0].w * m2.m_data[1].x + m1.m_data[1].w * m2.m_data[1].y + m1.m_data[2].w * m2.m_data[1].z + m1.m_data[3].w * m2.m_data[1].w;
-
-	r.m_data[2].x = m1.m_data[0].x * m2.m_data[2].x + m1.m_data[1].x * m2.m_data[2].y + m1.m_data[2].x * m2.m_data[2].z + m1.m_data[3].x * m2.m_data[2].w;
-	r.m_data[2].y = m1.m_data[0].y * m2.m_data[2].x + m1.m_data[1].y * m2.m_data[2].y + m1.m_data[2].y * m2.m_data[2].z + m1.m_data[3].y * m2.m_data[2].w;
-	r.m_data[2].z = m1.m_data[0].z * m2.m_data[2].x + m1.m_data[1].z * m2.m_data[2].y + m1.m_data[2].z * m2.m_data[2].z + m1.m_data[3].z * m2.m_data[2].w;
-	r.m_data[2].w = m1.m_data[0].w * m2.m_data[2].x + m1.m_data[1].w * m2.m_data[2].y + m1.m_data[2].w * m2.m_data[2].z + m1.m_data[3].w * m2.m_data[2].w;
-
-	r.m_data[3].x = m1.m_data[0].x * m2.m_data[3].x + m1.m_data[1].x * m2.m_data[3].y + m1.m_data[2].x * m2.m_data[3].z + m1.m_data[3].x * m2.m_data[3].w;
-	r.m_data[3].y = m1.m_data[0].y * m2.m_data[3].x + m1.m_data[1].y * m2.m_data[3].y + m1.m_data[2].y * m2.m_data[3].z + m1.m_data[3].y * m2.m_data[3].w;
-	r.m_data[3].z = m1.m_data[0].z * m2.m_data[3].x + m1.m_data[1].z * m2.m_data[3].y + m1.m_data[2].z * m2.m_data[3].z + m1.m_data[3].z * m2.m_data[3].w;
-	r.m_data[3].w = m1.m_data[0].w * m2.m_data[3].x + m1.m_data[1].w * m2.m_data[3].y + m1.m_data[2].w * m2.m_data[3].z + m1.m_data[3].w * m2.m_data[3].w;
-}
-
-void slMath::mul(const slMatrix3f& m, const slVec3f& v, slVec3f& r)
+void slMath::mul(const slMat4& m, const slVec3& v, slVec3& r)
 {
 	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
 	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
 	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
 }
 
-void slMath::mul(const slMatrix3& m, const slVec3& v, slVec3& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
-}
-
-void slMath::mul(const slMatrix3f& m, const slVec4f& v, slVec4f& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
-	r.w = 0.f;
-}
-
-void slMath::mul(const slMatrix3& m, const slVec4& v, slVec4& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
-	r.w = 0.f;
-}
-
-void slMath::mul(const slMatrix4f& m, const slVec3f& v, slVec3f& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
-}
-
-void slMath::mul(const slMatrix4& m, const slVec3& v, slVec3& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z;
-}
-
-void slMath::mul(const slMatrix4f& m, const slVec4f& v, slVec4f& r)
-{
-	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x + v.w * m.m_data[3].x;
-	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y + v.w * m.m_data[3].y;
-	r.z = v.x * m.m_data[0].z + v.y * m.m_data[1].z + v.z * m.m_data[2].z + v.w * m.m_data[3].z;
-	r.w = v.x * m.m_data[0].w + v.y * m.m_data[1].w + v.z * m.m_data[2].w + v.w * m.m_data[3].w;
-}
-
-void slMath::mul(const slMatrix4& m, const slVec4& v, slVec4& r)
+void slMath::mul(const slMat4& m, const slVec4& v, slVec4& r)
 {
 	r.x = v.x * m.m_data[0].x + v.y * m.m_data[1].x + v.z * m.m_data[2].x + v.w * m.m_data[3].x;
 	r.y = v.x * m.m_data[0].y + v.y * m.m_data[1].y + v.z * m.m_data[2].y + v.w * m.m_data[3].y;
@@ -966,73 +815,9 @@ void slMath::mul(const slQuaternion& q1, const slQuaternion& q2, slQuaternion& r
 	r.x = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
 }
 
-void slMath::transpose(slMatrix3& m)
+void slMath::transpose(slMat4& m)
 {
-	slMatrix3 tmp;
-	tmp[0u].x = m.m_data[0u].x;
-	tmp[0u].y = m.m_data[1u].x;
-	tmp[0u].z = m.m_data[2u].x;
-
-	tmp[1u].x = m.m_data[0u].y;
-	tmp[1u].y = m.m_data[1u].y;
-	tmp[1u].z = m.m_data[2u].y;
-
-	tmp[2u].x = m.m_data[0u].z;
-	tmp[2u].y = m.m_data[1u].z;
-	tmp[2u].z = m.m_data[2u].z;
-
-	m.m_data[0u] = tmp[0u];
-	m.m_data[1u] = tmp[1u];
-	m.m_data[2u] = tmp[2u];
-}
-
-void slMath::transpose(slMatrix3f& m)
-{
-	slMatrix3f tmp;
-	tmp[0u].x = m.m_data[0u].x;
-	tmp[0u].y = m.m_data[1u].x;
-	tmp[0u].z = m.m_data[2u].x;
-
-	tmp[1u].x = m.m_data[0u].y;
-	tmp[1u].y = m.m_data[1u].y;
-	tmp[1u].z = m.m_data[2u].y;
-
-	tmp[2u].x = m.m_data[0u].z;
-	tmp[2u].y = m.m_data[1u].z;
-	tmp[2u].z = m.m_data[2u].z;
-
-	m.m_data[0u] = tmp[0u];
-	m.m_data[1u] = tmp[1u];
-	m.m_data[2u] = tmp[2u];
-}
-
-void slMath::transpose(slMatrix4& m)
-{
-	slMatrix4 tmp;
-	tmp[0u].x = m.m_data[0u].x;
-	tmp[0u].y = m.m_data[1u].x;
-	tmp[0u].z = m.m_data[2u].x;
-	tmp[0u].w = m.m_data[3u].x;
-
-	tmp[1u].x = m.m_data[0u].y;
-	tmp[1u].y = m.m_data[1u].y;
-	tmp[1u].z = m.m_data[2u].y;
-	tmp[1u].w = m.m_data[3u].y;
-
-	tmp[2u].x = m.m_data[0u].z;
-	tmp[2u].y = m.m_data[1u].z;
-	tmp[2u].z = m.m_data[2u].z;
-	tmp[2u].w = m.m_data[3u].z;
-
-	m.m_data[0u] = tmp[0u];
-	m.m_data[1u] = tmp[1u];
-	m.m_data[2u] = tmp[2u];
-	m.m_data[3u] = tmp[3u];
-}
-
-void slMath::transpose(slMatrix4f& m)
-{
-	slMatrix4f tmp;
+	slMat4 tmp;
 	tmp[0u].x = m.m_data[0u].x;
 	tmp[0u].y = m.m_data[1u].x;
 	tmp[0u].z = m.m_data[2u].x;
@@ -1055,152 +840,9 @@ void slMath::transpose(slMatrix4f& m)
 }
 
 //https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
-// modified for matrix3x3
-void slMath::invert(slMatrix3& m)
+void slMath::invert(slMat4& m)
 {
-	slMatrix3 mat;
-	auto ptr = m.data();
-	for (unsigned column = 0; column < 3; ++column)
-	{
-		// Swap row in case our pivot point is not working
-		auto column_data = m.m_data[column].data();
-		if (column_data[column] == 0)
-		{
-			unsigned big = column;
-			for (unsigned row = 0; row < 3; ++row)
-			{
-				auto row_data = m.m_data[row].data();
-				auto big_data = m.m_data[big].data();
-				if (fabs(row_data[column]) > fabs(big_data[column]))
-					big = row;
-			}
-			// Print this is a singular matrix, return identity ?
-			if (big == column)
-				fprintf(stderr, "Singular matrix\n");
-			// Swap rows                               
-			else for (unsigned j = 0; j < 3; ++j)
-			{
-				auto big_data = m.m_data[big].data();
-				std::swap(column_data[j], big_data[j]);
-
-				auto other_column_data = mat.m_data[column].data();
-				auto other_big_data = mat.m_data[big].data();
-				std::swap(other_column_data[j], other_big_data[j]);
-			}
-		}
-
-		// Set each row in the column to 0  
-		for (unsigned row = 0; row < 3; ++row)
-		{
-			if (row != column)
-			{
-				auto row_data = m.m_data[row].data();
-				double coeff = row_data[column] / column_data[column];
-				if (coeff != 0)
-				{
-					for (unsigned j = 0; j < 3; ++j)
-					{
-						row_data[j] -= coeff * column_data[j];
-
-						auto other_row_data = mat.m_data[row].data();
-						auto other_column_data = mat.m_data[column].data();
-						other_row_data[j] -= coeff * other_column_data[j];
-					}
-					// Set the element to 0 for safety
-					row_data[column] = 0;
-				}
-			}
-		}
-	}
-
-	// Set each element of the diagonal to 1
-	for (unsigned row = 0; row < 3; ++row)
-	{
-		for (unsigned column = 0; column < 3; ++column)
-		{
-			auto other_row_data = mat.m_data[row].data();
-			auto row_data = m.m_data[row].data();
-			other_row_data[column] /= row_data[row];
-		}
-	}
-	m = mat;
-}
-
-//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
-void slMath::invert(slMatrix3f& m)
-{
-	slMatrix3f mat;
-	auto ptr = m.data();
-	for (unsigned column = 0; column < 3; ++column)
-	{
-		// Swap row in case our pivot point is not working
-		auto column_data = m.m_data[column].data();
-		if (column_data[column] == 0)
-		{
-			unsigned big = column;
-			for (unsigned row = 0; row < 3; ++row)
-			{
-				auto row_data = m.m_data[row].data();
-				auto big_data = m.m_data[big].data();
-				if (fabs(row_data[column]) > fabs(big_data[column]))
-					big = row;
-			}
-			// Print this is a singular matrix, return identity ?
-			if (big == column)
-				fprintf(stderr, "Singular matrix\n");
-			// Swap rows                               
-			else for (unsigned j = 0; j < 3; ++j)
-			{
-				auto big_data = m.m_data[big].data();
-				std::swap(column_data[j], big_data[j]);
-
-				auto other_column_data = mat.m_data[column].data();
-				auto other_big_data = mat.m_data[big].data();
-				std::swap(other_column_data[j], other_big_data[j]);
-			}
-		}
-
-		// Set each row in the column to 0  
-		for (unsigned row = 0; row < 3; ++row)
-		{
-			if (row != column)
-			{
-				auto row_data = m.m_data[row].data();
-				float coeff = row_data[column] / column_data[column];
-				if (coeff != 0)
-				{
-					for (unsigned j = 0; j < 3; ++j)
-					{
-						row_data[j] -= coeff * column_data[j];
-
-						auto other_row_data = mat.m_data[row].data();
-						auto other_column_data = mat.m_data[column].data();
-						other_row_data[j] -= coeff * other_column_data[j];
-					}
-					// Set the element to 0 for safety
-					row_data[column] = 0;
-				}
-			}
-		}
-	}
-
-	// Set each element of the diagonal to 1
-	for (unsigned row = 0; row < 3; ++row)
-	{
-		for (unsigned column = 0; column < 3; ++column)
-		{
-			auto other_row_data = mat.m_data[row].data();
-			auto row_data = m.m_data[row].data();
-			other_row_data[column] /= row_data[row];
-		}
-	}
-	m = mat;
-}
-
-//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
-void slMath::invert(slMatrix4& m)
-{
-	slMatrix4 mat;
+	slMat4 mat;
 	auto ptr = m.data();
 	for (unsigned column = 0; column < 4; ++column)
 	{
@@ -1237,7 +879,7 @@ void slMath::invert(slMatrix4& m)
 			if (row != column)
 			{
 				auto row_data = m.m_data[row].data();
-				double coeff = row_data[column] / column_data[column];
+				real_t coeff = row_data[column] / column_data[column];
 				if (coeff != 0)
 				{
 					for (unsigned j = 0; j < 4; ++j)
@@ -1268,170 +910,19 @@ void slMath::invert(slMatrix4& m)
 	m = mat;
 }
 
-//https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/matrix-inverse
-void slMath::invert(slMatrix4f& m)
+void slMath::perspectiveLH(slMat4& m, real_t FOV, real_t aspect, real_t Near, real_t Far)
 {
-	slMatrix4f mat;
-	auto ptr = m.data();
-	for (unsigned column = 0; column < 4; ++column)
-	{
-		// Swap row in case our pivot point is not working
-		auto column_data = m.m_data[column].data();
-		if (column_data[column] == 0)
-		{
-			unsigned big = column;
-			for (unsigned row = 0; row < 4; ++row)
-			{
-				auto row_data = m.m_data[row].data();
-				auto big_data = m.m_data[big].data();
-				if (fabs(row_data[column]) > fabs(big_data[column]))
-					big = row;
-			}
-			// Print this is a singular matrix, return identity ?
-			if (big == column)
-				fprintf(stderr, "Singular matrix\n");
-			// Swap rows                               
-			else for (unsigned j = 0; j < 4; ++j)
-			{
-				auto big_data = m.m_data[big].data();
-				std::swap(column_data[j], big_data[j]);
-
-				auto other_column_data = mat.m_data[column].data();
-				auto other_big_data = mat.m_data[big].data();
-				std::swap(other_column_data[j], other_big_data[j]);
-			}
-		}
-
-		// Set each row in the column to 0  
-		for (unsigned row = 0; row < 4; ++row)
-		{
-			if (row != column)
-			{
-				auto row_data = m.m_data[row].data();
-				float coeff = row_data[column] / column_data[column];
-				if (coeff != 0)
-				{
-					for (unsigned j = 0; j < 4; ++j)
-					{
-						row_data[j] -= coeff * column_data[j];
-
-						auto other_row_data = mat.m_data[row].data();
-						auto other_column_data = mat.m_data[column].data();
-						other_row_data[j] -= coeff * other_column_data[j];
-					}
-					// Set the element to 0 for safety
-					row_data[column] = 0;
-				}
-			}
-		}
-	}
-
-	// Set each element of the diagonal to 1
-	for (unsigned row = 0; row < 4; ++row)
-	{
-		for (unsigned column = 0; column < 4; ++column)
-		{
-			auto other_row_data = mat.m_data[row].data();
-			auto row_data = m.m_data[row].data();
-			other_row_data[column] /= row_data[row];
-		}
-	}
-	m = mat;
+	real_t S = ::sin(0.5 * FOV);
+	real_t C = ::cos(0.5 * FOV);
+	real_t H = C / S;
+	real_t W = H / aspect;
+	m.m_data[0] = slVec4(W, 0., 0.,0.);
+	m.m_data[1] = slVec4(0., H, 0.,0.);
+	m.m_data[2] = slVec4(0., 0., Far / (Far - Near), 1.);
+	m.m_data[3] = slVec4(0., 0., -m.m_data[2].z * Near, 0.);
 }
 
-void slMath::perspectiveLH(slMatrix3& m, double FOV, double aspect, double Near, double Far)
-{
-	double S = ::sin(0.5 * FOV);
-	double C = ::cos(0.5 * FOV);
-	double H = C / S;
-	double W = H / aspect;
-	m.m_data[0] = slVec3(W, 0.f, 0.f);
-	m.m_data[1] = slVec3(0.f, H, 0.f);
-	m.m_data[2] = slVec3(0.f, 0.f, Far / (Far - Near));
-}
-
-void slMath::perspectiveLH(slMatrix3f& m, float FOV, float aspect, float Near, float Far)
-{
-	float S = ::sinf(0.5f * FOV);
-	float C = ::cosf(0.5f * FOV);
-	float H = C / S;
-	float W = H / aspect;
-	m.m_data[0] = slVec3(W, 0.f, 0.f);
-	m.m_data[1] = slVec3(0.f, H, 0.f);
-	m.m_data[2] = slVec3(0.f, 0.f, Far / (Far - Near));
-}
-
-void slMath::perspectiveLH(slMatrix4& m, double FOV, double aspect, double Near, double Far)
-{
-	double S = ::sin(0.5 * FOV);
-	double C = ::cos(0.5 * FOV);
-	double H = C / S;
-	double W = H / aspect;
-	m.m_data[0] = slVec4(W, 0.f, 0.f,0.f);
-	m.m_data[1] = slVec4(0.f, H, 0.f,0.f);
-	m.m_data[2] = slVec4(0.f, 0.f, Far / (Far - Near), 1.f);
-	m.m_data[3] = slVec4(0.f, 0.f, -m.m_data[2].z * Near, 0.f);
-}
-
-void slMath::perspectiveLH(slMatrix4f& m, float FOV, float aspect, float Near, float Far)
-{
-	float S = ::sinf(0.5f * FOV);
-	float C = ::cosf(0.5f * FOV);
-	float H = C / S;
-	float W = H / aspect;
-	m.m_data[0] = slVec4(W, 0.f, 0.f, 0.f);
-	m.m_data[1] = slVec4(0.f, H, 0.f, 0.f);
-	m.m_data[2] = slVec4(0.f, 0.f, Far / (Far - Near), 1.f);
-	m.m_data[3] = slVec4(0.f, 0.f, -m.m_data[2].z * Near, 0.f);
-}
-
-void slMath::lookAtLH(slMatrix3& m, const slVec3& eye, const slVec3& center, const slVec3& up)
-{
-	slVec3 f(center - eye);
-	normalize(f);
-
-	slVec3 s;
-	cross(f, up, s);
-	normalize(s);
-
-	slVec3 u;
-	cross(s, f, u);
-
-	m.m_data[0].x = s.x;
-	m.m_data[1].x = s.y;
-	m.m_data[2].x = s.z;
-	m.m_data[0].y = u.x;
-	m.m_data[1].y = u.y;
-	m.m_data[2].y = u.z;
-	m.m_data[0].z = f.x;
-	m.m_data[1].z = f.y;
-	m.m_data[2].z = f.z;
-}
-
-void slMath::lookAtLH(slMatrix3f& m, const slVec3f& eye, const slVec3f& center, const slVec3f& up)
-{
-	slVec3f f(center - eye);
-	normalize(f);
-
-	slVec3f s;
-	cross(f, up, s);
-	normalize(s);
-
-	slVec3f u;
-	cross(s, f, u);
-
-	m.m_data[0].x = s.x;
-	m.m_data[1].x = s.y;
-	m.m_data[2].x = s.z;
-	m.m_data[0].y = u.x;
-	m.m_data[1].y = u.y;
-	m.m_data[2].y = u.z;
-	m.m_data[0].z = f.x;
-	m.m_data[1].z = f.y;
-	m.m_data[2].z = f.z;
-}
-
-void slMath::lookAtLH(slMatrix4& m, const slVec4& eye, const slVec4& center, const slVec4& up)
+void slMath::lookAtLH(slMat4& m, const slVec4& eye, const slVec4& center, const slVec4& up)
 {
 	slVec4 f(center - eye);
 	normalize(f);
@@ -1457,28 +948,3 @@ void slMath::lookAtLH(slMatrix4& m, const slVec4& eye, const slVec4& center, con
 	m.m_data[3].z = -dot(f, eye);
 }
 
-void slMath::lookAtLH(slMatrix4f& m, const slVec4f& eye, const slVec4f& center, const slVec4f& up)
-{
-	slVec4f f(center - eye);
-	normalize(f);
-
-	slVec4f s;
-	cross(f, up, s);
-	normalize(s);
-
-	slVec4f u;
-	cross(s, f, u);
-
-	m.m_data[0].x = s.x;
-	m.m_data[1].x = s.y;
-	m.m_data[2].x = s.z;
-	m.m_data[0].y = u.x;
-	m.m_data[1].y = u.y;
-	m.m_data[2].y = u.z;
-	m.m_data[0].z = f.x;
-	m.m_data[1].z = f.y;
-	m.m_data[2].z = f.z;
-	m.m_data[3].x = -dot(s, eye);
-	m.m_data[3].y = -dot(u, eye);
-	m.m_data[3].z = -dot(f, eye);
-}

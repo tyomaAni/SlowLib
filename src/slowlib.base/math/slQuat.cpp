@@ -55,6 +55,11 @@ void slQuaternion::identity()
 	w = 1.f;
 }
 
+float slQuaternion::length()
+{
+	return (x * x) + (y * y) + (z * z) + (w * w);
+}
+
 slQuaternion& slQuaternion::operator=(const slQuaternion& o)
 {
 	x = o.x;

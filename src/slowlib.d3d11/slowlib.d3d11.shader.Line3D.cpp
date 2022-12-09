@@ -92,7 +92,7 @@ bool slD3D11ShaderLine3D::init(){
 	return true;
 }
 
-void slD3D11ShaderLine3D::SetData(const slVec3& p1, const slVec3& p2, const slColor& color, const slMatrix4& projMat)
+void slD3D11ShaderLine3D::SetData(const slVec3& p1, const slVec3& p2, const slColor& color, const slMat4& projMat)
 {
 	m_cbData.P1 = p1;
 	m_cbData.P2 = p2;

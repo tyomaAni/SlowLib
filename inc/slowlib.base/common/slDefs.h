@@ -47,6 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>  // isspace
 #include <utility>  // std::move
 
+using real_t = double;
 
 // Detect platform
 #if defined(WIN32) | defined(_WIN64) | defined(_WIN32)

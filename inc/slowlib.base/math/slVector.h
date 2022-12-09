@@ -30,190 +30,413 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEMTHVEC_H__
 #define __SL_SLOWLIBBASEMTHVEC_H__
 
-class SL_API slVec3
+#include <cmath>
+
+template<typename T>
+class slVec3_t
 {
 public:
-	slVec3();
-	slVec3(double X, double Y, double Z);
-	slVec3(float v);
-	slVec3(double v);
-	slVec3(int32_t v);
-	slVec3(const slVec3&);
-	slVec3(const slVec3f&);
-	slVec3(const slVec4&);
-	slVec3(const slVec4f&);
-	double operator[](uint32_t index) const;
-	double& operator[](uint32_t index);
-	slVec3 operator+(const slVec3& v)const;
-	slVec3 operator+(const slVec3f& v)const;
-	slVec3 operator+(const slVec4& v)const;
-	slVec3 operator+(const slVec4f& v)const;
-	slVec3 operator-(const slVec3& v)const;
-	slVec3 operator-(const slVec3f& v)const;
-	slVec3 operator-(const slVec4& v)const;
-	slVec3 operator-(const slVec4f& v)const;
-	slVec3 operator*(const slVec3& v)const;
-	slVec3 operator*(const slVec3f& v)const;
-	slVec3 operator*(const slVec4& v)const;
-	slVec3 operator*(const slVec4f& v)const;
-	slVec3 operator/(const slVec3& v)const;
-	slVec3 operator/(const slVec3f& v)const;
-	slVec3 operator/(const slVec4& v)const;
-	slVec3 operator/(const slVec4f& v)const;
-	slVec3 operator-()const;
-	slVec3& operator=(const slVec3& v);
-	slVec3& operator=(const slVec3f& v);
-	slVec3& operator=(const slVec4& v);
-	slVec3& operator=(const slVec4f& v);
-	bool operator==(const slVec3& v)const;
-	bool operator!=(const slVec3& v)const;
+	slVec3_t() {}
+	
+	slVec3_t(T X, T Y, T Z) : 
+		x(X), 
+		y(Y), 
+		z(Z)
+	{}
 
-	double x = 0.0;
-	double y = 0.0;
-	double z = 0.0;
-	double* data() { return &x; }
-	void set(double X, double Y, double Z) { x = X; y = Y; z = Z; }
-	void set(float X, float Y, float Z) { x = X; y = Y; z = Z; }
+	template <typename T2>
+	slVec3_t(T2 v):
+		x(static_cast<T>(v)),
+		y(static_cast<T>(v)),
+		z(static_cast<T>(v))
+	{}
+
+	template <typename T2>
+	slVec3_t(const slVec3_t<T2>& v) :
+		x(static_cast<T>(v.x)),
+		y(static_cast<T>(v.y)),
+		z(static_cast<T>(v.z))
+	{}
+
+	void set(T X, T Y, T Z) 
+	{
+		x = X;
+		y = Y;
+		z = Z;
+	}
+
+	template <typename T2>
+	void set(const slVec3_t<T2>& v)
+	{
+		x = static_cast<T>(v.x);
+		y = static_cast<T>(v.y);
+		z = static_cast<T>(v.z);
+	}
+
+	T operator[](uint32_t index) const
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 3)); 
+		return (&x)[index];
+	}
+
+	T& operator[](uint32_t index)
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 3)); 
+		return (&x)[index];
+	}
+
+	template<typename T2>
+	slVec3_t<T2> operator+(const slVec3_t<T2>& v)const 
+	{
+		slVec3_t<T2> r;
+		r.x = x + v.x;
+		r.y = y + v.y;
+		r.z = z + v.z;
+		return r;
+	}
+
+	template<typename T2>
+	slVec3_t<T2> operator-(const slVec3_t<T2>& v)const
+	{
+		slVec3_t<T2> r;
+		r.x = x - v.x;
+		r.y = y - v.y;
+		r.z = z - v.z;
+		return r;
+	}
+
+	template<typename T2>
+	slVec3_t<T2> operator*(const slVec3_t<T2>& v)const
+	{
+		slVec3_t<T2> r;
+		r.x = x * v.x;
+		r.y = y * v.y;
+		r.z = z * v.z;
+		return r;
+	}
+
+	template<typename T2>
+	slVec3_t<T2> operator/(const slVec3_t<T2>& v)const
+	{
+		slVec3_t<T2> r;
+		r.x = x / v.x;
+		r.y = y / v.y;
+		r.z = z / v.z;
+		return r;
+	}
+
+	slVec3_t<T> operator-()const
+	{
+		slVec3_t<T> r;
+		r.x = -x;
+		r.y = -y;
+		r.z = -z;
+		return r;
+	}
+
+	template<typename T2>
+	slVec3_t<T>& operator=(const slVec3_t<T2>& v)
+	{
+		x = static_cast<T>(v.x);
+		y = static_cast<T>(v.y);
+		z = static_cast<T>(v.z);
+	}
+
+	bool operator==(const slVec3_t<T>& v)const
+	{
+		if (x != v.x)
+			return false; 
+		if (y != v.y)
+			return false; 
+		if (z != v.z)
+			return false; 
+		return true;
+	}
+
+	bool operator!=(const slVec3_t<T>& v)const
+	{
+		if (x != v.x)
+			return true; 
+		if (y != v.y)
+			return true; 
+		if (z != v.z)
+			return true; 
+		return false;
+	}
+
+	template<typename T2>
+	void operator+=(const slVec3_t<T2>& v)
+	{
+		x += static_cast<T>(v.x);
+		y += static_cast<T>(v.y);
+		z += static_cast<T>(v.z);
+	}
+	template<typename T2>
+	void operator-=(const slVec3_t<T2>& v)
+	{
+		x -= static_cast<T>(v.x);
+		y -= static_cast<T>(v.y);
+		z -= static_cast<T>(v.z);
+	}
+	template<typename T2>
+	void operator*=(const slVec3_t<T2>& v)
+	{
+		x *= static_cast<T>(v.x);
+		y *= static_cast<T>(v.y);
+		z *= static_cast<T>(v.z);
+	}
+	template<typename T2>
+	void operator/=(const slVec3_t<T2>& v)
+	{
+		x /= static_cast<T>(v.x);
+		y /= static_cast<T>(v.y);
+		z /= static_cast<T>(v.z);
+	}
+
+	template<typename T2>
+	void cross(const slVec3_t<T2>& a, slVec3_t<T>& out)const {
+		out.x = (y * static_cast<T>(a.z)) - (z * static_cast<T>(a.y));
+		out.y = (z * static_cast<T>(a.x)) - (x * static_cast<T>(a.z));
+		out.z = (x * static_cast<T>(a.y)) - (y * static_cast<T>(a.x));
+	}
+
+	void normalize()
+	{
+		T len = std::sqrt(dot());
+		if (len > 0)
+			len = 1.0 / len;
+		x *= static_cast<T>(len);
+		y *= static_cast<T>(len);
+		z *= static_cast<T>(len);
+	}
+
+	T dot()const { return (x * x) + (y * y) + (z * z); }
+	T length() const { return std::sqrt((x * x) + (y * y) + (z * z)); }
+
+	T x = static_cast<T>(0);
+	T y = static_cast<T>(0);
+	T z = static_cast<T>(0);
+	T* data() { return &x; }
 };
 
-class SL_API slVec3f
+template<typename T>
+class slVec4_t
 {
 public:
-	slVec3f();
-	slVec3f(double x, double y, double z);
-	slVec3f(float v);
-	slVec3f(double v);
-	slVec3f(int32_t v);
-	slVec3f(const slVec3&);
-	slVec3f(const slVec3f&);
-	slVec3f(const slVec4&);
-	slVec3f(const slVec4f&);
-	float operator[](uint32_t index) const;
-	float& operator[](uint32_t index);
-	slVec3f operator+(const slVec3& v)const;
-	slVec3f operator+(const slVec3f& v)const;
-	slVec3f operator+(const slVec4& v)const;
-	slVec3f operator+(const slVec4f& v)const;
-	slVec3f operator-(const slVec3& v)const;
-	slVec3f operator-(const slVec3f& v)const;
-	slVec3f operator-(const slVec4& v)const;
-	slVec3f operator-(const slVec4f& v)const;
-	slVec3f operator*(const slVec3& v)const;
-	slVec3f operator*(const slVec3f& v)const;
-	slVec3f operator*(const slVec4& v)const;
-	slVec3f operator*(const slVec4f& v)const;
-	slVec3f operator/(const slVec3& v)const;
-	slVec3f operator/(const slVec3f& v)const;
-	slVec3f operator/(const slVec4& v)const;
-	slVec3f operator/(const slVec4f& v)const;
-	slVec3f operator-()const;
-	slVec3f& operator=(const slVec3& v);
-	slVec3f& operator=(const slVec3f& v);
-	slVec3f& operator=(const slVec4& v);
-	slVec3f& operator=(const slVec4f& v);
-	bool operator==(const slVec3f& v)const;
-	bool operator!=(const slVec3f& v)const;
+	slVec4_t() {}
 
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
-	float* data() { return &x; }
-	void set(double X, double Y, double Z) { x = (float)X; y = (float)Y; z = (float)Z; }
-	void set(float X, float Y, float Z) { x = X; y = Y; z = Z; }
+	slVec4_t(T X, T Y, T Z, T W) :
+		x(X),
+		y(Y),
+		z(Z),
+		w(W)
+	{}
+
+	template <typename T2>
+	slVec4_t(T2 v) :
+		x(static_cast<T>(v)),
+		y(static_cast<T>(v)),
+		z(static_cast<T>(v)),
+		w(static_cast<T>(v))
+	{}
+
+	template <typename T2>
+	slVec4_t(const slVec4_t<T2>& v) :
+		x(static_cast<T>(v.x)),
+		y(static_cast<T>(v.y)),
+		z(static_cast<T>(v.z)),
+		w(static_cast<T>(v.w))
+	{}
+
+	template <typename T2>
+	slVec4_t(const slVec3_t<T2>& v) :
+		x(static_cast<T>(v.x)),
+		y(static_cast<T>(v.y)),
+		z(static_cast<T>(v.z))
+	{}
+
+	void set(T X, T Y, T Z, T W)
+	{
+		x = X;
+		y = Y;
+		z = Z;
+		w = W;
+	}
+
+	template <typename T2>
+	void set(const slVec4_t<T2>& v)
+	{
+		x = static_cast<T>(v.x);
+		y = static_cast<T>(v.y);
+		z = static_cast<T>(v.z);
+		w = static_cast<T>(v.w);
+	}
+
+	T operator[](uint32_t index) const
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 4));
+		return (&x)[index];
+	}
+
+	T& operator[](uint32_t index)
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 4));
+		return (&x)[index];
+	}
+
+	template<typename T2>
+	slVec4_t<T2> operator+(const slVec4_t<T2>& v)const
+	{
+		slVec4_t r<T2>;
+		r.x = x + v.x;
+		r.y = y + v.y;
+		r.z = z + v.z;
+		r.w = w + v.w;
+		return r;
+	}
+
+	template<typename T2>
+	slVec4_t<T2> operator-(const slVec4_t<T2>& v)const
+	{
+		slVec4_t<T2> r;
+		r.x = x - v.x;
+		r.y = y - v.y;
+		r.z = z - v.z;
+		r.w = w - v.w;
+		return r;
+	}
+
+	template<typename T2>
+	slVec4_t<T2> operator*(const slVec4_t<T2>& v)const
+	{
+		slVec4_t<T2> r;
+		r.x = x * v.x;
+		r.y = y * v.y;
+		r.z = z * v.z;
+		r.w = w * v.w;
+		return r;
+	}
+
+	template<typename T2>
+	slVec4_t<T2> operator/(const slVec4_t<T2>& v)const
+	{
+		slVec4_t<T2> r;
+		r.x = x / v.x;
+		r.y = y / v.y;
+		r.z = z / v.z;
+		r.w = w / v.w;
+		return r;
+	}
+
+	slVec4_t<T> operator-()const
+	{
+		slVec4_t<T> r;
+		r.x = -x;
+		r.y = -y;
+		r.z = -z;
+		r.w = -w;
+		return r;
+	}
+
+	template<typename T2>
+	slVec4_t<T>& operator=(const slVec4_t<T2>& v)
+	{
+		x = static_cast<T>(v.x);
+		y = static_cast<T>(v.y);
+		z = static_cast<T>(v.z);
+		w = static_cast<T>(v.w);
+	}
+
+	bool operator==(const slVec4_t<T>& v)const
+	{
+		if (x != v.x)
+			return false;
+		if (y != v.y)
+			return false;
+		if (z != v.z)
+			return false;
+		if (w != v.w)
+			return false;
+		return true;
+	}
+
+	bool operator!=(const slVec4_t<T>& v)const
+	{
+		if (x != v.x)
+			return true;
+		if (y != v.y)
+			return true;
+		if (z != v.z)
+			return true;
+		if (w != v.w)
+			return true;
+		return false;
+	}
+
+	template<typename T2>
+	void operator+=(const slVec4_t<T2>& v)
+	{
+		x += static_cast<T>(v.x);
+		y += static_cast<T>(v.y);
+		z += static_cast<T>(v.z);
+		w += static_cast<T>(v.w);
+	}
+	template<typename T2>
+	void operator-=(const slVec4_t<T2>& v)
+	{
+		x -= static_cast<T>(v.x);
+		y -= static_cast<T>(v.y);
+		z -= static_cast<T>(v.z);
+		w -= static_cast<T>(v.w);
+	}
+	template<typename T2>
+	void operator*=(const slVec4_t<T2>& v)
+	{
+		x *= static_cast<T>(v.x);
+		y *= static_cast<T>(v.y);
+		z *= static_cast<T>(v.z);
+		w *= static_cast<T>(v.w);
+	}
+	template<typename T2>
+	void operator/=(const slVec4_t<T2>& v)
+	{
+		x /= static_cast<T>(v.x);
+		y /= static_cast<T>(v.y);
+		z /= static_cast<T>(v.z);
+		w /= static_cast<T>(v.w);
+	}
+
+	template<typename T2>
+	void cross(const slVec4_t<T2>& a, slVec4_t<T>& out)const {
+		out.x = (y * static_cast<T>(a.z)) - (z * static_cast<T>(a.y));
+		out.y = (z * static_cast<T>(a.x)) - (x * static_cast<T>(a.z));
+		out.z = (x * static_cast<T>(a.y)) - (y * static_cast<T>(a.x));
+	}
+
+	void normalize()
+	{
+		T len = std::sqrt(dot());
+		if (len > 0)
+			len = 1.0 / len;
+		x *= static_cast<T>(len);
+		y *= static_cast<T>(len);
+		z *= static_cast<T>(len);
+		w *= static_cast<T>(len);
+	}
+
+	T dot()const { return (x * x) + (y * y) + (z * z) + (w * w); }
+	T length() const { return std::sqrt((x * x) + (y * y) + (z * z) + (w * w)); }
+
+	T x = static_cast<T>(0);
+	T y = static_cast<T>(0);
+	T z = static_cast<T>(0);
+	T w = static_cast<T>(0);
+	T* data() { return &x; }
 };
 
-class SL_API slVec4
-{
-public:
-	slVec4();
-	slVec4(double x, double y, double z, double w);
-	slVec4(float v);
-	slVec4(double v);
-	slVec4(int32_t v);
-	slVec4(const slVec3&);
-	slVec4(const slVec3f&);
-	slVec4(const slVec4&);
-	slVec4(const slVec4f&);
-	double operator[](uint32_t index) const;
-	double& operator[](uint32_t index);
-	slVec4 operator+(const slVec3& v)const;
-	slVec4 operator+(const slVec3f& v)const;
-	slVec4 operator+(const slVec4& v)const;
-	slVec4 operator+(const slVec4f& v)const;
-	slVec4 operator-(const slVec3& v)const;
-	slVec4 operator-(const slVec3f& v)const;
-	slVec4 operator-(const slVec4& v)const;
-	slVec4 operator-(const slVec4f& v)const;
-	slVec4 operator*(const slVec3& v)const;
-	slVec4 operator*(const slVec3f& v)const;
-	slVec4 operator*(const slVec4& v)const;
-	slVec4 operator*(const slVec4f& v)const;
-	slVec4 operator/(const slVec3& v)const;
-	slVec4 operator/(const slVec3f& v)const;
-	slVec4 operator/(const slVec4& v)const;
-	slVec4 operator/(const slVec4f& v)const;
-	slVec4 operator-()const;
-	slVec4& operator=(const slVec3& v);
-	slVec4& operator=(const slVec3f& v);
-	slVec4& operator=(const slVec4& v);
-	slVec4& operator=(const slVec4f& v);
-	bool operator==(const slVec4& v)const;
-	bool operator!=(const slVec4& v)const;
-
-	double x = 0.0;
-	double y = 0.0;
-	double z = 0.0;
-	double w = 0.0;
-	double* data() { return &x; }
-	void set(double X, double Y, double Z, double W) { x = X; y = Y; z = Z; w = W; }
-	void set(float X, float Y, float Z, float W) { x = X; y = Y; z = Z; w = W; }
-};
-
-class SL_API slVec4f
-{
-public:
-	slVec4f();
-	slVec4f(double x, double y, double z, double w);
-	slVec4f(float v);
-	slVec4f(double v);
-	slVec4f(int32_t v);
-	slVec4f(const slVec3&);
-	slVec4f(const slVec3f&);
-	slVec4f(const slVec4&);
-	slVec4f(const slVec4f&);
-	float operator[](uint32_t index) const;
-	float& operator[](uint32_t index);
-	slVec4f operator+(const slVec3& v)const;
-	slVec4f operator+(const slVec3f& v)const;
-	slVec4f operator+(const slVec4& v)const;
-	slVec4f operator+(const slVec4f& v)const;
-	slVec4f operator-(const slVec3& v)const;
-	slVec4f operator-(const slVec3f& v)const;
-	slVec4f operator-(const slVec4& v)const;
-	slVec4f operator-(const slVec4f& v)const;
-	slVec4f operator*(const slVec3& v)const;
-	slVec4f operator*(const slVec3f& v)const;
-	slVec4f operator*(const slVec4& v)const;
-	slVec4f operator*(const slVec4f& v)const;
-	slVec4f operator/(const slVec3& v)const;
-	slVec4f operator/(const slVec3f& v)const;
-	slVec4f operator/(const slVec4& v)const;
-	slVec4f operator/(const slVec4f& v)const;
-	slVec4f operator-()const;
-	slVec4f& operator=(const slVec3& v);
-	slVec4f& operator=(const slVec3f& v);
-	slVec4f& operator=(const slVec4& v);
-	slVec4f& operator=(const slVec4f& v);
-	bool operator==(const slVec4f& v)const;
-	bool operator!=(const slVec4f& v)const;
-
-	float x = 0.0;
-	float y = 0.0;
-	float z = 0.0;
-	float w = 0.0;
-	float* data() { return &x; }
-	void set(double X, double Y, double Z, double W) { x = (float)X; y = (float)Y; z = (float)Z; w = (float)W; }
-	void set(float X, float Y, float Z, float W) { x = X; y = Y; z = Z; w = W; }
-};
+using slVec3 = slVec3_t<real_t>;
+using slVec3f = slVec3_t<float>;
+using slVec4 = slVec4_t<real_t>;
+using slVec4f = slVec4_t<float>;
 
 #endif

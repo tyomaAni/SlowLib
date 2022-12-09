@@ -38,6 +38,7 @@ public:
 	slQuaternion(float x, float y, float z, float w);
 
 	void identity();
+	float length();
 
 	slQuaternion& operator=(const slQuaternion& o);
 	slQuaternion operator*(const slQuaternion& q)const;
