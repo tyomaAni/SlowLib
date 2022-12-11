@@ -31,7 +31,48 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __SL_SLOWLIBBASEPOLYMESH_H__
 
 #include "slowlib.base/containers/slList.h"
+#include "slowlib.base/containers/slArray.h"
+#include "slowlib.base/geometry/slMesh.h"
 #include "slowlib.base/geometry/slPolyTriangle.h"
+
+#include <map>
+#include <string>
+
+struct slPolygonCreatorVertex{
+	slVertexTriangle baseData;
+
+	bool weld = false;
+};
+
+struct slPolygonCreatorData
+{
+	slPolygonCreatorVertex curr;
+	slArray<slPolygonCreatorVertex> array;
+};
+
+class SL_API slPolygonCreator
+{
+	slPolygonCreatorData m_data;
+public:
+	slPolygonCreator();
+	~slPolygonCreator();
+
+	// set vertex data using this
+	void SetPosition(const slVec3f&);
+	void SetNormal(const slVec3f&);
+	void SetBinormal(const slVec3f&);
+	void SetTangent(const slVec3f&);
+	void SetColor(const slVec4f&);
+	void SetUV(const slVec2f&);
+	// or this
+	void SetVertex(const slVertexTriangle&);
+	// then call this
+
+	void AddVertex(bool weld);
+	uint32_t Size();
+
+	slArray<slPolygonCreatorVertex>* GetArray() { return &m_data.array; }
+};
 
 class slPolyVertex
 {
@@ -43,7 +84,7 @@ public:
 	slPolyVertex* m_left = 0;
 	slPolyVertex* m_right = 0;
 
-	slVec3f m_position;
+	slPolygonCreatorVertex m_data;
 
 	uint32_t m_flags = 0;
 	enum {
@@ -58,7 +99,7 @@ public:
 
 	void CopyData(slPolyVertex* other)
 	{
-		m_position = other->m_position;
+		m_data = other->m_data;
 		m_flags = other->m_flags;
 	}
 
@@ -127,10 +168,11 @@ struct slPolygonVertexData
 	slPolygonVertexData(slPolyVertex* v, const slVec2f& uv, const slVec3f& normal, uint32_t flags)
 		:
 		m_vertex(v),
-		m_uv(uv),
-		m_normal(normal),
 		m_flags(flags)
-	{}
+	{
+		m_baseData.UV = uv;
+		m_baseData.Normal = normal;
+	}
 
 	bool operator==(const slPolygonVertexData& other) {
 		return m_vertex == other.m_vertex;
@@ -139,8 +181,11 @@ struct slPolygonVertexData
 	enum { flag_isSelected = 1, };
 
 	slPolyVertex* m_vertex;
-	slVec2f m_uv;
-	slVec3f m_normal;
+	
+	// slPolyVertex is vertex for editor, and this vertex can contain many slMesh\GPU vertices
+	// slPolygonVertexData have data for each unique slMesh\GPU vertex
+	slVertexTriangle m_baseData;
+
 	uint32_t m_flags;
 };
 
@@ -205,7 +250,10 @@ public:
 	uint32_t m_edgeCount = 0;
 	uint32_t m_polygonCount = 0;
 	uint32_t m_uvCount = 0;
+	
+	slAabb m_aabb;
 
+	std::map<std::string, slPolyVertex*> m_weldMap;
 
 	void UpdateCounts();
 
@@ -213,7 +261,8 @@ public:
 	// array contain first miUVChannel* for each channel
 	//miArray<miUVChannelNode*> m_UVChannels;
 	
-	void AddPolygon(slPolygonCreator*);
+	void AddPolygon(slPolygonCreator*, bool genNormals);
+	slMesh* CreateMesh();
 
 	void CreateEdges();
 };

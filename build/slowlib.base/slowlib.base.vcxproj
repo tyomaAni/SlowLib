@@ -354,7 +354,7 @@
     <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slAabb.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slMeshCreator.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygonCreator.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygon.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyMesh.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyTriangle.cpp" />

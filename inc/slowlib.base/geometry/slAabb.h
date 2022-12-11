@@ -40,6 +40,8 @@ public:
 	void Transform(slAabb* original, slMat4* matrix, slVec4* position);
 	void Add(const slVec4& point);
 	void Add(const slVec3& point);
+	void Add(const slVec4f& point);
+	void Add(const slVec3f& point);
 	void Add(const slAabb& box);
 	bool RayTest(const slRay& r);
 	void Center(slVec4& v) const;

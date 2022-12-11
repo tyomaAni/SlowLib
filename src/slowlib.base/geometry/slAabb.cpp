@@ -113,6 +113,28 @@ void slAabb::Add(const slVec3& point)
 	if (point.z > m_max.z) m_max.z = point.z;
 }
 
+void slAabb::Add(const slVec4f& point)
+{
+	if (point.x < m_min.x) m_min.x = point.x;
+	if (point.y < m_min.y) m_min.y = point.y;
+	if (point.z < m_min.z) m_min.z = point.z;
+
+	if (point.x > m_max.x) m_max.x = point.x;
+	if (point.y > m_max.y) m_max.y = point.y;
+	if (point.z > m_max.z) m_max.z = point.z;
+}
+
+void slAabb::Add(const slVec3f& point)
+{
+	if (point.x < m_min.x) m_min.x = point.x;
+	if (point.y < m_min.y) m_min.y = point.y;
+	if (point.z < m_min.z) m_min.z = point.z;
+
+	if (point.x > m_max.x) m_max.x = point.x;
+	if (point.y > m_max.y) m_max.y = point.y;
+	if (point.z > m_max.z) m_max.z = point.z;
+}
+
 void slAabb::Add(const slAabb& box)
 {
 	if (box.m_min.x < m_min.x) m_min.x = box.m_min.x;

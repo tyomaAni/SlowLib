@@ -34,9 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slRay.h"
 
 #include "slMesh.h"
-#include "slMeshCreator.h"
-
-
 
 
 #endif

@@ -26,59 +26,68 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEMESHCR_H__
-#define __SL_SLOWLIBBASEMESHCR_H__
-
+#include "slowlib.h"
+#include "slowlib.base/geometry/slGeometry.h"
+#include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/containers/slArray.h"
 
-struct slPolygonCreatorVertex
+slPolygonCreator::slPolygonCreator()
 {
-	slVec3f Position;
-	slVec2f UV;
-	slVec3f Normal;
-	slVec3f Binormal;
-	slVec3f Tangent;
-	slVec4f Color;
+}
 
-	bool weld = false;
-};
-
-struct slPolygonCreatorData
+slPolygonCreator::~slPolygonCreator()
 {
-	slPolygonCreatorVertex curr;
-	slArray<slPolygonCreatorVertex> array;
-};
+}
 
-class SL_API slPolygonCreator
+void slPolygonCreator::SetPosition(const slVec3f& v)
 {
-	slPolygonCreatorData m_data;
-public:
-	slPolygonCreator();
-	~slPolygonCreator();
+	m_data.curr.baseData.Position = v;
+}
 
-	// set vertex data using this
-	void SetPosition(const slVec3f&);
-	void SetNormal(const slVec3f&);
-	void SetBinormal(const slVec3f&);
-	void SetTangent(const slVec3f&);
-	void SetColor(const slVec4f&);
-	void SetUV(const slVec2f&);
-	// or this
-	void SetVertex(const slVertexTriangle&);
-	// then call this
-	
-	void AddVertex(bool weld);
-};
-
-class SL_API slMeshCreator
+void slPolygonCreator::SetNormal(const slVec3f& v)
 {
-public:
-	slMeshCreator();
-	~slMeshCreator();
+	m_data.curr.baseData.Normal = v;
+}
 
-	// Create and return slMesh
-	slMesh* CreateMesh(slPolygonMesh*);
-};
+void slPolygonCreator::SetBinormal(const slVec3f& v)
+{
+	m_data.curr.baseData.Binormal = v;
+}
 
-#endif
+void slPolygonCreator::SetTangent(const slVec3f& v)
+{
+	m_data.curr.baseData.Tangent = v;
+}
+
+void slPolygonCreator::SetColor(const slVec4f& v)
+{
+	m_data.curr.baseData.Color = v;
+}
+
+void slPolygonCreator::SetUV(const slVec2f& v)
+{
+	m_data.curr.baseData.UV = v;
+}
+
+void slPolygonCreator::SetVertex(const slVertexTriangle& v)
+{
+	m_data.curr.baseData.Binormal = v.Binormal;
+	m_data.curr.baseData.Color = v.Color;
+	m_data.curr.baseData.Normal = v.Normal;
+	m_data.curr.baseData.Position = v.Position;
+	m_data.curr.baseData.Tangent = v.Tangent;
+	m_data.curr.baseData.UV = v.UV;
+}
+
+void slPolygonCreator::AddVertex(bool weld)
+{
+	m_data.curr.weld = weld;
+	m_data.array.push_back(m_data.curr);
+}
+
+uint32_t slPolygonCreator::Size()
+{
+	return m_data.array.size();
+}
+
+

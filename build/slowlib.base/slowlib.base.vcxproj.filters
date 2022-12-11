@@ -93,7 +93,7 @@
     <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp">
       <Filter>Source Files\geometry</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slMeshCreator.cpp">
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygonCreator.cpp">
       <Filter>Source Files\geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyMesh.cpp">

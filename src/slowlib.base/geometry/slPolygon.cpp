@@ -140,8 +140,8 @@ bool slPolygon::IsVisible()
 	auto vertex_2 = vertex_3->m_right;
 	while (true)
 	{
-		auto a = vertex_2->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
-		auto b = vertex_3->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
+		auto a = vertex_2->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
+		auto b = vertex_3->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
 
 		slVec3f n;
 		a.cross(b, n);
@@ -164,14 +164,14 @@ void slPolygon::CalculateNormal()
 	slPolygonData* data = (slPolygonData*)m_data;
 	{
 		auto vertex_1 = data->m_verts.m_head;
-		vertex_1->m_data.m_normal.set(0.f);
+		vertex_1->m_data.m_baseData.Normal.set(0.f);
 
 		auto vertex_3 = vertex_1->m_right;
 		auto vertex_2 = vertex_3->m_right;
 		while (true) 
 		{
-			vertex_2->m_data.m_normal.set(0.f);
-			vertex_3->m_data.m_normal.set(0.f);
+			vertex_2->m_data.m_baseData.Normal.set(0.f);
+			vertex_3->m_data.m_baseData.Normal.set(0.f);
 			// ===============================
 			vertex_2 = vertex_2->m_right;
 			vertex_3 = vertex_3->m_right;
@@ -185,13 +185,13 @@ void slPolygon::CalculateNormal()
 		auto vertex_3 = vertex_1->m_right;
 		auto vertex_2 = vertex_3->m_right;
 		while (true) {
-			auto e1 = vertex_2->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
-			auto e2 = vertex_3->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
+			auto e1 = vertex_2->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
+			auto e2 = vertex_3->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
 			slVec3f n;
 			e1.cross(e2, n);
-			vertex_1->m_data.m_normal -= n;
-			vertex_2->m_data.m_normal -= n;
-			vertex_3->m_data.m_normal -= n;
+			vertex_1->m_data.m_baseData.Normal -= n;
+			vertex_2->m_data.m_baseData.Normal -= n;
+			vertex_3->m_data.m_baseData.Normal -= n;
 
 			// ===============================
 			vertex_2 = vertex_2->m_right;
@@ -203,13 +203,13 @@ void slPolygon::CalculateNormal()
 	}
 	{
 		auto vertex_1 = data->m_verts.m_head;
-		vertex_1->m_data.m_normal.normalize();
+		vertex_1->m_data.m_baseData.Normal.normalize();
 
 		auto vertex_3 = vertex_1->m_right;
 		auto vertex_2 = vertex_3->m_right;
 		while (true) {
-			vertex_2->m_data.m_normal.normalize();
-			vertex_3->m_data.m_normal.normalize();
+			vertex_2->m_data.m_baseData.Normal.normalize();
+			vertex_3->m_data.m_baseData.Normal.normalize();
 			// ===============================
 			vertex_2 = vertex_2->m_right;
 			vertex_3 = vertex_3->m_right;
@@ -228,7 +228,7 @@ slVec3f slPolygon::GetFaceNormal()
 	auto lastV = curV->m_left;
 	while (true)
 	{
-		n += curV->m_data.m_normal;
+		n += curV->m_data.m_baseData.Normal;
 		if (curV == lastV)
 			break;
 		curV = curV->m_right;
@@ -245,8 +245,8 @@ slVec3f slPolygon::GetFaceNormalCalculateNew()
 	auto vertex_3 = vertex_1->m_right;
 	auto vertex_2 = vertex_3->m_right;
 	while (true) {
-		auto e1 = vertex_2->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
-		auto e2 = vertex_3->m_data.m_vertex->m_position - vertex_1->m_data.m_vertex->m_position;
+		auto e1 = vertex_2->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
+		auto e2 = vertex_3->m_data.m_baseData.Position - vertex_1->m_data.m_baseData.Position;
 		slVec3f n;
 		e1.cross(e2, n);
 		_n -= n;
@@ -324,26 +324,26 @@ void slPolygon::FixOrder(float lineLineCollisionLen)
 					slPolyTriangle tri3;
 					auto vertex = current.m_first;
 
-					tri3.v1 = vertex->m_data.m_vertex->m_position;
+					tri3.v1 = vertex->m_data.m_baseData.Position;
 					vertex = vertex->m_right;
 
-					tri3.v2 = vertex->m_data.m_vertex->m_position;
+					tri3.v2 = vertex->m_data.m_baseData.Position;
 					vertex = vertex->m_right;
 
-					tri3.v3 = vertex->m_data.m_vertex->m_position;
+					tri3.v3 = vertex->m_data.m_baseData.Position;
 
 					tri3.update();
 					tri3.e1.cross(tri3.e2, normal);
 					normal.normalize();
 				}
 
-				tri1.v1 = current.m_first->m_data.m_vertex->m_position;
-				tri1.v2 = current.m_first->m_right->m_data.m_vertex->m_position;
-				tri1.v3 = current.m_first->m_data.m_vertex->m_position;
+				tri1.v1 = current.m_first->m_data.m_baseData.Position;
+				tri1.v2 = current.m_first->m_right->m_data.m_baseData.Position;
+				tri1.v3 = current.m_first->m_data.m_baseData.Position;
 
-				tri2.v1 = current.m_first->m_data.m_vertex->m_position;
-				tri2.v2 = current.m_first->m_right->m_data.m_vertex->m_position;
-				tri2.v3 = current.m_first->m_right->m_data.m_vertex->m_position;
+				tri2.v1 = current.m_first->m_data.m_baseData.Position;
+				tri2.v2 = current.m_first->m_right->m_data.m_baseData.Position;
+				tri2.v3 = current.m_first->m_right->m_data.m_baseData.Position;
 
 				//ip = m_origin + t * m_direction;
 				tri1.v1 = tri1.v1 + 1.f * normal;
@@ -367,8 +367,8 @@ void slPolygon::FixOrder(float lineLineCollisionLen)
 				tri2.update();
 
 				slRay r;
-				r.m_origin = target.m_first->m_data.m_vertex->m_position;
-				r.m_end = target.m_second->m_data.m_vertex->m_position;
+				r.m_origin = target.m_first->m_data.m_baseData.Position;
+				r.m_end = target.m_second->m_data.m_baseData.Position;
 				r.Update();
 
 				real_t T = 0.f;

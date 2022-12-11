@@ -463,7 +463,177 @@ void slPolygonMesh::listRemovePolygon(slPolygon* o)
 		m_first_polygon = 0;
 }
 
-void slPolygonMesh::AddPolygon(slPolygonCreator* pc)
+void slPolygonMesh::AddPolygon(slPolygonCreator* pc, bool genNormals)
 {
+	auto polygonVertexCount = pc->Size();
+	if (polygonVertexCount < 3)
+		return;
 
+	slPolygon* newPolygon = slCreate<slPolygon>();
+
+	if (!m_first_polygon)
+	{
+		m_first_polygon = newPolygon;
+		m_first_polygon->m_right = m_first_polygon;
+		m_first_polygon->m_left = m_first_polygon;
+	}
+	else
+	{
+		auto last = m_first_polygon->m_left;
+		last->m_right = newPolygon;
+		newPolygon->m_left = last;
+		newPolygon->m_right = m_first_polygon;
+		m_first_polygon->m_left = newPolygon;
+	}
+
+	auto verts = pc->GetArray();
+
+	std::string key;
+	char cbuf[100];
+
+	for (uint32_t i = 0; i < polygonVertexCount; ++i)
+	{
+		slPolyVertex* newVertex = 0;
+		m_aabb.Add(verts->m_data[i].baseData.Position);
+
+		if (verts->m_data[i].weld)
+		{
+			key.clear();
+			sprintf_s(cbuf, 100, "%f%f%f", 
+				verts->m_data[i].baseData.Position.x,
+				verts->m_data[i].baseData.Position.y,
+				verts->m_data[i].baseData.Position.z);
+			key = cbuf;
+
+			auto find_result = m_weldMap.find(key);
+			if (find_result == m_weldMap.end())
+			{
+				newVertex = slCreate<slPolyVertex>();
+				newVertex->m_data = verts->m_data[i];
+
+				m_weldMap[key] = newVertex;
+				listAddVertex(newVertex);
+			}
+			else
+			{
+				newVertex = find_result->second;
+			}
+		}
+		else
+		{
+			newVertex = slCreate<slPolyVertex>();
+			newVertex->m_data = verts->m_data[i];
+
+			listAddVertex(newVertex);
+		}
+
+		/*if (positions[i].m_second & miPolygonCreator::flag_selected)
+			newVertex->m_flags |= miVertex::flag_isSelected;*/
+
+		// add newPolygon to vertex and newVertex to polygon
+		// only once
+		if (newVertex->m_polygons.find(newPolygon) == 0)
+		{
+			newVertex->m_polygons.push_back(newPolygon);
+			slPolygonVertexData newVD;
+			newVD.m_vertex = newVertex;
+			newVD.m_baseData = verts->m_data[i].baseData;
+			newPolygon->GetVertices()->push_back(newVD);
+		}
+	}
+
+	if (genNormals)
+		newPolygon->CalculateNormal();
+}
+
+slMesh* slPolygonMesh::CreateMesh()
+{
+	UpdateCounts();
+	if (m_polygonCount)
+	{
+		slMesh* newMesh = slCreate<slMesh>();
+
+		newMesh->m_info.m_stride = sizeof(slVertexTriangle);
+
+		uint32_t index = 0;
+
+		slArray<slVertexTriangle> vertArr;
+		slArray<uint32_t> indsArr;
+
+		vertArr.reserve(5000);
+		indsArr.reserve(5000);
+
+		slVertexTriangle currVert;
+
+		auto current_polygon = m_first_polygon;
+		auto last_polygon = current_polygon->m_left;
+		while (true)
+		{
+
+			auto vertex_1 = current_polygon->GetVertices()->m_head;
+			auto vertex_3 = vertex_1->m_right;
+			auto vertex_2 = vertex_3->m_right;
+			while (true)
+			{
+				currVert = vertex_1->m_data.m_baseData;
+				vertArr.push_back(currVert);
+				indsArr.push_back(index);
+
+				++index;
+
+				currVert = vertex_2->m_data.m_baseData;
+				vertArr.push_back(currVert);
+				indsArr.push_back(index);
+
+				++index;
+
+				currVert = vertex_3->m_data.m_baseData;
+				vertArr.push_back(currVert);
+				indsArr.push_back(index);
+
+				++index;
+
+				newMesh->m_info.m_vCount += 3;
+				newMesh->m_info.m_iCount += 3;
+
+				vertex_2 = vertex_2->m_right;
+				vertex_3 = vertex_3->m_right;
+
+				if (vertex_2 == vertex_1)
+					break;
+			}
+
+			if (current_polygon == last_polygon)
+				break;
+			current_polygon = current_polygon->m_right;
+		}
+
+		newMesh->m_vertices = (uint8_t*)vertArr.m_data;
+
+		if (newMesh->m_info.m_iCount > 0xFFF0)
+		{
+			newMesh->m_info.m_indexType = slMeshIndexType::u32;
+			newMesh->m_indices = (uint8_t*)slMemory::malloc(newMesh->m_info.m_iCount * sizeof(uint32_t));
+			uint32_t* i32 = (uint32_t*)newMesh->m_indices;
+			uint16_t* i16 = (uint16_t*)newMesh->m_indices;
+			for (uint32_t i = 0; i < newMesh->m_info.m_iCount; ++i)
+			{
+				*i32 = *i16;
+				++i32;
+				++i16;
+			}
+
+			indsArr.free_memory();
+		}
+		else
+		{
+			newMesh->m_indices = (uint8_t*)indsArr.m_data;
+		}
+
+		vertArr.m_data = 0;
+		indsArr.m_data = 0;
+
+		return newMesh;
+	}
+	return 0;
 }
