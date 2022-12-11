@@ -32,6 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEMATH_H__
 #define __SL_SLOWLIBBASEMATH_H__
 
+#include <cmath>
+#include <limits>
+
+#define slInfinity std::numeric_limits<real_t>::infinity()
+#define slEpsilon std::numeric_limits<real_t>::epsilon()
+
 const float PIf = static_cast<float>(3.14159265358979323846);
 const float PIfHalf = static_cast<float>(3.14159265358979323846 * 0.5);
 const float PIfPI = 6.2831853f;
@@ -42,6 +48,9 @@ const double PIPI = 6.283185307179586476925286766559;
 #include "slowlib.base/math/slVector.h"
 #include "slowlib.base/math/slMatrix.h"
 #include "slowlib.base/math/slQuaternion.h"
+
+const slVec4 slVec4fFltMax = slVec4(DBL_MAX);
+const slVec4 slVec4fFltMaxNeg = slVec4(-DBL_MAX);
 
 class SL_API slMath
 {
@@ -92,23 +101,23 @@ public:
 	static void cross(const slVec3& v1, const slVec4& v2, slVec3& r);
 	static void cross(const slVec3f& v1, const slVec4f& v2, slVec3f& r);
 	
-	static double distance(const slVec3& v1, const slVec3& v2);
-	static double distance(const slVec4& v1, const slVec4& v2);
-	static double distance(const slVec3& v1, const slVec4& v2);
+	static real_t distance(const slVec3& v1, const slVec3& v2);
+	static real_t distance(const slVec4& v1, const slVec4& v2);
+	static real_t distance(const slVec3& v1, const slVec4& v2);
 	static float distance(const slVec3f& v1, const slVec3f& v2);
 	static float distance(const slVec4f& v1, const slVec4f& v2);
 	static float distance(const slVec3f& v1, const slVec4f& v2);
 
-	static double dot(const slVec3& v1, const slVec3& v2);
-	static double dot(const slVec4& v1, const slVec4& v2);
-	static double dot(const slVec3& v1, const slVec4& v2);
+	static real_t dot(const slVec3& v1, const slVec3& v2);
+	static real_t dot(const slVec4& v1, const slVec4& v2);
+	static real_t dot(const slVec3& v1, const slVec4& v2);
 	static float dot(const slVec3f& v1, const slVec3f& v2);
 	static float dot(const slVec4f& v1, const slVec4f& v2);
 	static float dot(const slVec3f& v1, const slVec4f& v2);
 	static float dot(const slQuaternion& v1, const slQuaternion& v2);
 
-	static double length(const slVec3& v);
-	static double length(const slVec4& v);
+	static real_t length(const slVec3& v);
+	static real_t length(const slVec4& v);
 	static float length(const slVec3f& v);
 	static float length(const slVec4f& v);
 	static float length(const slQuaternion& v);

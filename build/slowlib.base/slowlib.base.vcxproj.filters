@@ -37,6 +37,9 @@
     <Filter Include="Source Files\scene">
       <UniqueIdentifier>{7fca4673-012a-41d7-bc8a-5f80a9d84fd3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\geometry">
+      <UniqueIdentifier>{d1379aee-ca59-4765-afa3-baba8c0f7219}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
@@ -80,6 +83,27 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\scene\slCamera.cpp">
       <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slRay.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slAabb.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slMeshCreator.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyMesh.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygon.cpp">
+      <Filter>Source Files\geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyTriangle.cpp">
+      <Filter>Source Files\geometry</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

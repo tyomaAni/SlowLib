@@ -352,6 +352,13 @@
     <ClCompile Include="..\..\src\slowlib.base\common\slAssert.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\common\slLog.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slAabb.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slMeshCreator.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygon.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyMesh.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyTriangle.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\geometry\slRay.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\input\slInput.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\math\slMath.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\math\slMatrix.cpp" />

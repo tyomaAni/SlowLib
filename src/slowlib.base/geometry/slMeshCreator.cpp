@@ -26,17 +26,71 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#include "slowlib.h"
+#include "slowlib.base/geometry/slGeometry.h"
+#include "slowlib.base/geometry/slPolyMesh.h"
+#include "slowlib.base/containers/slArray.h"
 
-#include "slAabb.h"
-#include "slRay.h"
+slPolygonCreator::slPolygonCreator()
+{
+}
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
+slPolygonCreator::~slPolygonCreator()
+{
+}
+
+void slPolygonCreator::SetPosition(const slVec3f& v)
+{
+	m_data.curr.Position = v;
+}
+
+void slPolygonCreator::SetNormal(const slVec3f& v)
+{
+	m_data.curr.Normal = v;
+}
+
+void slPolygonCreator::SetBinormal(const slVec3f& v)
+{
+	m_data.curr.Binormal = v;
+}
+
+void slPolygonCreator::SetTangent(const slVec3f& v)
+{
+	m_data.curr.Tangent = v;
+}
+
+void slPolygonCreator::SetColor(const slVec4f& v)
+{
+	m_data.curr.Color = v;
+}
+
+void slPolygonCreator::SetUV(const slVec2f& v)
+{
+	m_data.curr.UV = v;
+}
+
+void slPolygonCreator::SetVertex(const slVertexTriangle& v)
+{
+	m_data.curr.Binormal = v.Binormal;
+	m_data.curr.Color = v.Color;
+	m_data.curr.Normal = v.Normal;
+	m_data.curr.Position = v.Position;
+	m_data.curr.Tangent = v.Tangent;
+	m_data.curr.UV = v.UV;
+}
+
+void slPolygonCreator::AddVertex(bool weld)
+{
+	m_data.curr.weld = weld;
+	m_data.array.push_back(m_data.curr);
+}
 
 
+slMeshCreator::slMeshCreator(){}
+slMeshCreator::~slMeshCreator(){}
 
+slMesh* slMeshCreator::CreateMesh(slPolygonMesh* pm)
+{
+	return 0;
+}
 
-#endif

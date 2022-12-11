@@ -27,16 +27,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEPAIR_H__
+#define __SL_SLOWLIBBASEPAIR_H__
 
-#include "slAabb.h"
-#include "slRay.h"
-
-#include "slMesh.h"
-#include "slMeshCreator.h"
-
-
-
+template<typename T1, typename T2>
+struct slPair
+{
+	slPair() {}
+	slPair(const T1& _t1, const T2& _t2) :m_first(_t1), m_second(_t2) {}
+	T1 m_first;
+	T2 m_second;
+};
 
 #endif

@@ -27,16 +27,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEMESH_H__
+#define __SL_SLOWLIBBASEMESH_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+enum class slMeshVertexType : uint32_t
+{
+	Null, // 0
+	Triangle
+};
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
+enum class slMeshIndexType : uint32_t
+{
+	u16,
+	u32
+};
 
+struct slVertexTriangle
+{
+	slVec3f Position;
+	slVec2f UV;
+	slVec3f Normal;
+	slVec3f Binormal;
+	slVec3f Tangent;
+	slVec4f Color;
+};
 
+struct slMeshInfo
+{
+	slMeshVertexType m_vertexType = slMeshVertexType::Triangle;
+	slMeshIndexType m_indexType = slMeshIndexType::u16;
+	uint32_t m_vCount = 0;
+	uint32_t m_iCount = 0;
+	uint32_t m_stride = 0;
+};
 
+class SL_API slMesh
+{
+	void CalculateTangents(slVec3f& normal, slVec3f& tangent, slVec3f& binormal,
+		const slVec3f& vt1, const slVec3f& vt2, const slVec3f& vt3, // vertices, in float
+		const slVec2f& tc1, const slVec2f& tc2, const slVec2f& tc3); // texture coords
+	void GenerateTangents_u16();
+	void GenerateTangents_u32();
+public:
+	slMesh();
+	~slMesh();
+
+	slAabb m_aabb;
+
+	uint8_t* m_vertices = nullptr;
+	uint8_t* m_indices = nullptr;
+	
+	slMeshInfo m_info;
+
+	void GenerateTangents();
+};
 
 #endif

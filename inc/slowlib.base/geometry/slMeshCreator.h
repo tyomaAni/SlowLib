@@ -27,16 +27,58 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEMESHCR_H__
+#define __SL_SLOWLIBBASEMESHCR_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+#include "slowlib.base/containers/slArray.h"
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
+struct slPolygonCreatorVertex
+{
+	slVec3f Position;
+	slVec2f UV;
+	slVec3f Normal;
+	slVec3f Binormal;
+	slVec3f Tangent;
+	slVec4f Color;
 
+	bool weld = false;
+};
 
+struct slPolygonCreatorData
+{
+	slPolygonCreatorVertex curr;
+	slArray<slPolygonCreatorVertex> array;
+};
 
+class SL_API slPolygonCreator
+{
+	slPolygonCreatorData m_data;
+public:
+	slPolygonCreator();
+	~slPolygonCreator();
+
+	// set vertex data using this
+	void SetPosition(const slVec3f&);
+	void SetNormal(const slVec3f&);
+	void SetBinormal(const slVec3f&);
+	void SetTangent(const slVec3f&);
+	void SetColor(const slVec4f&);
+	void SetUV(const slVec2f&);
+	// or this
+	void SetVertex(const slVertexTriangle&);
+	// then call this
+	
+	void AddVertex(bool weld);
+};
+
+class SL_API slMeshCreator
+{
+public:
+	slMeshCreator();
+	~slMeshCreator();
+
+	// Create and return slMesh
+	slMesh* CreateMesh(slPolygonMesh*);
+};
 
 #endif

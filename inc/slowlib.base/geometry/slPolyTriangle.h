@@ -27,16 +27,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEPOLYTRI_H__
+#define __SL_SLOWLIBBASEPOLYTRI_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+class SL_API slPolyTriangle
+{
+public:
+	slPolyTriangle();
+	slPolyTriangle(const slVec4f& _v1, const slVec4f& _v2, const slVec4f& _v3);
+	slPolyTriangle(const slVec3f& _v1, const slVec3f& _v2, const slVec3f& _v3);
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
+	slVec4f v1;
+	slVec4f v2;
+	slVec4f v3;
+	//v4f faceNormal;
+	slVec4f normal1;
+	slVec4f normal2;
+	slVec4f normal3;
+	slVec4f e1;
+	slVec4f e2;
+	slVec4f t1;
+	slVec4f t2;
+	slVec4f t3;
 
-
-
+	void update();
+	void center(slVec4f& out);
+	bool rayTest_MT(const slRay& ray, bool withBackFace, real_t& T, real_t& U, real_t& V, real_t& W);
+	bool rayTest_Watertight(const slRay& ray, bool withBackFace, real_t& T, real_t& U, real_t& V, real_t& W);
+};
 
 #endif

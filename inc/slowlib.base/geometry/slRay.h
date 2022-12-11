@@ -27,16 +27,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASERAY_H__
+#define __SL_SLOWLIBBASERAY_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+#include "slowlib.base/math/slMath.h"
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
+class SL_API slRay
+{
+public:
+	slRay();
+	~slRay();
 
+	slVec4 m_origin;
+	slVec4 m_end;
+	slVec4 m_direction;
+	slVec4 m_invDir;
 
+	int32_t m_kz = 0;
+	int32_t m_kx = 0;
+	int32_t m_ky = 0;
 
+	real_t m_Sx = 0;
+	real_t m_Sy = 0;
+	real_t m_Sz = 0;
+
+	void CreateFrom2DCoords(const slPoint& coord, const slRect& rc, const slPoint& rc_sz, 
+		const slMat4& VPinv, const slVec3f& depthRange);
+	
+
+	real_t DistanceToLine(const slVec4& lineP0, const slVec4& lineP1);
+	void Update();
+
+	void GetIntersectionPoint(real_t t, slVec4& ip);
+	bool PlaneIntersection(const slVec4& planePoint, const slVec4& planeNormal, real_t& T);
+};
 
 #endif

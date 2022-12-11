@@ -36,9 +36,17 @@ class SL_API slStringA;
 class SL_API slStringW;
 class SL_API slWindow;
 class SL_API slCamera;
+class SL_API slRay;
+class SL_API slAabb;
+class SL_API slPolygonMesh;
+class SL_API slPolygon;
+class SL_API slPolyTriangle;
 class slWindowCallback;
 class slGS;
+class slPolyEdge;
 
+template<typename T>
+class slVec2_t;
 template<typename T>
 class slVec3_t;
 template<typename T>
@@ -46,10 +54,18 @@ class slVec4_t;
 template<typename T>
 class slMatrix4_t;
 
-using slVec3 = slVec3_t<real_t>;
+using slVec2  = slVec2_t<real_t>;
+using slVec2f = slVec2_t<float>;
+using slVec3  = slVec3_t<real_t>;
 using slVec3f = slVec3_t<float>;
-using slVec4 = slVec4_t<real_t>;
+using slVec4  = slVec4_t<real_t>;
 using slVec4f = slVec4_t<float>;
-using slMat4 = slMatrix4_t<real_t>;
+using slMat4  = slMatrix4_t<real_t>;
+
+template<typename _type>
+struct slListNode;
+
+template<typename _type>
+class slList;
 
 #endif

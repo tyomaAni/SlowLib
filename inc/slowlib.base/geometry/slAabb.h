@@ -27,16 +27,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEAABB_H__
+#define __SL_SLOWLIBBASEAABB_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+// Axis-Aligned Bounding Box
+class SL_API slAabb
+{
+public:
+	slAabb();
+	slAabb(const slVec4& min, const slVec4& max);
+	
+	void Transform(slAabb* original, slMat4* matrix, slVec4* position);
+	void Add(const slVec4& point);
+	void Add(const slVec3& point);
+	void Add(const slAabb& box);
+	bool RayTest(const slRay& r);
+	void Center(slVec4& v) const;
+	real_t Radius();
+	void Extent(slVec4& v);
+	bool IsEmpty() const;
+	void Reset();
 
-#include "slMesh.h"
-#include "slMeshCreator.h"
-
-
-
+	slVec4 m_min;
+	slVec4 m_max;
+};
 
 #endif
