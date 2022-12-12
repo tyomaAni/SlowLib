@@ -27,14 +27,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEMESHLDR_H__
+#define __SL_SLOWLIBBASEMESHLDR_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+class slMeshLoaderCallback
+{
+public:
+	slMeshLoaderCallback() {}
+	virtual ~slMeshLoaderCallback() {}
 
-#include "slMesh.h"
-#include "slMeshLoader.h"
+	virtual void OnMaterial(slMaterial* m, slString* name);
+	virtual void OnMesh(slMesh* newMesh, slString* name, slString* materialName);
+};
 
+class slMeshLoader
+{
+public:
+	slMeshLoader() {}
+	virtual ~slMeshLoader() {}
+
+	virtual uint32_t GetSupportedFilesCount() = 0;
+	virtual slString GetSupportedFileExtension(uint32_t) = 0;
+	virtual slString GetSupportedFileName(uint32_t) = 0;
+
+	virtual void Load(const char* path, slMeshLoaderCallback*) = 0;
+};
 
 #endif

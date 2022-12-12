@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/gs/slMaterial.h"
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/geometry/slGeometry.h"
 

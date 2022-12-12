@@ -633,6 +633,8 @@ slMesh* slPolygonMesh::CreateMesh()
 		vertArr.m_data = 0;
 		indsArr.m_data = 0;
 
+		newMesh->m_aabb = m_aabb;
+
 		return newMesh;
 	}
 	return 0;

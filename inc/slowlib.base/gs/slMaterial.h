@@ -27,14 +27,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGEOMETRY_H__
-#define __SL_SLOWLIBBASEGEOMETRY_H__
+#ifndef __SL_SLOWLIBBASEMATERIAL_H__
+#define __SL_SLOWLIBBASEMATERIAL_H__
 
-#include "slAabb.h"
-#include "slRay.h"
+#include "slowlib.base/common/slColor.h"
 
-#include "slMesh.h"
-#include "slMeshLoader.h"
+enum class slShaderType
+{
+	Solid,
+	BumpMap,
+	SphereMap,
+	User
+};
 
+// Graphics System
+struct slMaterial
+{
+	slShaderType m_shader = slShaderType::Solid;
+	float m_opacity = 1.f;
+	slColor m_colorDiffuse = ColorWhite;
+	slColor m_colorAmbient = ColorGray;
+	slColor m_colorSpecular = ColorWhite;
+	slVec3 m_sunPosition;
+	bool m_wireframe = false;
+	bool m_cullBackFace = false;
+
+	struct map{
+		slTexture* m_texture = 0;
+	}m_maps[16];
+
+	slString m_name;
+};
 
 #endif

@@ -50,5 +50,7 @@ public:
 };
 
 typedef slGS* (SL_CDECL* slSummonGS_t)();
+typedef slMeshLoader* (SL_CDECL* slSummonMeshloader_t)();
+
 
 #endif

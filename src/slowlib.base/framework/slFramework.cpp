@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/geometry/slMeshLoader.h"
 #include "slowlib.base/scene/slCamera.h"
 
 #include <stdio.h>
@@ -45,6 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern "C"
 {
 	SL_API slGS* SL_CDECL slGSD3D11_create();
+	SL_API slMeshLoader* SL_CDECL slMeshLoaderOBJ_create();
 }
 SL_LINK_LIBRARY("slowlib.d3d11");
 #endif
@@ -72,6 +74,17 @@ void LoadLib(std::filesystem::path p)
 			}
 		}
 
+		slSummonMeshloader_t f_summon_ml = (slSummonMeshloader_t)slDLL::get_proc(dll_handle, "slSummonMeshloader");
+		if (f_summon_ml)
+		{
+			slMeshLoader* ml = f_summon_ml();
+			if (ml)
+			{
+				g_framework->m_meshLoaders.push_back(ml);
+				isGood = true;
+			}
+		}
+
 		if (isGood)
 			g_framework->m_dlls.push_back(dll_handle);
 		else
@@ -82,6 +95,14 @@ void LoadLib(std::filesystem::path p)
 
 void slFrameworkImpl::OnDestroy()
 {
+	if (g_framework->m_meshLoaders.size())
+	{
+		for (auto o : g_framework->m_meshLoaders)
+		{
+			slDestroy(o);
+		}
+		g_framework->m_meshLoaders.clear();
+	}
 	if (g_framework->m_gss.size())
 	{
 		for (auto o : g_framework->m_gss)
@@ -242,18 +263,20 @@ bool slFramework::CompareUIDs(const slUID& id1, const slUID& id2)
 }
 
 // =========== GS
-uint32_t slFramework::GetGSCount()
+uint32_t slFramework::GetGSNum()
 {
 	return (uint32_t)g_framework->m_gss.size();
 }
 
 slString slFramework::GetGSName(uint32_t i)
 {
+	SL_ASSERT_ST(i < g_framework->m_gss.size());
 	return g_framework->m_gss[i]->GetName();
 }
 
 slUID slFramework::GetGSUID(uint32_t i)
 {
+	SL_ASSERT_ST(i < g_framework->m_gss.size());
 	return g_framework->m_gss[i]->GetUID();
 }
 
@@ -292,6 +315,41 @@ slGS* slFramework::SummonGS(slUID id, const char* _name)
 		}
 	}
 	return 0;
+}
+
+uint32_t slFramework::GetMeshLoadersNum()
+{
+	return (uint32_t)g_framework->m_meshLoaders.size();
+}
+
+slMeshLoader* slFramework::GetMeshLoader(uint32_t i)
+{
+	SL_ASSERT_ST(i < g_framework->m_meshLoaders.size());
+	return g_framework->m_meshLoaders[i];
+}
+
+void slFramework::LoadMesh(const char* path, slMeshLoaderCallback* cb)
+{
+	slStringA stra;
+	std::filesystem::path p = path;
+	auto e = p.extension();
+	uint32_t mln = GetMeshLoadersNum();
+	for (uint32_t i = 0; i < mln; ++i)
+	{
+		auto ml = GetMeshLoader(i);
+		auto sfc = ml->GetSupportedFilesCount();
+		for (uint32_t o = 0; o < sfc; ++o)
+		{
+			slString sfe = ml->GetSupportedFileExtension(o);
+			sfe.to_utf8(stra);
+
+			if (strcmp((const char*)stra.m_data, e.generic_string().c_str()) == 0)
+			{
+				ml->Load(path, cb);
+				return;
+			}
+		}
+	}
 }
 
 slMat4* slFramework::GetMatrix(slMatrixType t)

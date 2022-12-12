@@ -97,7 +97,7 @@ using real_t = double;
 
 // SL_LIB_STATIC must be defined when compile .lib files
 // if need .dll, undef SL_LIB_STATIC, and define SL_LIB_EXPORT (only for lib)
-#define SL_LIB_STATIC //it will be here
+//#define SL_LIB_STATIC //it will be here
 #ifdef SL_LIB_STATIC
 #define SL_API
 #else

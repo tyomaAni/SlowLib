@@ -44,6 +44,10 @@ class SL_API slPolyTriangle;
 class slWindowCallback;
 class slGS;
 class slPolyEdge;
+struct slMaterial;
+class slTexture;
+class slMeshLoaderCallback;
+class slMeshLoader;
 
 template<typename T>
 class slVec2_t;
