@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASELOG_H__
 #define __SL_SLOWLIBBASELOG_H__
 
-class SL_API slLog
+class slLog
 {
 public:
 	static void Print(const char* s, ...);

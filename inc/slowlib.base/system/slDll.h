@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef void* slDLLHandle;   // HMODULE in Windows
 typedef void* slDLLFunction;
 
-class SL_API slDLL
+class slDLL
 {
 public:
 	
@@ -48,9 +48,6 @@ public:
 	// Return NULL if there is some error.
 	static slDLLFunction get_proc(slDLLHandle library, const char* functionName);
 };
-
-typedef slGS* (SL_CDECL* slSummonGS_t)();
-typedef slMeshLoader* (SL_CDECL* slSummonMeshloader_t)();
 
 
 #endif

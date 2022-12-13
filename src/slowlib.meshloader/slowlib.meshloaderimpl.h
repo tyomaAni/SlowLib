@@ -25,6 +25,28 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#pragma once
+#ifndef _SL_MSHLDRIMPL_H_
+#define _SL_MSHLDRIMPL_H_
 
-#include "slowlib.h"
+#include "slowlib.base/geometry/slMeshLoader.h"
+#include "slowlib.base/containers/slArray.h"
 
+struct OBJMaterial;
+class slMeshLoaderImpl : public slMeshLoader
+{
+	void ImportOBJ_MTL(slArray<OBJMaterial*>& materials, const char* obj_fileName, const char* mtl_fileName, slMeshLoaderCallback* cb);
+	void LoadOBJ(const char* path, slMeshLoaderCallback*);
+public:
+	slMeshLoaderImpl();
+	virtual ~slMeshLoaderImpl();
+
+	virtual uint32_t GetSupportedFilesCount() final;
+	virtual slString GetSupportedFileExtension(uint32_t) final;
+	virtual slString GetSupportedFileName(uint32_t) final;
+
+	virtual void Load(const char* path, slMeshLoaderCallback*) final;
+};
+
+
+#endif

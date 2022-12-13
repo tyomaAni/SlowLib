@@ -90,4 +90,7 @@ uint32_t slPolygonCreator::Size()
 	return m_data.array.size();
 }
 
-
+void slPolygonCreator::Clear()
+{
+	m_data.array.clear();
+}

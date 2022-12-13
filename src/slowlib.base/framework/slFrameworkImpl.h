@@ -41,8 +41,10 @@ public:
 	~slFrameworkImpl() {}
 
 	slString m_appPath;
+	slStringA m_fileExistString;
+	slStringA m_fileSizeString;
+
 	
-	std::vector<slDLLHandle> m_dlls;
 	std::vector<slGS*> m_gss;
 	std::vector<slMeshLoader*> m_meshLoaders;
 

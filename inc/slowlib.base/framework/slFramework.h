@@ -73,7 +73,7 @@ enum class slMatrixType : uint32_t
 
 // Main API for framework.
 // It will be static methods.
-class SL_API slFramework
+class slFramework
 {
 public:
 	//allocate implementation
@@ -118,6 +118,14 @@ public:
 	static void SetMatrix(slMatrixType, slMat4*);
 
 	static slCamera* SummonCamera();
+
+	static bool FileExist(const char*);
+	static bool FileExist(const slString&);
+
+	static uint64_t FileSize(const char*);
+	static uint64_t FileSize(const slString&);
+
+	static slPolygonMesh* SummonPolygonMesh();
 };
 
 #endif

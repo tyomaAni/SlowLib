@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEST_H__
 #define __SL_SLOWLIBBASEST_H__
 
-class SL_API slStackTracer
+class slStackTracer
 {
 public:
 	static void Print();

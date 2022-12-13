@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEPOLYTRI_H__
 #define __SL_SLOWLIBBASEPOLYTRI_H__
 
-class SL_API slPolyTriangle
+class slPolyTriangle
 {
 public:
 	slPolyTriangle();

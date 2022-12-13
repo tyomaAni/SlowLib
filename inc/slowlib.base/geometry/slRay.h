@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.base/math/slMath.h"
 
-class SL_API slRay
+class slRay
 {
 public:
 	slRay();

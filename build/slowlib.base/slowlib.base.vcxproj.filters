@@ -75,19 +75,10 @@
     <ClCompile Include="..\..\src\slowlib.base\math\slMath.cpp">
       <Filter>Source Files\math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\math\slMatrix.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\math\slQuat.cpp">
-      <Filter>Source Files\math</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\scene\slCamera.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\geometry\slRay.cpp">
-      <Filter>Source Files\geometry</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slAabb.cpp">
       <Filter>Source Files\geometry</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp">

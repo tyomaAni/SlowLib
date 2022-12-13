@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEMTHMAT_H__
 #define __SL_SLOWLIBBASEMTHMAT_H__
 
+#include "slVector.h"
 #include "slQuaternion.h"
 
 template<typename T>

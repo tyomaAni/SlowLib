@@ -4,7 +4,7 @@ Slow library for slow gamedev
 # Some things about library
 
 * No inline functions (if need, make inline version with suffix '_inl')
-* Library by default will be a collection of static libraries, but it should have option to use it as dynamic link libraries.
+* Library will be a collection of static libraries.
 
 # Coding
 

@@ -30,27 +30,124 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEMTHQUAT_H__
 #define __SL_SLOWLIBBASEMTHQUAT_H__
 
-class SL_API slQuaternion
+class slQuaternion
 {
 public:
-	slQuaternion();
-	slQuaternion(const slQuaternion&);
-	slQuaternion(float x, float y, float z, float w);
+	slQuaternion() {
+		identity();
+	}
 
-	void identity();
-	float length();
+	slQuaternion(const slQuaternion& o) :
+		x(o.x),
+		y(o.y),
+		z(o.z),
+		w(o.w)
+	{}
 
-	slQuaternion& operator=(const slQuaternion& o);
-	slQuaternion operator*(const slQuaternion& q)const;
-	slQuaternion operator*(float s) const;
-	void operator*=(const slQuaternion& q);
-	bool operator!=(const slQuaternion& q)const;
-	bool operator==(const slQuaternion& q)const;
-	slQuaternion operator+(const slQuaternion& o) const;
-	slQuaternion operator-(const slQuaternion& o) const;
-	slQuaternion operator-();
-	float operator[](uint32_t index) const;
-	float& operator[](uint32_t index);
+	slQuaternion(float x, float y, float z, float w) :
+		x(x),
+		y(y),
+		z(z),
+		w(w)
+	{}
+
+	void identity()
+	{
+		x = y = z = 0.f;
+		w = 1.f;
+	}
+
+	float length()
+	{
+		return (x * x) + (y * y) + (z * z) + (w * w);
+	}
+
+	slQuaternion& operator=(const slQuaternion& o)
+	{
+		x = o.x;
+		y = o.y;
+		z = o.z;
+		w = o.w;
+		return *this;
+	}
+
+	slQuaternion operator*(const slQuaternion& q)const
+	{
+		return slQuaternion(
+			w * q.x + x * q.w + y * q.z - z * q.y,
+			w * q.y + y * q.w + z * q.x - x * q.z,
+			w * q.z + z * q.w + x * q.y - y * q.x,
+			w * q.w - x * q.x - y * q.y - z * q.z);
+	}
+
+	slQuaternion operator*(float s) const
+	{
+		return slQuaternion(s * x, s * y, s * z, s * w);
+	}
+
+	void operator*=(const slQuaternion& q)
+	{
+		x = w * q.x + x * q.w + y * q.z - z * q.y;
+		y = w * q.y + y * q.w + z * q.x - x * q.z;
+		z = w * q.z + z * q.w + x * q.y - y * q.x;
+		w = w * q.w - x * q.x - y * q.y - z * q.z;
+	}
+
+	bool operator!=(const slQuaternion& q)const
+	{
+		if (x != q.x) return true;
+		if (y != q.y) return true;
+		if (z != q.z) return true;
+		if (w != q.w) return true;
+		return false;
+	}
+
+	bool operator==(const slQuaternion& q)const
+	{
+		if (x != q.x) return false;
+		if (y != q.y) return false;
+		if (z != q.z) return false;
+		if (w != q.w) return false;
+		return true;
+	}
+
+	slQuaternion operator+(const slQuaternion& o) const
+	{
+		return slQuaternion(
+			x + o.x,
+			y + o.y,
+			z + o.z,
+			w + o.w);
+	}
+
+	slQuaternion operator-(const slQuaternion& o) const
+	{
+		return slQuaternion(
+			x - o.x,
+			y - o.y,
+			z - o.z,
+			w - o.w);
+	}
+
+	slQuaternion operator-()
+	{
+		x = -x;
+		y = -y;
+		z = -z;
+		return slQuaternion(x, y, z, w);
+	}
+
+	float operator[](uint32_t index) const
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 4));
+		return (&x)[index];
+	}
+
+	float& operator[](uint32_t index)
+	{
+		SL_ASSERT_ST((index >= 0) && (index < 4));
+		return (&x)[index];
+	}
 
 	float x, y, z, w;
 	float* data() { return &x; }

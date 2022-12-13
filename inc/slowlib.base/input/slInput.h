@@ -57,7 +57,7 @@ struct slInputData
 	uint8_t keyboardModifier = 0; /*KBMOD...*/
 };
 
-class SL_API slInput
+class slInput
 {
 public:
 	static slInputData* GetData();

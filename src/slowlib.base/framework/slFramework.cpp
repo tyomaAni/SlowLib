@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
 #include "slowlib.base/geometry/slMeshLoader.h"
+#include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/scene/slCamera.h"
 
 #include <stdio.h>
@@ -42,56 +43,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slFrameworkImpl.h"
 
-#ifdef SL_LIB_STATIC
 extern "C"
 {
-	SL_API slGS* SL_CDECL slGSD3D11_create();
-	SL_API slMeshLoader* SL_CDECL slMeshLoaderOBJ_create();
+	slGS* SL_CDECL slGSD3D11_create();
+	slMeshLoader* SL_CDECL slMeshLoaderOBJ_create();
 }
 SL_LINK_LIBRARY("slowlib.d3d11");
-#endif
 
 
 slFrameworkImpl* g_framework = 0;
 
-#ifndef SL_LIB_STATIC
-void LoadLib(std::filesystem::path p)
-{
-	std::string path = p.generic_string();
-	slDLLHandle dll_handle = slDLL::load(path.c_str());
-	if (dll_handle)
-	{
-		bool isGood = false;
-
-		slSummonGS_t f_summon_gs = (slSummonGS_t)slDLL::get_proc(dll_handle, "slSummonGS");
-		if (f_summon_gs)
-		{
-			slGS* gs = f_summon_gs();
-			if (gs)
-			{
-				g_framework->m_gss.push_back(gs);
-				isGood = true;
-			}
-		}
-
-		slSummonMeshloader_t f_summon_ml = (slSummonMeshloader_t)slDLL::get_proc(dll_handle, "slSummonMeshloader");
-		if (f_summon_ml)
-		{
-			slMeshLoader* ml = f_summon_ml();
-			if (ml)
-			{
-				g_framework->m_meshLoaders.push_back(ml);
-				isGood = true;
-			}
-		}
-
-		if (isGood)
-			g_framework->m_dlls.push_back(dll_handle);
-		else
-			slDLL::free(dll_handle);
-	}
-}
-#endif
 
 void slFrameworkImpl::OnDestroy()
 {
@@ -111,14 +72,6 @@ void slFrameworkImpl::OnDestroy()
 			slDestroy(o);
 		}
 		g_framework->m_gss.clear();
-	}
-	if (g_framework->m_dlls.size())
-	{
-		for (auto o : g_framework->m_dlls)
-		{
-			slDLL::free(o);
-		}
-		g_framework->m_dlls.clear();
 	}
 }
 
@@ -142,25 +95,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 #error OMG
 #endif
 
-#ifndef SL_LIB_STATIC
-		slStringA utf8apppath;
-		g_framework->m_appPath.to_utf8(utf8apppath);
-		for (auto& entry : std::filesystem::directory_iterator(utf8apppath.m_data))
-		{
-			auto path = entry.path();
-			if (path.has_extension())
-			{
-				auto ex = path.extension();
-				if (ex == ".dll" || ex == ".DLL")
-				{
-					slLog::PrintInfo("[%s]\n", path.generic_string().c_str());
-					LoadLib(path);
-				}
-			}
-		}
-#else
 		g_framework->m_gss.push_back(slGSD3D11_create());
-#endif
 	}
 }
 
@@ -365,4 +300,33 @@ void slFramework::SetMatrix(slMatrixType t, slMat4* m)
 slCamera* slFramework::SummonCamera()
 {
 	return slCreate<slCamera>();
+}
+
+bool slFramework::FileExist(const char* p)
+{
+	return std::filesystem::exists(p);
+}
+
+bool slFramework::FileExist(const slString& p)
+{
+	g_framework->m_fileExistString.clear();
+	p.to_utf8(g_framework->m_fileExistString);
+	return std::filesystem::exists(g_framework->m_fileExistString.m_data);
+}
+
+uint64_t slFramework::FileSize(const char* p)
+{
+	return (uint64_t)std::filesystem::file_size(p);
+}
+
+uint64_t slFramework::FileSize(const slString& p)
+{
+	g_framework->m_fileSizeString.clear();
+	p.to_utf8(g_framework->m_fileSizeString);
+	return (uint64_t)std::filesystem::file_size(g_framework->m_fileSizeString.m_data);
+}
+
+slPolygonMesh* slFramework::SummonPolygonMesh()
+{
+	return slCreate<slPolygonMesh>();
 }

@@ -27,6 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "slowlib.h"
+#include <string>
 
 struct slUnicodeCharNode
 {
@@ -110,6 +111,7 @@ void slStringA::push_back(char8_t c)
 	m_size = new_size;
 	m_data[m_size] = 0;
 }
+void slStringA::clear() { m_size = 0; }
 void slStringW::reallocate(size_t new_allocated)
 {
 	char16_t* new_data = (char16_t*)slMemory::malloc(new_allocated * sizeof(char16_t));
@@ -136,6 +138,7 @@ void slStringW::push_back(char16_t c)
 	m_size = new_size;
 	m_data[m_size] = 0;
 }
+void slStringW::clear() { m_size = 0; }
 
 
 void slString::reallocate(size_t new_allocated)
@@ -201,7 +204,7 @@ slString::~slString()
 		slMemory::free(m_data);
 }
 
-const char32_t* slString::c_str()
+const char32_t* slString::c_str() const
 {
 	return m_data;
 }
@@ -1095,7 +1098,7 @@ bool slString::operator!=(const slString& other) const
 	return false;
 }
 
-void slString::to_utf8(slStringA& stra)
+void slString::to_utf8(slStringA& stra) const
 {
 	UC uc;
 	auto ut = &g_UnicodeChars[0];
@@ -1114,7 +1117,7 @@ void slString::to_utf8(slStringA& stra)
 	}
 }
 
-void slString::to_utf16(slStringW& strw)
+void slString::to_utf16(slStringW& strw) const
 {
 	UC uc;
 	auto ut = &g_UnicodeChars[0];

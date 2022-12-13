@@ -26,33 +26,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SL_LIB_STATIC
-#define SL_LIB_EXPORT
-#endif
-
 #include "slowlib.h"
 
 #include "slowlib.d3d11impl.h"
 
-#ifndef SL_LIB_STATIC
 SL_LINK_LIBRARY("slowlib.base");
-#endif
 
 
 extern "C"
 {
-#ifdef SL_LIB_STATIC
-	SL_API slGS* SL_CDECL slGSD3D11_create()
+	slGS* SL_CDECL slGSD3D11_create()
 	{
 		slGSD3D11* gs = slCreate<slGSD3D11>();
 		return gs;
 	}
-#else
-	SL_API slGS* SL_CDECL slSummonGS()
-	{
-		slGSD3D11* gs = slCreate<slGSD3D11>();
-		return gs;
-	}
-#endif
 }
 

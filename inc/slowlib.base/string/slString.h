@@ -31,31 +31,84 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // just data and size
 // it will use in slString
-class SL_API slStringA
+class slStringA
 {
 	void reallocate(size_t new_allocated);
 public:
 	slStringA();
 	~slStringA();
 	void push_back(char8_t);
+	void clear();
+	const char8_t& operator[](size_t i) const { return m_data[i]; }
+	char8_t& operator[](size_t i) { return m_data[i]; }
+	size_t size() const { return m_size; }
+	char* data() { return (char*)m_data; }
+	bool operator==(const slStringA& other) const {
+		if (other.size() != m_size)
+			return false;
+		const size_t sz = other.size();
+		const auto* ptr = other.m_data;
+		for (size_t i = 0u; i < sz; ++i){
+			if (ptr[i] != m_data[i])
+				return false;
+		}
+		return true;
+	}
+	bool operator!=(const slStringA& other) const {
+		if (other.size() != m_size)
+			return true;
+		const size_t sz = other.size();
+		const auto* ptr = other.m_data;
+		for (size_t i = 0u; i < sz; ++i){
+			if (ptr[i] != m_data[i])
+				return true;
+		}
+		return false;
+	}
 	size_t m_allocated = 0;
 	size_t m_size = 0;
 	char8_t* m_data = nullptr;
 };
-class SL_API slStringW
+class slStringW
 {
 	void reallocate(size_t new_allocated);
 public:
 	slStringW();
 	~slStringW();
 	void push_back(char16_t);
+	void clear();
+	const char16_t& operator[](size_t i) const { return m_data[i]; }
+	char16_t& operator[](size_t i) { return m_data[i]; }
+	size_t size() const { return m_size; }
+	bool operator==(const slStringW& other) const {
+		if (other.size() != m_size)
+			return false;
+		const size_t sz = other.size();
+		const auto* ptr = other.m_data;
+		for (size_t i = 0u; i < sz; ++i) {
+			if (ptr[i] != m_data[i])
+				return false;
+		}
+		return true;
+	}
+	bool operator!=(const slStringW& other) const {
+		if (other.size() != m_size)
+			return true;
+		const size_t sz = other.size();
+		const auto* ptr = other.m_data;
+		for (size_t i = 0u; i < sz; ++i) {
+			if (ptr[i] != m_data[i])
+				return true;
+		}
+		return false;
+	}
 	size_t m_allocated = 0;
 	size_t m_size = 0;
 	char16_t* m_data = nullptr;
 };
 
 // Unicode string.
-class SL_API slString
+class slString
 {
 	size_t m_size = 0;
 	size_t m_allocated = 0;
@@ -73,7 +126,7 @@ public:
 	slString(slString&&);
 	~slString();
 	
-	const char32_t* c_str();
+	const char32_t* c_str()const;
 	size_t size() const;
 	void reserve(size_t size);
 	void clear();
@@ -164,8 +217,8 @@ public:
 	bool operator==(const slString& other) const;
 	bool operator!=(const slString& other) const;
 
-	void to_utf8(slStringA&);
-	void to_utf16(slStringW&);
+	void to_utf8(slStringA&) const;
+	void to_utf16(slStringW&) const;
 };
 
 #endif

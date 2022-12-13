@@ -61,7 +61,7 @@ struct slWindowCommonData
 	void* m_implementation = 0;
 };
 
-class SL_API slWindow
+class slWindow
 {
 	slWindowCommonData m_data;
 public:

@@ -73,7 +73,7 @@ static void(*g_onAssert)(const char* message, const char* file, uint32_t line, u
 
 namespace sl_internal
 {
-    SL_API void SL_CDECL onAssert(const char* message, const char* file, uint32_t line, uint32_t flags)
+    void SL_CDECL onAssert(const char* message, const char* file, uint32_t line, uint32_t flags)
     {
         g_onAssert(message, file, line, flags);
     }
@@ -81,7 +81,7 @@ namespace sl_internal
 
 extern "C"
 {
-    SL_API void SL_CDECL slSetOnAssert(void(* f)(const char* message, const char* file, uint32_t line, uint32_t flags))
+    void SL_CDECL slSetOnAssert(void(* f)(const char* message, const char* file, uint32_t line, uint32_t flags))
     {
         g_onAssert = f ? f : onAssert_default;
     }

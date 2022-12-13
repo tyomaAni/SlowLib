@@ -52,7 +52,7 @@ const double PIPI = 6.283185307179586476925286766559;
 const slVec4 slVec4fFltMax = slVec4(DBL_MAX);
 const slVec4 slVec4fFltMaxNeg = slVec4(-DBL_MAX);
 
-class SL_API slMath
+class slMath
 {
 public:
 	static float DegToRad(float degrees);

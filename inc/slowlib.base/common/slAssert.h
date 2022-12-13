@@ -38,7 +38,7 @@ namespace sl_internal
         flag_onAssert_useDefaultSystemWindow = 0x1,
         flag_onAssert_useStackTrace = 0x2,
     };
-    SL_API void SL_CDECL onAssert(const char* message, const char* file, uint32_t line, uint32_t flags = 0);
+    void SL_CDECL onAssert(const char* message, const char* file, uint32_t line, uint32_t flags = 0);
 }
 
 #ifdef SL_DEBUG
@@ -51,7 +51,7 @@ namespace sl_internal
 
 extern "C"
 {
-    SL_API void SL_CDECL slSetOnAssert(void(*)(const char* message, const char* file, uint32_t line, uint32_t flags));
+    void SL_CDECL slSetOnAssert(void(*)(const char* message, const char* file, uint32_t line, uint32_t flags));
 }
 
 #endif

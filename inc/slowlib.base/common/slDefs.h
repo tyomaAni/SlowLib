@@ -95,19 +95,6 @@ using real_t = double;
 #error Please, write code for other platform
 #endif
 
-// SL_LIB_STATIC must be defined when compile .lib files
-// if need .dll, undef SL_LIB_STATIC, and define SL_LIB_EXPORT (only for lib)
-//#define SL_LIB_STATIC //it will be here
-#ifdef SL_LIB_STATIC
-#define SL_API
-#else
-#ifdef SL_LIB_EXPORT // add it into project parameters
-#define SL_API __declspec(dllexport)
-#else
-#define SL_API __declspec(dllimport)
-#endif
-#endif
-
 // For easy linking
 #ifdef _MSC_VER
 
@@ -131,13 +118,8 @@ using real_t = double;
 #endif
 
 // Use like this: SL_LINK_LIBRARY("libname")
-#ifdef SL_LIB_STATIC
 #define SL_LINK_LIBRARY(n) \
 	__pragma(comment(lib, n SL_LINK_LIBRARY_CMP SL_LINK_LIBRARY_ARCH SL_LINK_LIBRARY_CONF ".lib"))
-#else
-#define SL_LINK_LIBRARY(n) \
-	__pragma(comment(lib, n ".lib"))
-#endif
 
 #else
 #error Please, do something!

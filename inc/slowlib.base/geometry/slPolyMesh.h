@@ -50,7 +50,7 @@ struct slPolygonCreatorData
 	slArray<slPolygonCreatorVertex> array;
 };
 
-class SL_API slPolygonCreator
+class slPolygonCreator
 {
 	slPolygonCreatorData m_data;
 public:
@@ -70,6 +70,8 @@ public:
 
 	void AddVertex(bool weld);
 	uint32_t Size();
+
+	void Clear();
 
 	slArray<slPolygonCreatorVertex>* GetArray() { return &m_data.array; }
 };
@@ -189,7 +191,7 @@ struct slPolygonVertexData
 	uint32_t m_flags;
 };
 
-class SL_API slPolygon
+class slPolygon
 {
 	void* m_data = 0; //hide all in .cpp
 public:
@@ -226,7 +228,7 @@ struct slSkeleton {
 
 // m_mesh = slCreate<slPolygonMesh>();
 // slDestroy(m_mesh);
-class SL_API slPolygonMesh
+class slPolygonMesh
 {
 	void DeleteMesh();
 	void DeleteEdges();

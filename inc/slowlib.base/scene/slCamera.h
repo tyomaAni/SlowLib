@@ -30,6 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASESCCAM_H__
 #define __SL_SLOWLIBBASESCCAM_H__
 
+#include "slowlib.base/math/slMatrix.h"
+
 struct slCameraFrustum
 {
 	slVec4 m_planes[6u];

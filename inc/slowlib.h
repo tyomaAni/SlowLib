@@ -29,6 +29,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIB_H__
 #define __SL_SLOWLIB_H__
 
+template<class T>
+const T& slMax(const T& a, const T& b)
+{
+    return (a < b) ? b : a;
+}
+template<class T>
+const T& slMin(const T& a, const T& b)
+{
+    return (b < a) ? b : a;
+}
+
 #include "slowlib.base/common/slDefs.h"
 #include "slowlib.base/common/slForward.h"
 #include "slowlib.base/common/slLog.h"
@@ -41,6 +52,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/framework/slFramework.h"
 #include "slowlib.base/system/slWindow.h"
 #include "slowlib.base/math/slMath.h"
+
+
 
 
 #endif

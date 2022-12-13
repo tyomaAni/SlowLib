@@ -30,6 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEMESH_H__
 #define __SL_SLOWLIBBASEMESH_H__
 
+#include "slowlib.base/geometry/slAabb.h"
+
 enum class slMeshVertexType : uint32_t
 {
 	Null, // 0
@@ -61,7 +63,7 @@ struct slMeshInfo
 	uint32_t m_stride = 0;
 };
 
-class SL_API slMesh
+class slMesh
 {
 	void CalculateTangents(slVec3f& normal, slVec3f& tangent, slVec3f& binormal,
 		const slVec3f& vt1, const slVec3f& vt2, const slVec3f& vt3, // vertices, in float
