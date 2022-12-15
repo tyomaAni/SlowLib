@@ -43,8 +43,7 @@ slDEFINE_UID(g_uid_d3d11, 0xfe89b14, 0x923c, 0x4f2e, 0xba22, 0xb1, 0x86, 0x94, 0
 #define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
 
 slGSD3D11::slGSD3D11()
-{
-	
+{	
 }
 
 slGSD3D11::~slGSD3D11()
@@ -729,3 +728,58 @@ void slGSD3D11::DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c)
 
 	m_d3d11DevCon->Draw(2, 0);
 }
+
+slGPUMesh* slGSD3D11::SummonMesh(slMesh* m)
+{
+	SL_ASSERT_ST(m);
+	SL_ASSERT_ST(m->m_vertices);
+	SL_ASSERT_ST(m->m_indices);
+	SL_ASSERT_ST(m->m_info.m_iCount);
+	SL_ASSERT_ST(m->m_info.m_vCount);
+
+	slGSD3D11Mesh* newMesh = slCreate<slGSD3D11Mesh>();
+	newMesh->m_meshInfo = m->m_info;
+
+	slZeroDecl(D3D11_BUFFER_DESC, vbd);
+	slZeroDecl(D3D11_BUFFER_DESC, ibd);
+
+	vbd.Usage = D3D11_USAGE_DEFAULT;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
+
+	ibd.Usage = D3D11_USAGE_DEFAULT;
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	slZeroDecl(D3D11_SUBRESOURCE_DATA, vData);
+	slZeroDecl(D3D11_SUBRESOURCE_DATA, iData);
+
+	vbd.ByteWidth = m->m_info.m_stride * m->m_info.m_vCount;
+	vData.pSysMem = &m->m_vertices[0];
+
+	auto hr = m_d3d11Device->CreateBuffer(&vbd, &vData, &newMesh->m_vBuffer);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create Direct3D 11 vertex buffer [%u]\n", hr);
+		return nullptr;
+	}
+
+	uint32_t index_sizeof = sizeof(uint16_t);
+	newMesh->m_indexType = DXGI_FORMAT_R16_UINT;
+	if (m->m_info.m_indexType == slMeshIndexType::u32)
+	{
+		newMesh->m_indexType = DXGI_FORMAT_R32_UINT;
+		index_sizeof = sizeof(uint32_t);
+	}
+	ibd.ByteWidth = index_sizeof * newMesh->m_meshInfo.m_iCount;
+	iData.pSysMem = &m->m_indices[0];
+
+
+	hr = m_d3d11Device->CreateBuffer(&ibd, &iData, &newMesh->m_iBuffer);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create Direct3D 11 index buffer [%u]\n", hr);
+		return nullptr;
+	}
+
+	return newMesh;
+}
+

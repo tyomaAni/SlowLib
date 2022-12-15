@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SL_MSHLDRIMPL_H_
 #define _SL_MSHLDRIMPL_H_
 
+#include "slowlib.base/geometry/slMesh.h"
 #include "slowlib.base/geometry/slMeshLoader.h"
 #include "slowlib.base/containers/slArray.h"
 

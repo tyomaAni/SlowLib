@@ -126,6 +126,9 @@ public:
 	static uint64_t FileSize(const slString&);
 
 	static slPolygonMesh* SummonPolygonMesh();
+
+	static slString GetAppPath();
+	static slStringA GetPathA(const slString&);
 };
 
 #endif

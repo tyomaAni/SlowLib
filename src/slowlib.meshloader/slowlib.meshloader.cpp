@@ -30,9 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.meshloaderimpl.h"
 
-SL_LINK_LIBRARY("slowlib.base");
-
-
 extern "C"
 {
 	slMeshLoader* SL_CDECL slMeshLoaderOBJ_create()

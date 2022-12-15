@@ -403,9 +403,6 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 
 			polygonCreator.Clear();
 
-			/*if (!importerHelper.m_meshBuilder->m_isBegin)
-				importerHelper.m_meshBuilder->Begin();*/
-
 			bool weld = false;
 			bool genNormals = true;
 
@@ -419,6 +416,8 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 				{
 					// если индекс отрицательный то он указывает на позицию относительно последнего элемента
 					// -1 = последний элемент
+					// if index is negative then he points on position relative last element
+					// -1 = last element
 					pos_index = last_counter[0] + pos_index + 1;
 				}
 
@@ -426,22 +425,15 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 					hash.clear();
 					hash += pos_index;
 
-					// это я не помню зачем сделал
-					// когда дойду до control вершин, станет ясно зачем это здесь
 					auto it = map.find(hash);
 					if (it == map.end())
-					{
 						map[hash] = pos_index;
-					}
 					else
-					{
 						weld = true;
-					}
 				}
 
 				auto v = position[pos_index];
 
-				//geometry_creator->AddPosition(v.x, v.y, v.z);
 				slVec3f pcPos, pcNorm;
 				slVec2f pcUV;
 
@@ -457,7 +449,6 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 					}
 
 					auto u = uv[uv_index];
-					//	geometry_creator->AddUV(u.x, u.y);
 					pcUV.x = u.x;
 					pcUV.y = 1.f - u.y;
 				}
@@ -734,7 +725,7 @@ unsigned char* OBJReadFace(unsigned char* ptr, OBJFace& f, char* s) {
 	return ptr;
 }
 
-unsigned char* OBJReadWord(unsigned char* ptr, std::string& str)
+unsigned char* OBJReadWord(unsigned char* ptr, slStringA& str)
 {
 	ptr = OBJSkipSpaces(ptr);
 	str.clear();
@@ -742,13 +733,13 @@ unsigned char* OBJReadWord(unsigned char* ptr, std::string& str)
 	{
 		if (isspace(*ptr))
 			break;
-		str += (wchar_t)*ptr;
+		str.push_back(*ptr);
 		ptr++;
 	}
 	return ptr;
 }
 
-unsigned char* OBJReadLastWord(unsigned char* ptr, std::string& str) {
+unsigned char* OBJReadLastWord(unsigned char* ptr, slStringA& str) {
 	while (true)
 	{
 		ptr = OBJSkipSpaces(ptr);

@@ -36,6 +36,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <time.h>
 #include <filesystem>
 
+#include <algorithm>
+
+//
+//  Lowercases string
+//
+template <typename T>
+std::basic_string<T> lowercase(const std::basic_string<T>& s)
+{
+	std::basic_string<T> s2 = s;
+	std::transform(s2.begin(), s2.end(), s2.begin(), tolower);
+	return s2;
+}
+
+//
+// Uppercases string
+//
+template <typename T>
+std::basic_string<T> uppercase(const std::basic_string<T>& s)
+{
+	std::basic_string<T> s2 = s;
+	std::transform(s2.begin(), s2.end(), s2.begin(), toupper);
+	return s2;
+}
+
 #ifdef SL_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -49,10 +73,10 @@ extern "C"
 	slMeshLoader* SL_CDECL slMeshLoaderOBJ_create();
 }
 SL_LINK_LIBRARY("slowlib.d3d11");
+SL_LINK_LIBRARY("slowlib.meshloader");
 
 
 slFrameworkImpl* g_framework = 0;
-
 
 void slFrameworkImpl::OnDestroy()
 {
@@ -96,6 +120,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 #endif
 
 		g_framework->m_gss.push_back(slGSD3D11_create());
+		g_framework->m_meshLoaders.push_back(slMeshLoaderOBJ_create());
 	}
 }
 
@@ -108,6 +133,20 @@ void slFramework::Stop()
 		slDestroy(g_framework);
 		g_framework = 0;
 	}
+}
+
+slString slFramework::GetAppPath()
+{
+	return g_framework->m_appPath;
+}
+
+slStringA slFramework::GetPathA(const slString& v)
+{
+	slString p = g_framework->m_appPath;
+	p.append(v);
+	slStringA stra;
+	p.to_utf8(stra);
+	return stra;
 }
 
 void slFramework::Update()
@@ -276,9 +315,11 @@ void slFramework::LoadMesh(const char* path, slMeshLoaderCallback* cb)
 		for (uint32_t o = 0; o < sfc; ++o)
 		{
 			slString sfe = ml->GetSupportedFileExtension(o);
+			sfe.insert(U".", 0);
+			sfe.to_lower();
 			sfe.to_utf8(stra);
-
-			if (strcmp((const char*)stra.m_data, e.generic_string().c_str()) == 0)
+			auto stre = lowercase(e.generic_string());
+			if (strcmp((const char*)stra.m_data, stre.c_str()) == 0)
 			{
 				ml->Load(path, cb);
 				return;

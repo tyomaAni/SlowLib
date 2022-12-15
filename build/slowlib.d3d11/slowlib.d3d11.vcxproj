@@ -22,6 +22,7 @@
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.cpp" />
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.shader.Line3D.cpp" />
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11impl.cpp" />
+    <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.mesh.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

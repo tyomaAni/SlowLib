@@ -26,52 +26,24 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef _SL_D3D11MESH_H_
+#define _SL_D3D11MESH_H_
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
+#include <d3d11.h>
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+class slGSD3D11Mesh : public slGPUMesh
+{
+public:
+	slGSD3D11Mesh();
+	virtual ~slGSD3D11Mesh();
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+//	ID3D11Buffer* m_lockedResource = 0;
+	ID3D11Buffer* m_vBuffer = 0;
+	ID3D11Buffer* m_iBuffer = 0;
+	
+	DXGI_FORMAT m_indexType = DXGI_FORMAT_R16_UINT;
 
-template<typename _type>
-struct slListNode;
-
-template<typename _type>
-class slList;
+	slMeshInfo m_meshInfo;
+};
 
 #endif

@@ -64,6 +64,31 @@ public:
 	}
 };
 
+class MeshLoaderCallback : public slMeshLoaderCallback
+{
+public:
+	MeshLoaderCallback() {}
+	virtual ~MeshLoaderCallback() {}
+
+	virtual void OnMaterial(slMaterial* m, slString* name) override 
+	{
+	}
+
+	virtual void OnMesh(slMesh* newMesh, slString* name, slString* materialName) override 
+	{
+		if (newMesh)
+		{
+			slStringA stra;
+			if (name)
+				name->to_utf8(stra);
+
+			printf("MESH [%s] verts [%i] inds [%i]\n", stra.m_data, newMesh->m_info.m_vCount,
+				newMesh->m_info.m_iCount);
+			slDestroy(newMesh);
+		}
+	}
+};
+
 int main(int argc, char * argv[])
 {
 	FrameworkCallback frameworkCallback;
@@ -72,29 +97,6 @@ int main(int argc, char * argv[])
 	slFramework::Start(&frameworkCallback);
 	slWindow * window = slFramework::SummonWindow(&windowCallback, 800, 600);
 	window->SetVisible(true);
-
-	slQuaternion qX40;
-	slMath::set_rotation(qX40, slMath::DegToRad(40.f), 0.f, 0.f);
-
-	slQuaternion qY20;
-	slMath::set_rotation(qY20, 0.f, slMath::DegToRad(20.f), 0.f);
-
-
-	slMat4 m1;
-	slMath::set_rotation(m1, qX40);
-
-	slMat4 m2;
-	slMath::set_rotation(m2, qY20);
-
-	slMat4 m3;
-	slMath::mul(m1, m2, m3);
-
-	slVec3 pos(0.f, 1.f, 0.f);
-	slVec3 posRotated;
-	slMath::mul(m3, pos, posRotated);
-
-	slMat4 p;
-	slMath::perspectiveLH(p, 1.f, 800.f / 600.f, 0.1f, 60000.f);
 
 	auto inputData = slInput::GetData();
 
@@ -187,6 +189,16 @@ int main(int argc, char * argv[])
 		{
 			camera->m_position.y -= 10.0 * (double)(*dt);
 			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+		}
+		if (slInput::IsKeyHit(slInput::KEY_END))
+		{
+			printf("try to load\n");
+			MeshLoaderCallback mlcb;
+			/*slString path = slFramework::GetAppPath() + "4_objs.obj";
+			slStringA stra;
+			path.to_utf8(stra);
+			slFramework::LoadMesh(stra.data(), &mlcb);*/
+			slFramework::LoadMesh(slFramework::GetPathA("..\\data\\4_objs.obj").c_str(), &mlcb);
 		}
 
 

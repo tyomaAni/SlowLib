@@ -37,12 +37,17 @@ class slStringA
 public:
 	slStringA();
 	~slStringA();
+	slStringA(const slStringA&);
+	slStringA(slStringA&&);
+	void assign(const slStringA&);
+	void append(const slStringA&);
 	void push_back(char8_t);
 	void clear();
 	const char8_t& operator[](size_t i) const { return m_data[i]; }
 	char8_t& operator[](size_t i) { return m_data[i]; }
 	size_t size() const { return m_size; }
 	char* data() { return (char*)m_data; }
+	const char* c_str() { return (const char*)m_data; }
 	bool operator==(const slStringA& other) const {
 		if (other.size() != m_size)
 			return false;
@@ -65,6 +70,8 @@ public:
 		}
 		return false;
 	}
+	slStringA& operator=(const slStringA&);
+	slStringA& operator=(slStringA&&);
 	size_t m_allocated = 0;
 	size_t m_size = 0;
 	char8_t* m_data = nullptr;
@@ -75,6 +82,10 @@ class slStringW
 public:
 	slStringW();
 	~slStringW();
+	slStringW(const slStringW&);
+	slStringW(slStringW&&);
+	void assign(const slStringW&);
+	void append(const slStringW&);
 	void push_back(char16_t);
 	void clear();
 	const char16_t& operator[](size_t i) const { return m_data[i]; }
@@ -102,6 +113,8 @@ public:
 		}
 		return false;
 	}
+	slStringW& operator=(const slStringW&);
+	slStringW& operator=(slStringW&&);
 	size_t m_allocated = 0;
 	size_t m_size = 0;
 	char16_t* m_data = nullptr;
@@ -213,6 +226,22 @@ public:
 	void operator+=(uint64_t);
 	void operator+=(float);
 	void operator+=(double);
+
+	slString operator+(const char*);
+	slString operator+(const wchar_t*);
+	slString operator+(const char8_t*);
+	slString operator+(const char16_t*);
+	slString operator+(const char32_t*);
+	slString operator+(int8_t);
+	slString operator+(int16_t);
+	slString operator+(int32_t);
+	slString operator+(int64_t);
+	slString operator+(uint8_t);
+	slString operator+(uint16_t);
+	slString operator+(uint32_t);
+	slString operator+(uint64_t);
+	slString operator+(float);
+	slString operator+(double);
 
 	bool operator==(const slString& other) const;
 	bool operator!=(const slString& other) const;

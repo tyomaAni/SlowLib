@@ -33,7 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/gs/slGPUMesh.h"
 
+#include "slowlib.d3d11.mesh.h"
 #include "slowlib.d3d11.shader.h"
 #include "slowlib.d3d11.shader.Line3D.h"
 
@@ -102,6 +104,7 @@ public:
 	virtual void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) final;
 	virtual void SetScissorRect(const slVec4f& rect, slVec4f* old) final;
 	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) final;
+	virtual slGPUMesh* SummonMesh(slMesh*) final;
 
 	bool createShaders(
 		const char* vertexTarget,

@@ -83,6 +83,8 @@ public:
 	virtual void SetScissorRect(const slVec4f& rect, slVec4f* old) = 0;
 
 	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) = 0;
+
+	virtual slGPUMesh* SummonMesh(slMesh*) = 0;
 };
 
 #endif

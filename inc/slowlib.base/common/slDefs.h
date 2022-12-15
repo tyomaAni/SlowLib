@@ -29,6 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEDEFS_H__
 #define __SL_SLOWLIBBASEDEFS_H__
 
+#define SL_SLOW_LIBRARY
+
 // Some defines
 
 // I think this is unnecessary, maybe this is old style thing, but I saw it in many
@@ -129,5 +131,7 @@ using real_t = double;
 // You can get 0xAABB and 0xCCDD using this macros
 #define SL_LO32(l) ((uint16_t)(((uint32_t)(l)) & 0xffff))
 #define SL_HI32(l) ((uint16_t)((((uint32_t)(l)) >> 16) & 0xffff))
+
+#define slZeroDecl(t,n) t n; memset(&n, 0, sizeof(n))
 
 #endif

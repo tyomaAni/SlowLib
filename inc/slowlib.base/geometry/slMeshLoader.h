@@ -36,8 +36,14 @@ public:
 	slMeshLoaderCallback() {}
 	virtual ~slMeshLoaderCallback() {}
 
-	virtual void OnMaterial(slMaterial* m, slString* name);
-	virtual void OnMesh(slMesh* newMesh, slString* name, slString* materialName);
+	virtual void OnMaterial(slMaterial* m, slString* name) {}
+	virtual void OnMesh(slMesh* newMesh, slString* name, slString* materialName) {
+		if (newMesh)
+		{
+			// if don't need thin destroy this mesh
+			slDestroy(newMesh);
+		}
+	}
 };
 
 class slMeshLoader

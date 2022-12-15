@@ -30,9 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.d3d11impl.h"
 
-SL_LINK_LIBRARY("slowlib.base");
-
-
 extern "C"
 {
 	slGS* SL_CDECL slGSD3D11_create()

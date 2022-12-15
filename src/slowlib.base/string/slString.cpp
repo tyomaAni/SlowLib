@@ -101,6 +101,8 @@ void slStringA::reallocate(size_t new_allocated)
 	m_allocated = new_allocated;
 }
 slStringA::slStringA(){}
+slStringA::slStringA(const slStringA& s) : slStringA(){assign(s);}
+slStringA::slStringA(slStringA&& s) : slStringA(){this->operator=(std::move(s));}
 slStringA::~slStringA(){if (m_data) slMemory::free(m_data);}
 void slStringA::push_back(char8_t c)
 {
@@ -112,6 +114,34 @@ void slStringA::push_back(char8_t c)
 	m_data[m_size] = 0;
 }
 void slStringA::clear() { m_size = 0; }
+void slStringA::assign(const slStringA& s) {
+	clear();
+	append(s);
+}
+void slStringA::append(const slStringA& s) {
+	for (size_t i = 0; i < s.m_size; ++i)
+	{
+		push_back(s.m_data[i]);
+	}
+}
+slStringA& slStringA::operator=(const slStringA& s) {
+	clear();
+	append(s);
+	return *this;
+}
+slStringA& slStringA::operator=(slStringA&& s) {
+	if (m_data)
+		slMemory::free(m_data);
+	m_data = s.m_data;
+	m_allocated = s.m_allocated;
+	m_size = s.m_size;
+
+	s.m_data = 0;
+	s.m_allocated = 0;
+	s.m_size = 0;
+	return *this;
+}
+
 void slStringW::reallocate(size_t new_allocated)
 {
 	char16_t* new_data = (char16_t*)slMemory::malloc(new_allocated * sizeof(char16_t));
@@ -139,7 +169,35 @@ void slStringW::push_back(char16_t c)
 	m_data[m_size] = 0;
 }
 void slStringW::clear() { m_size = 0; }
+slStringW::slStringW(const slStringW& s) : slStringW() { assign(s); }
+slStringW::slStringW(slStringW&& s) : slStringW() { this->operator=(std::move(s)); }
+void slStringW::assign(const slStringW& s) {
+	clear();
+	append(s);
+}
+void slStringW::append(const slStringW& s) {
+	for (size_t i = 0; i < s.m_size; ++i)
+	{
+		push_back(s.m_data[i]);
+	}
+}
+slStringW& slStringW::operator=(const slStringW& s) {
+	clear();
+	append(s);
+	return *this;
+}
+slStringW& slStringW::operator=(slStringW&& s) {
+	if (m_data)
+		slMemory::free(m_data);
+	m_data = s.m_data;
+	m_allocated = s.m_allocated;
+	m_size = s.m_size;
 
+	s.m_data = 0;
+	s.m_allocated = 0;
+	s.m_size = 0;
+	return *this;
+}
 
 void slString::reallocate(size_t new_allocated)
 {
@@ -1133,3 +1191,109 @@ void slString::to_utf16(slStringW& strw) const
 		if (uc.shorts[0]) strw.push_back(uc.shorts[0]);
 	}
 }
+
+slString slString::operator+(const char* v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(const wchar_t* v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(const char8_t* v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(const char16_t* v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(const char32_t* v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(int8_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(int16_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(int32_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(int64_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(uint8_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(uint16_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(uint32_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(uint64_t v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(float v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
+slString slString::operator+(double v)
+{
+	slString s = *this;
+	s += v;
+	return s;
+}
+
