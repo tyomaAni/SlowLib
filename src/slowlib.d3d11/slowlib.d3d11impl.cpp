@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.d3d11impl.h"
 #include "slowlib.base/system/slWindowWin32.h"
+#include "slowlib.base/gs/slMaterial.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -64,6 +65,10 @@ bool slGSD3D11::CreateShaders()
 {
 	m_shaderLine3D = slCreate<slD3D11ShaderLine3D>(this);
 	if (!m_shaderLine3D->init())
+		return false;
+
+	m_shaderSolid = slCreate<slD3D11ShaderSolid>(this);
+	if (!m_shaderSolid->init())
 		return false;
 
 	return true;
@@ -160,12 +165,64 @@ bool slGSD3D11::createShaders(
 		*/
 
 		int ind = 0;
-		/*switch (vertexType)
+		switch (vertexType)
 		{
-		default:
-			slLog::PrintError("Unsupportex vertex type\n");
-			return false;
-		}*/
+		case slMeshVertexType::Triangle:
+			ind = 0;
+			vertexLayout[ind].SemanticName = "POSITION";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 0;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+
+			ind++;
+			vertexLayout[ind].SemanticName = "TEXCOORD";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 12;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+
+			ind++;
+			vertexLayout[ind].SemanticName = "NORMAL";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 20;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+
+			ind++;
+			vertexLayout[ind].SemanticName = "BINORMAL";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 32;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+
+			ind++;
+			vertexLayout[ind].SemanticName = "TANGENT";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 44;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+
+			ind++;
+			vertexLayout[ind].SemanticName = "COLOR";
+			vertexLayout[ind].SemanticIndex = 0;
+			vertexLayout[ind].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			vertexLayout[ind].InputSlot = 0;
+			vertexLayout[ind].AlignedByteOffset = 56;
+			vertexLayout[ind].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			vertexLayout[ind].InstanceDataStepRate = 0;
+			break;
+		}
 		vertexLayoutSize = ind + 1;
 
 		hr = m_d3d11Device->CreateInputLayout(
@@ -250,6 +307,10 @@ bool slGSD3D11::createGeometryShaders(const char* target,
 
 void slGSD3D11::Shutdown()
 {
+	
+	if (m_shaderSolid) { slDestroy(m_shaderSolid); m_shaderSolid = 0; }
+	if (m_shaderLine3D) {slDestroy(m_shaderLine3D); m_shaderLine3D = 0;}
+
 	SLD3DSAFE_RELEASE(m_depthStencilView);
 	SLD3DSAFE_RELEASE(m_blendStateAlphaDisabled);
 	SLD3DSAFE_RELEASE(m_blendStateAlphaEnabled);
@@ -724,7 +785,7 @@ void slGSD3D11::DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c)
 
 	SetActiveShader(m_shaderLine3D);
 	m_shaderLine3D->SetData(p1, p2, c, *slFramework::GetMatrix(slMatrixType::ViewProjection));
-	m_shaderLine3D->SetConstants(/*0*/);
+	m_shaderLine3D->SetConstants(0);
 
 	m_d3d11DevCon->Draw(2, 0);
 }
@@ -736,6 +797,38 @@ slGPUMesh* slGSD3D11::SummonMesh(slMesh* m)
 	SL_ASSERT_ST(m->m_indices);
 	SL_ASSERT_ST(m->m_info.m_iCount);
 	SL_ASSERT_ST(m->m_info.m_vCount);
+
+	slMesh* oldm = m;
+
+	slVertexTriangle V[6];
+	V[0].Position.set(1.f, 1.f, 0.f);
+	V[1].Position.set(-1.f, -1.f, 0.f);
+	V[2].Position.set(-1.f, 1.f, 0.f);
+
+	V[3].Position.set(1.f, 1.f, 0.f);
+	V[4].Position.set(1.f, -1.f, 0.f);
+	V[5].Position.set(-1.f, -1.f, 0.f);
+	uint16_t I[6];
+	I[0] = 0;
+	I[1] = 1;
+	I[2] = 2;
+	I[3] = 3;
+	I[4] = 4;
+	I[5] = 5;
+
+	slMesh M;
+	M.m_indices = (uint8_t*)(&I[0]);
+	M.m_vertices = (uint8_t*)(&V[0]);
+	M.m_info.m_iCount = 6;
+	M.m_info.m_vCount = 6;
+	M.m_info.m_stride = sizeof(slVertexTriangle);
+	M.m_info.m_indexType = slMeshIndexType::u16;
+	M.m_info.m_vertexType = slMeshVertexType::Triangle;
+
+	//m = &M;
+	slVertexTriangle* vertArr = (slVertexTriangle*)m->m_vertices;
+	uint16_t* indsArr = (uint16_t*)m->m_indices;
+
 
 	slGSD3D11Mesh* newMesh = slCreate<slGSD3D11Mesh>();
 	newMesh->m_meshInfo = m->m_info;
@@ -772,7 +865,6 @@ slGPUMesh* slGSD3D11::SummonMesh(slMesh* m)
 	ibd.ByteWidth = index_sizeof * newMesh->m_meshInfo.m_iCount;
 	iData.pSysMem = &m->m_indices[0];
 
-
 	hr = m_d3d11Device->CreateBuffer(&ibd, &iData, &newMesh->m_iBuffer);
 	if (FAILED(hr))
 	{
@@ -780,6 +872,73 @@ slGPUMesh* slGSD3D11::SummonMesh(slMesh* m)
 		return nullptr;
 	}
 
+	M.m_indices = 0;
+	M.m_vertices = 0;
+
+	m = oldm;
 	return newMesh;
 }
 
+void slGSD3D11::SetMesh(slGPUMesh* m)
+{
+	m_currMesh = (slGSD3D11Mesh*)m;
+}
+
+void slGSD3D11::SetMaterial(slMaterial* m)
+{
+	m_currMaterial = m;
+}
+
+void slGSD3D11::Draw()
+{
+	SL_ASSERT_ST(m_currMesh);
+	SL_ASSERT_ST(m_currMaterial);
+
+	if (m_currMaterial->m_wireframe)
+	{
+		if (m_currMaterial->m_cullBackFace)
+			m_d3d11DevCon->RSSetState(m_RasterizerWireframe);
+		else
+			m_d3d11DevCon->RSSetState(m_RasterizerWireframeNoBackFaceCulling);
+	}
+	else
+	{
+		if (m_currMaterial->m_cullBackFace)
+			m_d3d11DevCon->RSSetState(m_RasterizerSolid);
+		else
+			m_d3d11DevCon->RSSetState(m_RasterizerSolidNoBackFaceCulling);
+	}
+
+	switch (m_currMesh->m_meshInfo.m_vertexType)
+	{
+	case slMeshVertexType::Triangle:
+	{
+		switch (m_currMaterial->m_shader)
+		{
+		case slShaderType::Solid:
+			SetActiveShader(m_shaderSolid);
+			m_shaderSolid->SetData(*slFramework::GetMatrix(slMatrixType::WorldViewProjection),
+				*slFramework::GetMatrix(slMatrixType::World));
+			m_shaderSolid->SetConstants(m_currMaterial);
+			break;
+		}
+	}break;
+	}
+	/*{
+		m_d3d11DevCon->PSSetShaderResources(0, 1, &m_currentTextures[0]->m_textureResView);
+		m_d3d11DevCon->PSSetSamplers(0, 1, &m_currentTextures[0]->m_samplerState);
+	}*/
+
+	uint32_t offset = 0u;
+	m_d3d11DevCon->IASetVertexBuffers(0, 1, &m_currMesh->m_vBuffer, &m_currMesh->m_meshInfo.m_stride, &offset);
+
+	switch (m_currMesh->m_meshInfo.m_vertexType)
+	{
+	default:
+	case slMeshVertexType::Triangle:
+		m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_d3d11DevCon->IASetIndexBuffer(m_currMesh->m_iBuffer, m_currMesh->m_indexType, 0);
+		m_d3d11DevCon->DrawIndexed(m_currMesh->m_meshInfo.m_iCount, 0, 0);
+		break;
+	}
+}

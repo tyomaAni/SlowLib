@@ -34,17 +34,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 template<typename type>
 class slArray
 {
-	uint32_t m_allocated;
-	void reallocate(uint32_t new_capacity)
+	size_t m_allocated;
+	void reallocate(size_t new_capacity)
 	{
-		new_capacity += (uint32_t)ceilf((float)m_allocated * 0.5f);
+		new_capacity += (size_t)ceilf((float)m_allocated * 0.5f);
 		auto tmp_size = new_capacity * sizeof(type);
 		pointer new_data = static_cast<type*>(slMemory::malloc(tmp_size));
 		memset(new_data, 0, tmp_size);
 
 		if (m_data)
 		{
-			for (uint32_t i = 0u; i < m_size; ++i)
+			for (size_t i = 0u; i < m_size; ++i)
 			{
 				new(&new_data[i]) type(m_data[i]);
 				(&m_data[i])->~type();
@@ -79,7 +79,7 @@ public:
 
 		if (m_size)
 		{
-			for (uint32_t i = 0u; i < m_size; ++i)
+			for (size_t i = 0u; i < m_size; ++i)
 			{
 				new(&m_data[i]) type(other.m_data[i]);
 				m_data[i] = other.m_data[i];
@@ -92,15 +92,15 @@ public:
 		free_memory(); 
 	}
 
-	const_reference operator[](uint32_t id) const { return m_data[id]; }
-	reference       operator[](uint32_t id) { return m_data[id]; }
+	const_reference operator[](size_t id) const { return m_data[id]; }
+	reference       operator[](size_t id) { return m_data[id]; }
 
-	uint32_t capacity() 
+	size_t capacity()
 	{
 		return m_allocated;
 	}
 
-	uint32_t size() 
+	size_t size()
 	{
 		return m_size;
 	}
@@ -114,7 +114,7 @@ public:
 
 		if (m_data)
 		{
-			for (uint32_t i = 0u; i < m_size; ++i)
+			for (size_t i = 0u; i < m_size; ++i)
 			{
 				new(&new_data[i]) type(m_data[i]);
 				(&m_data[i])->~type();
@@ -125,13 +125,13 @@ public:
 		m_allocated = new_capacity;
 	}
 
-	void reserve(uint32_t new_capacity)
+	void reserve(size_t new_capacity)
 	{
 		if (new_capacity > m_allocated)
 			reallocate(new_capacity);
 	}
 
-	void insert(uint32_t where, const_reference object)
+	void insert(size_t where, const_reference object)
 	{
 		if (where >= m_size)
 		{
@@ -139,11 +139,11 @@ public:
 		}
 		else
 		{
-			uint32_t new_size = m_size + 1u;
+			size_t new_size = m_size + 1u;
 			if (new_size > m_allocated)
 				reallocate(new_size);
 
-			for (uint32_t i = m_size; i > where;)
+			for (size_t i = m_size; i > where;)
 			{
 				m_data[i] = m_data[i - 1];
 				--i;
@@ -156,7 +156,7 @@ public:
 
 	void push_back(const_reference object)
 	{
-		uint32_t new_size = m_size + 1u;
+		size_t new_size = m_size + 1u;
 		if (new_size > m_allocated)
 			reallocate(new_size);
 		new(&m_data[m_size]) type(object);
@@ -172,7 +172,7 @@ public:
 	{
 		if (m_data)
 		{
-			for (uint32_t i = 0u; i < m_allocated; ++i)
+			for (size_t i = 0u; i < m_allocated; ++i)
 			{
 				(&m_data[i])->~type();
 			}
@@ -188,7 +188,7 @@ public:
 		m_size = 0;
 	}
 
-	type* get(uint32_t index)
+	type* get(size_t index)
 	{
 		if (index >= m_allocated)
 			return nullptr;
@@ -209,7 +209,7 @@ public:
 	template<class _Pr>
 	void sort_insertion(_Pr _pred)
 	{
-		uint32_t i, j;
+		size_t i, j;
 		type t;
 		for (i = 1; i < m_size; ++i)
 		{
@@ -222,9 +222,9 @@ public:
 		}
 	}
 
-	void erase(uint32_t index)
+	void erase(size_t index)
 	{
-		for (uint32_t i = index; i < m_size; ++i)
+		for (size_t i = index; i < m_size; ++i)
 		{
 			if (i + 1 < m_size)
 				m_data[i] = m_data[i + 1];
@@ -237,7 +237,7 @@ public:
 
 	void erase_first(const_reference ref)
 	{
-		for (uint32_t i = 0u; i < m_size; ++i)
+		for (size_t i = 0u; i < m_size; ++i)
 		{
 			if (m_data[i] == ref)
 			{
@@ -248,7 +248,7 @@ public:
 	}
 
 	pointer m_data;
-	uint32_t     m_size;
+	size_t     m_size;
 };
 
 #endif

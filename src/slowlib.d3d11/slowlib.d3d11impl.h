@@ -38,10 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.d3d11.mesh.h"
 #include "slowlib.d3d11.shader.h"
 #include "slowlib.d3d11.shader.Line3D.h"
+#include "slowlib.d3d11.shader.Solid.h"
 
 class slGSD3D11 : public slGS
 {
 	friend class slD3D11ShaderLine3D;
+	friend class slD3D11ShaderSolid;
 
 	slWindow* m_activeWindow = 0;
 	slPoint* m_activeWindowSize = 0;
@@ -70,10 +72,14 @@ class slGSD3D11 : public slGS
 	bool m_vsync = false;
 
 	slD3D11ShaderLine3D* m_shaderLine3D = 0;
+	slD3D11ShaderSolid* m_shaderSolid = 0;
 	slGSD3D11ShaderBase* m_activeShader = 0;
 
 	bool createBackBuffer(float x, float y);
 	bool updateMainTarget();
+
+	slGSD3D11Mesh* m_currMesh = 0;
+	slMaterial* m_currMaterial = 0;
 
 public:
 	slGSD3D11();
@@ -105,6 +111,9 @@ public:
 	virtual void SetScissorRect(const slVec4f& rect, slVec4f* old) final;
 	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) final;
 	virtual slGPUMesh* SummonMesh(slMesh*) final;
+	virtual void SetMesh(slGPUMesh*) final;
+	virtual void SetMaterial(slMaterial*) final;
+	virtual void Draw() final;
 
 	bool createShaders(
 		const char* vertexTarget,

@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/gs/slMaterial.h"
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/geometry/slGeometry.h"
+#include "slowlib.base/containers/slArray.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 
@@ -89,6 +90,73 @@ public:
 	}
 };
 
+
+class MyModel {
+	slGS* m_gs = 0;
+	slArray<slGPUMesh*> m_meshBuffers;
+	slMaterial m_material;
+	slMat4 m_W;
+	slMat4 m_WVP;
+public:
+	MyModel(slGS* gs):m_gs(gs) {}
+	~MyModel() 
+	{
+		for (size_t i = 0; i < m_meshBuffers.m_size; ++i)
+		{
+			slDestroy(m_meshBuffers.m_data[i]);
+		}
+	}
+
+	class cb : public slMeshLoaderCallback
+	{
+	public:
+		cb(){}
+		virtual ~cb() {}
+
+		virtual void OnMaterial(slMaterial* m, slString* name) override{}
+		virtual void OnMesh(slMesh* newMesh, slString* name, slString* materialName) override{
+			if (newMesh)
+			{
+				slGPUMesh* gpumesh = m_model->m_gs->SummonMesh(newMesh);
+				if(gpumesh)
+					m_model->m_meshBuffers.push_back(gpumesh);
+				slDestroy(newMesh);
+			}
+		}
+
+		MyModel* m_model = 0;
+	}
+	m_cb;
+
+	bool Load(const char* p)
+	{
+		m_cb.m_model = this;
+		slFramework::LoadMesh(p, &m_cb);
+		return m_meshBuffers.m_size > 0;
+	}
+
+	void Draw(slCamera* camera)
+	{
+		m_WVP = camera->m_projectionMatrix * camera->m_viewMatrix * m_W;
+		m_material.m_sunPosition.set(0.f, 1.f, 0.f);
+
+		slFramework::SetMatrix(slMatrixType::World, &m_W);
+		slFramework::SetMatrix(slMatrixType::WorldViewProjection, &m_WVP);
+		for (size_t i = 0; i < m_meshBuffers.m_size; ++i)
+		{			
+			m_gs->SetMesh(m_meshBuffers.m_data[i]);
+			m_gs->SetMaterial(&m_material);
+			m_gs->Draw();
+		}
+	}
+
+	void SetPosition(const slVec3& p) 
+	{
+		m_W.m_data[3] = p;
+		m_W.m_data[3].w = 1.f;
+	}
+};
+
 int main(int argc, char * argv[])
 {
 	FrameworkCallback frameworkCallback;
@@ -117,6 +185,13 @@ int main(int argc, char * argv[])
 	camera->m_target = globalPosition;
 	camera->Update();
 	slFramework::SetMatrix(slMatrixType::ViewProjection, &camera->m_viewProjectionMatrix);
+
+	MyModel* mm = slCreate<MyModel>(gs);
+	if (mm->Load(slFramework::GetPathA("..\\data\\4_objs.obj").c_str()))
+	{
+		printf("LOADED!\n");
+	}
+	mm->SetPosition(globalPosition);
 
 	float* dt = slFramework::GetDeltaTime();
 
@@ -211,10 +286,14 @@ int main(int argc, char * argv[])
 			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y + 1.f, globalPosition.z), slVec3(globalPosition.x, globalPosition .y -1.f, globalPosition.z), ColorYellow);
 			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y, globalPosition.z + 1.f), slVec3(globalPosition.x, globalPosition.y, globalPosition.z -1.f), ColorLime);
 
+			mm->Draw(camera);
+
 			gs->EndDraw();
 			gs->SwapBuffers();
 		}
 	}
+	
+	slDestroy(mm);
 
 	if (window)
 		slDestroy(window);

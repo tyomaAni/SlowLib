@@ -36,7 +36,10 @@ slD3D11ShaderLine3D::slD3D11ShaderLine3D(slGSD3D11* gs)
 	m_gs(gs)
 {}
 
-slD3D11ShaderLine3D::~slD3D11ShaderLine3D() {}
+slD3D11ShaderLine3D::~slD3D11ShaderLine3D() 
+{
+	if (m_cb)m_cb->Release();
+}
 
 bool slD3D11ShaderLine3D::init(){
 	const char* text =
@@ -102,7 +105,7 @@ void slD3D11ShaderLine3D::SetData(const slVec3& p1, const slVec3& p2, const slCo
 	m_cbData.VP = projMat; // g_d3d11->m_matrixViewProjection;
 }
 
-void slD3D11ShaderLine3D::SetConstants(/*miMaterial* material*/){
+void slD3D11ShaderLine3D::SetConstants(slMaterial* material){
 
 	m_gs->m_d3d11DevCon->VSSetConstantBuffers(0, 1, &m_cb);
 	D3D11_MAPPED_SUBRESOURCE mappedResource;

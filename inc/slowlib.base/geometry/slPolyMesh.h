@@ -40,8 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 struct slPolygonCreatorVertex{
 	slVertexTriangle baseData;
-
-	bool weld = false;
 };
 
 struct slPolygonCreatorData
@@ -68,7 +66,7 @@ public:
 	void SetVertex(const slVertexTriangle&);
 	// then call this
 
-	void AddVertex(bool weld);
+	void AddVertex();
 	uint32_t Size();
 
 	void Clear();
@@ -254,8 +252,6 @@ public:
 	uint32_t m_uvCount = 0;
 	
 	slAabb m_aabb;
-
-	std::map<std::string, slPolyVertex*> m_weldMap;
 
 	void UpdateCounts();
 

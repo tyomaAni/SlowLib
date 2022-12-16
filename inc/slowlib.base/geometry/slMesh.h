@@ -57,7 +57,7 @@ struct slVertexTriangle
 struct slMeshInfo
 {
 	slMeshVertexType m_vertexType = slMeshVertexType::Triangle;
-	slMeshIndexType m_indexType = slMeshIndexType::u16;
+	slMeshIndexType m_indexType = slMeshIndexType::u32;
 	uint32_t m_vCount = 0;
 	uint32_t m_iCount = 0;
 	uint32_t m_stride = 0;

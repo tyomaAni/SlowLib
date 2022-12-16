@@ -48,7 +48,7 @@ public:
 		slVec4  P2;
 		slColor  Color;
 	}m_cbData;
-	virtual void SetConstants(/*slMaterial* material*/);
+	virtual void SetConstants(slMaterial* material);
 
 	void SetData(const slVec3& p1, const slVec3& p2, const slColor& color, const slMat4& projMat);
 

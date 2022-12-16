@@ -327,9 +327,6 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 
 	int last_counter[3] = { 0,0,0 };
 
-	std::map<std::string, unsigned int> map;
-	std::string hash;
-
 	slPolygonCreator polygonCreator;
 	slPolygonMesh* polygonMesh = 0;
 
@@ -403,7 +400,6 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 
 			polygonCreator.Clear();
 
-			bool weld = false;
 			bool genNormals = true;
 
 			for (size_t sz2 = f.p.size(), i2 = 0; i2 < sz2; ++i2)
@@ -419,17 +415,6 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 					// if index is negative then he points on position relative last element
 					// -1 = last element
 					pos_index = last_counter[0] + pos_index + 1;
-				}
-
-				{
-					hash.clear();
-					hash += pos_index;
-
-					auto it = map.find(hash);
-					if (it == map.end())
-						map[hash] = pos_index;
-					else
-						weld = true;
 				}
 
 				auto v = position[pos_index];
@@ -470,7 +455,7 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 				polygonCreator.SetPosition(pcPos);
 				polygonCreator.SetNormal(pcNorm);
 				polygonCreator.SetUV(pcUV);
-				polygonCreator.AddVertex(weld);
+				polygonCreator.AddVertex();
 			}
 
 			if (!polygonMesh)

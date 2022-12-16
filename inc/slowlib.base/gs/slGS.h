@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __SL_SLOWLIBBASEGS_H__
 
 #include "slowlib.base/common/slColor.h"
+#include "slowlib.base/gs/slGPUMesh.h"
 
 // Graphics System
 class slGS
@@ -85,6 +86,10 @@ public:
 	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) = 0;
 
 	virtual slGPUMesh* SummonMesh(slMesh*) = 0;
+
+	virtual void SetMesh(slGPUMesh*) = 0;
+	virtual void SetMaterial(slMaterial*) = 0;
+	virtual void Draw() = 0;
 };
 
 #endif

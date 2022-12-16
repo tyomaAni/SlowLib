@@ -52,7 +52,7 @@ public:
 	ID3D11GeometryShader* m_gShader;
 	ID3D11InputLayout* m_vLayout;
 
-	virtual void SetConstants(/*slMaterial* material*/) = 0;
+	virtual void SetConstants(slMaterial* material) = 0;
 };
 
 

@@ -488,44 +488,15 @@ void slPolygonMesh::AddPolygon(slPolygonCreator* pc, bool genNormals)
 
 	auto verts = pc->GetArray();
 
-	std::string key;
-	char cbuf[100];
-
 	for (uint32_t i = 0; i < polygonVertexCount; ++i)
 	{
 		slPolyVertex* newVertex = 0;
 		m_aabb.Add(verts->m_data[i].baseData.Position);
 
-		if (verts->m_data[i].weld)
-		{
-			key.clear();
-			sprintf_s(cbuf, 100, "%f%f%f", 
-				verts->m_data[i].baseData.Position.x,
-				verts->m_data[i].baseData.Position.y,
-				verts->m_data[i].baseData.Position.z);
-			key = cbuf;
+		newVertex = slCreate<slPolyVertex>();
+		newVertex->m_data = verts->m_data[i];
 
-			auto find_result = m_weldMap.find(key);
-			if (find_result == m_weldMap.end())
-			{
-				newVertex = slCreate<slPolyVertex>();
-				newVertex->m_data = verts->m_data[i];
-
-				m_weldMap[key] = newVertex;
-				listAddVertex(newVertex);
-			}
-			else
-			{
-				newVertex = find_result->second;
-			}
-		}
-		else
-		{
-			newVertex = slCreate<slPolyVertex>();
-			newVertex->m_data = verts->m_data[i];
-
-			listAddVertex(newVertex);
-		}
+		listAddVertex(newVertex);
 
 		/*if (positions[i].m_second & miPolygonCreator::flag_selected)
 			newVertex->m_flags |= miVertex::flag_isSelected;*/
@@ -609,25 +580,34 @@ slMesh* slPolygonMesh::CreateMesh()
 		}
 
 		newMesh->m_vertices = (uint8_t*)vertArr.m_data;
+		newMesh->m_indices = (uint8_t*)indsArr.m_data;
 
-		if (newMesh->m_info.m_iCount > 0xFFF0)
+		/*for (size_t i = 0; i < vertArr.m_size; ++i)
 		{
-			newMesh->m_info.m_indexType = slMeshIndexType::u32;
-			newMesh->m_indices = (uint8_t*)slMemory::malloc(newMesh->m_info.m_iCount * sizeof(uint32_t));
-			uint32_t* i32 = (uint32_t*)newMesh->m_indices;
+			printf("P: %f %f %f\n", vertArr.m_data[i].Position.x, vertArr.m_data[i].Position.y, vertArr.m_data[i].Position.z);
+		}
+		for (size_t i = 0; i < indsArr.m_size; ++i)
+		{
+			printf("I: %i\n", indsArr.m_data[i]);
+		}*/
+
+		if (newMesh->m_info.m_iCount < 0xFFFF)
+		{
+			newMesh->m_info.m_indexType = slMeshIndexType::u16;
+
+			uint32_t* oldIndices = (uint32_t*)newMesh->m_indices;
+
+			newMesh->m_indices = (uint8_t*)slMemory::malloc(newMesh->m_info.m_iCount * sizeof(uint16_t));
 			uint16_t* i16 = (uint16_t*)newMesh->m_indices;
+
 			for (uint32_t i = 0; i < newMesh->m_info.m_iCount; ++i)
 			{
-				*i32 = *i16;
-				++i32;
+				*i16 = *oldIndices;
+				++oldIndices;
 				++i16;
 			}
 
 			indsArr.free_memory();
-		}
-		else
-		{
-			newMesh->m_indices = (uint8_t*)indsArr.m_data;
 		}
 
 		vertArr.m_data = 0;

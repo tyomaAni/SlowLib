@@ -495,6 +495,7 @@ public:
 		y = static_cast<T>(v.y);
 		z = static_cast<T>(v.z);
 		w = static_cast<T>(v.w);
+		return *this;
 	}
 
 	bool operator==(const slVec4_t<T>& v)const
