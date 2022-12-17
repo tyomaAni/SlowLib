@@ -26,56 +26,25 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef _SL_IMGLDRIMPL_H_
+#define _SL_IMGLDRIMPL_H_
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
-class slImage;
-class slColor;
-class slImageLoader;
-struct slTextureInfo;
+#include "slowlib.base/gs/slImage.h"
+#include "slowlib.base/gs/slImageLoader.h"
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+class slImageLoaderImpl : public slImageLoader
+{
+	slImage* LoadBMP(const char* path);
+public:
+	slImageLoaderImpl();
+	virtual ~slImageLoaderImpl();
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+	virtual uint32_t GetSupportedFilesCount() final;
+	virtual slString GetSupportedFileExtension(uint32_t) final;
+	virtual slString GetSupportedFileName(uint32_t) final;
 
-template<typename _type>
-struct slListNode;
+	virtual slImage* Load(const char* path) final;
+};
 
-template<typename _type>
-class slList;
 
 #endif

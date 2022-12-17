@@ -25,57 +25,84 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef __SL_SLOWLIBBASETEXTURE_H__
+#define __SL_SLOWLIBBASETEXTURE_H__
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
-class slImage;
-class slColor;
-class slImageLoader;
-struct slTextureInfo;
+#include "slowlib.base/gs/slImage.h"
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+enum class slTextureType : uint32_t
+{
+	Texture2D,
+	RTT
+};
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+enum class slTextureComparisonFunc : uint32_t
+{
+	Never,
+	Less,
+	Equal,
+	LessEqual,
+	Greater,
+	NotEqual,
+	GreaterEqual,
+	Always
+};
 
-template<typename _type>
-struct slListNode;
+enum class slTextureAddressMode : uint32_t
+{
+	Wrap,
+	Mirror,
+	Clamp,
+	Border,
+	MirrorOnce
+};
 
-template<typename _type>
-class slList;
+enum class slTextureFilter : uint32_t
+{
+	// min mag mip / point linear
+	PPP,
+	PPL,
+	PLP,
+	PLL,
+	LPP,
+	LPL,
+	LLP,
+	LLL,
+	ANISOTROPIC,
+	// comparison
+	CMP_PPP,
+	CMP_PPL,
+	CMP_PLP,
+	CMP_PLL,
+	CMP_LPP,
+	CMP_LPL,
+	CMP_LLP,
+	CMP_LLL,
+	CMP_ANISOTROPIC,
+};
+
+struct slTextureInfo
+{
+	slImageInfo m_imageInfo;
+	slTextureType m_type = slTextureType::Texture2D;
+	slTextureComparisonFunc m_cmpFnc = slTextureComparisonFunc::Always;
+	slTextureAddressMode m_adrMode = slTextureAddressMode::Wrap;
+	slTextureFilter m_filter = slTextureFilter::PPP;
+	uint32_t m_anisotropicLevel = 1;
+	bool m_generateMipmaps = false;
+};
+
+class slTexture
+{
+protected:
+	slTextureInfo m_info;
+public:
+	slTexture() {}
+	virtual ~slTexture() {}
+
+	const slTextureInfo& GetInfo() { return m_info; }
+};
 
 #endif

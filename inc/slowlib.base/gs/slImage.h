@@ -25,57 +25,55 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef __SL_SLOWLIBBASEIMG_H__
+#define __SL_SLOWLIBBASEIMG_H__
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
-class slImage;
-class slColor;
-class slImageLoader;
-struct slTextureInfo;
+enum class slImageFormat : uint32_t
+{
+	r8g8b8,
+	r8g8b8a8,
+	x1r5g5b5,
+	a4r4g4b4,
+	x4r4g4b4,
+	r5g6b5,
+	a1r5g5b5
+};
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+struct slImageInfo
+{
+	uint32_t m_width = 0;
+	uint32_t m_height = 0;
+	uint32_t m_bits = 32;
+	uint32_t m_pitch = 0;
+	slImageFormat m_format = slImageFormat::r8g8b8a8;
+};
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+class slImage
+{
+public:
+	slImage();
+	~slImage();
 
-template<typename _type>
-struct slListNode;
+	uint8_t* m_data = 0;
+	uint32_t m_dataSize = 0;
+	slImageInfo m_info;
 
-template<typename _type>
-class slList;
+	// fast creating
+	void Create(uint32_t x, uint32_t y);
+	
+	// must be created
+	// only for r8g8b8a8
+	void FlipVertical();
+	// must be created
+	// only for r8g8b8a8
+	void FlipPixel();
+	// must be created
+	// only for r8g8b8a8
+	void Fill(const slColor& color);
+
+	void ConvertTo(slImageFormat);
+};
 
 #endif

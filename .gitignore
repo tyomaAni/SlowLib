@@ -49,3 +49,5 @@ build/slowlib.d3d11/Debug
 build/slowlib.d3d11/Release
 build/slowlib.meshloader/Debug
 build/slowlib.meshloader/Release
+build/slowlib.imageloader/Debug
+build/slowlib.imageloader/Release

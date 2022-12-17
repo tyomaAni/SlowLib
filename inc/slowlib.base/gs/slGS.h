@@ -90,6 +90,8 @@ public:
 	virtual void SetMesh(slGPUMesh*) = 0;
 	virtual void SetMaterial(slMaterial*) = 0;
 	virtual void Draw() = 0;
+
+	virtual slTexture* SummonTexture(slImage*, const slTextureInfo&) = 0;
 };
 
 #endif

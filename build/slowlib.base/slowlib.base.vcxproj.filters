@@ -40,6 +40,9 @@
     <Filter Include="Source Files\geometry">
       <UniqueIdentifier>{d1379aee-ca59-4765-afa3-baba8c0f7219}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\gs">
+      <UniqueIdentifier>{9d01bffc-d65c-4d53-a15c-e2932701f3c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp">
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\gs\slImage.cpp">
+      <Filter>Source Files\gs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

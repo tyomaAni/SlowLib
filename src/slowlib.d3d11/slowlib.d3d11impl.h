@@ -34,11 +34,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/gs/slGS.h"
 #include "slowlib.base/gs/slGPUMesh.h"
+#include "slowlib.base/gs/slTexture.h"
 
 #include "slowlib.d3d11.mesh.h"
+#include "slowlib.d3d11.texture.h"
 #include "slowlib.d3d11.shader.h"
 #include "slowlib.d3d11.shader.Line3D.h"
 #include "slowlib.d3d11.shader.Solid.h"
+
+#define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
 
 class slGSD3D11 : public slGS
 {
@@ -78,6 +82,7 @@ class slGSD3D11 : public slGS
 	bool createBackBuffer(float x, float y);
 	bool updateMainTarget();
 
+
 	slGSD3D11Mesh* m_currMesh = 0;
 	slMaterial* m_currMaterial = 0;
 
@@ -114,6 +119,7 @@ public:
 	virtual void SetMesh(slGPUMesh*) final;
 	virtual void SetMaterial(slMaterial*) final;
 	virtual void Draw() final;
+	virtual slTexture* SummonTexture(slImage*, const slTextureInfo&) final;
 
 	bool createShaders(
 		const char* vertexTarget,
@@ -131,6 +137,11 @@ public:
 		const char* shaderText,
 		const char* entryPoint,
 		ID3D11GeometryShader** gs);
+	HRESULT	createSamplerState(D3D11_FILTER filter,
+		D3D11_TEXTURE_ADDRESS_MODE addressMode,
+		uint32_t anisotropic_level,
+		ID3D11SamplerState** samplerState,
+		D3D11_COMPARISON_FUNC cmpFunc);
 };
 
 #endif

@@ -101,7 +101,7 @@ public:
 
 	static uint32_t GetMeshLoadersNum();
 	static slMeshLoader* GetMeshLoader(uint32_t);
-	static void LoadMesh(const char*, slMeshLoaderCallback*);
+	static void SummonMesh(const char*, slMeshLoaderCallback*);
 
 	static float* GetDeltaTime();
 
@@ -129,6 +129,10 @@ public:
 
 	static slString GetAppPath();
 	static slStringA GetPathA(const slString&);
+
+	static uint32_t GetImageLoadersNum();
+	static slImageLoader* GetImageLoader(uint32_t);
+	static slImage* SummonImage(const char*);
 };
 
 #endif

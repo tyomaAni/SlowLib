@@ -41,7 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // {0FE89B14-923C-4F2E-BA22-B18694D6F1ED}
 slDEFINE_UID(g_uid_d3d11, 0xfe89b14, 0x923c, 0x4f2e, 0xba22, 0xb1, 0x86, 0x94, 0xd6, 0xf1, 0xed);
 
-#define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
 
 slGSD3D11::slGSD3D11()
 {	
@@ -337,15 +336,7 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	m_mainTargetSize.x = (float)m_activeWindowSize->x;
 	m_mainTargetSize.y = (float)m_activeWindowSize->y;
 
-	DXGI_MODE_DESC	bufferDesc;
-	memset(&bufferDesc, 0, sizeof(bufferDesc));
-	bufferDesc.Width = (UINT)m_activeWindowSize->x;
-	bufferDesc.Height = (UINT)m_activeWindowSize->y;
-	bufferDesc.RefreshRate.Numerator = 60;
-	bufferDesc.RefreshRate.Denominator = 1;
-	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	bufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 	auto hr = D3D11CreateDevice(
@@ -390,6 +381,24 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	}
 
 	slWindowWin32* w32 = (slWindowWin32*)w->GetData()->m_implementation;
+
+	DXGI_MODE_DESC	bufferDesc;
+	memset(&bufferDesc, 0, sizeof(bufferDesc));
+	bufferDesc.Width = (UINT)m_activeWindowSize->x;
+	bufferDesc.Height = (UINT)m_activeWindowSize->y;
+	bufferDesc.RefreshRate.Numerator = 60;
+	bufferDesc.RefreshRate.Denominator = 1;
+
+	//DXGI_FORMAT_R16G16B16A16_FLOAT
+	//DXGI_FORMAT_R10G10B10A2_UNORM
+	//DXGI_FORMAT_R8G8B8A8_UNORM
+	//DXGI_FORMAT_R8G8B8A8_UNORM_SRGB
+	//DXGI_FORMAT_B8G8R8A8_UNORM
+	//DXGI_FORMAT_B8G8R8A8_UNORM_SRGB
+	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+	bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	bufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
 	DXGI_SWAP_CHAIN_DESC	swapChainDesc;
 	memset(&swapChainDesc, 0, sizeof(swapChainDesc));
@@ -941,4 +950,306 @@ void slGSD3D11::Draw()
 		m_d3d11DevCon->DrawIndexed(m_currMesh->m_meshInfo.m_iCount, 0, 0);
 		break;
 	}
+}
+
+HRESULT	slGSD3D11::createSamplerState(D3D11_FILTER filter,
+	D3D11_TEXTURE_ADDRESS_MODE addressMode,
+	uint32_t anisotropic_level,
+	ID3D11SamplerState** samplerState,
+	D3D11_COMPARISON_FUNC cmpFunc)
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = filter;
+	samplerDesc.MipLODBias = 0.0f;
+
+	samplerDesc.AddressU = addressMode;
+	samplerDesc.AddressV = addressMode;
+	samplerDesc.AddressW = addressMode;
+
+	samplerDesc.ComparisonFunc = cmpFunc; //D3D11_COMPARISON_ALWAYS;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	samplerDesc.MaxAnisotropy = anisotropic_level;
+
+
+	return m_d3d11Device->CreateSamplerState(&samplerDesc, samplerState);
+}
+
+slTexture* slGSD3D11::SummonTexture(slImage* img, const slTextureInfo& inf)
+{
+	SL_ASSERT_ST(img);
+	slGSD3D11Texture* newTexture = 0;
+
+	ID3D11Texture2D* _texture = 0;
+	ID3D11ShaderResourceView* _textureResView = 0;
+	ID3D11SamplerState* _samplerState = 0;
+	ID3D11RenderTargetView* _RTV = 0;
+	D3D11_FILTER filter;
+	slTextureFilter tf = inf.m_filter;
+	switch (tf)
+	{
+	case slTextureFilter::PPP:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_POINT;
+		break;
+	case slTextureFilter::PPL:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+		break;
+	case slTextureFilter::PLP:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+		break;
+	case slTextureFilter::PLL:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+		break;
+	case slTextureFilter::LPP:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+		break;
+	case slTextureFilter::LPL:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		break;
+	case slTextureFilter::LLP:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		break;
+	case slTextureFilter::LLL:
+		filter = D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		break;
+	case slTextureFilter::ANISOTROPIC:
+		filter = D3D11_FILTER::D3D11_FILTER_ANISOTROPIC;
+		break;
+	case slTextureFilter::CMP_PPP:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_MIP_POINT;
+		break;
+	case slTextureFilter::CMP_PPL:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR;
+		break;
+	case slTextureFilter::CMP_PLP:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT;
+		break;
+	case slTextureFilter::CMP_PLL:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR;
+		break;
+	case slTextureFilter::CMP_LPP:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_LINEAR_MAG_MIP_POINT;
+		break;
+	case slTextureFilter::CMP_LPL:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		break;
+	case slTextureFilter::CMP_LLP:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+		break;
+	case slTextureFilter::CMP_LLL:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+		break;
+	case slTextureFilter::CMP_ANISOTROPIC:
+		filter = D3D11_FILTER::D3D11_FILTER_COMPARISON_ANISOTROPIC;
+		break;
+	default:
+		break;
+	}
+
+	HRESULT hr = 0;
+	if (inf.m_type == slTextureType::Texture2D)
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Width = img->m_info.m_width;
+		desc.Height = img->m_info.m_height;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+
+		bool isGenMips = inf.m_generateMipmaps;
+
+		switch (img->m_info.m_format)
+		{
+		case slImageFormat::r8g8b8a8:
+		{
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+			desc.MiscFlags = 0;
+			desc.MipLevels = 1;
+
+			desc.ArraySize = 1;
+			desc.Usage = D3D11_USAGE_DEFAULT;
+			desc.CPUAccessFlags = 0;
+
+			if (isGenMips)
+			{
+				desc.MipLevels = 0;
+				desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+				hr = m_d3d11Device->CreateTexture2D(&desc, 0, &_texture);
+				if (FAILED(hr))
+				{
+					slLog::PrintError("Can't create 2D texture\n");
+					goto fail;
+				}
+				m_d3d11DevCon->UpdateSubresource(_texture, 0, NULL, img->m_data, img->m_info.m_pitch, 0);
+			}
+			else
+			{
+				D3D11_SUBRESOURCE_DATA initData;
+				ZeroMemory(&initData, sizeof(initData));
+				initData.pSysMem = img->m_data;
+				initData.SysMemPitch = img->m_info.m_pitch;
+				initData.SysMemSlicePitch = img->m_dataSize;
+				hr = m_d3d11Device->CreateTexture2D(&desc, &initData, &_texture);
+				if (FAILED(hr))
+				{
+					slLog::PrintError("Can't create 2D texture\n");
+					goto fail;
+				}
+			}
+
+
+			D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+			ZeroMemory(&SRVDesc, sizeof(SRVDesc));
+			SRVDesc.Format = desc.Format;
+			SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+			SRVDesc.Texture2D.MostDetailedMip = 0;
+			SRVDesc.Texture2D.MipLevels = 1;
+			if (isGenMips)
+				SRVDesc.Texture2D.MipLevels = -1;
+
+			hr = m_d3d11Device->CreateShaderResourceView(_texture,
+				&SRVDesc, &_textureResView);
+			if (FAILED(hr))
+			{
+				slLog::PrintError("Can't create shader resource view\n");
+				goto fail;
+			}
+		}break;
+		default:
+			slLog::PrintError("Unsupported texture format\n");
+			goto fail;
+		}
+		if (isGenMips)
+			m_d3d11DevCon->GenerateMips(_textureResView);
+	}
+	else
+	{
+		D3D11_TEXTURE2D_DESC desc;
+		ZeroMemory(&desc, sizeof(desc));
+		desc.Width = img->m_info.m_width;
+		desc.Height = img->m_info.m_height;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.SampleDesc.Quality = 0;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		desc.MiscFlags = 0;
+		desc.ArraySize = 1;
+		desc.MipLevels = 1;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.CPUAccessFlags = 0;
+
+		hr = m_d3d11Device->CreateTexture2D(&desc, NULL, &_texture);
+		if (FAILED(hr))
+		{
+			slLog::PrintError("Can't create render target texture\n");
+			goto fail;
+		}
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		renderTargetViewDesc.Format = desc.Format;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
+		hr = m_d3d11Device->CreateRenderTargetView(_texture, &renderTargetViewDesc, &_RTV);
+		if (FAILED(hr))
+		{
+			slLog::PrintError("Can't create render target view\n");
+			goto fail;
+		}
+
+
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+		ZeroMemory(&SRVDesc, sizeof(SRVDesc));
+		SRVDesc.Format = desc.Format;
+		SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		SRVDesc.Texture2D.MostDetailedMip = 0;
+		SRVDesc.Texture2D.MipLevels = 1;
+
+		hr = m_d3d11Device->CreateShaderResourceView(_texture,
+			&SRVDesc, &_textureResView);
+		if (FAILED(hr))
+		{
+			slLog::PrintError("Can't create shader resource view\n");
+			goto fail;
+		}
+
+		//goto success;
+	}
+
+	D3D11_TEXTURE_ADDRESS_MODE tam;
+	switch (inf.m_adrMode)
+	{
+	case slTextureAddressMode::Wrap:
+	default:
+		tam = D3D11_TEXTURE_ADDRESS_WRAP;
+		break;
+	case slTextureAddressMode::Mirror:
+		tam = D3D11_TEXTURE_ADDRESS_MIRROR;
+		break;
+	case slTextureAddressMode::Clamp:
+		tam = D3D11_TEXTURE_ADDRESS_CLAMP;
+		break;
+	case slTextureAddressMode::Border:
+		tam = D3D11_TEXTURE_ADDRESS_BORDER;
+		break;
+	case slTextureAddressMode::MirrorOnce:
+		tam = D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
+		break;
+	}
+
+	D3D11_COMPARISON_FUNC cmpFunc;
+	switch (inf.m_cmpFnc)
+	{
+	case slTextureComparisonFunc::Never:
+		cmpFunc = D3D11_COMPARISON_NEVER;
+		break;
+	case slTextureComparisonFunc::Less:
+		cmpFunc = D3D11_COMPARISON_LESS;
+		break;
+	case slTextureComparisonFunc::Equal:
+		cmpFunc = D3D11_COMPARISON_EQUAL;
+		break;
+	case slTextureComparisonFunc::LessEqual:
+		cmpFunc = D3D11_COMPARISON_LESS_EQUAL;
+		break;
+	case slTextureComparisonFunc::Greater:
+		cmpFunc = D3D11_COMPARISON_GREATER;
+		break;
+	case slTextureComparisonFunc::NotEqual:
+		cmpFunc = D3D11_COMPARISON_NOT_EQUAL;
+		break;
+	case slTextureComparisonFunc::GreaterEqual:
+		cmpFunc = D3D11_COMPARISON_GREATER_EQUAL;
+		break;
+	case slTextureComparisonFunc::Always:
+	default:
+		cmpFunc = D3D11_COMPARISON_ALWAYS;
+		break;
+	}
+
+	hr = createSamplerState(filter, tam, inf.m_anisotropicLevel,
+		&_samplerState, cmpFunc);
+	if (FAILED(hr))
+	{
+		slLog::PrintError("Can't create sampler state\n");
+		goto fail;
+	}
+
+	newTexture = slCreate<slGSD3D11Texture>();
+	newTexture->m_RTV = _RTV;
+	newTexture->m_samplerState = _samplerState;
+	newTexture->m_textureResView = _textureResView;
+	newTexture->m_texture = _texture;
+	newTexture->m_textureInfo = inf;
+	newTexture->m_textureInfo.m_imageInfo = img->m_info;
+	return newTexture;
+
+fail:;
+	SLD3DSAFE_RELEASE(_RTV);
+	SLD3DSAFE_RELEASE(_samplerState);
+	SLD3DSAFE_RELEASE(_textureResView);
+	SLD3DSAFE_RELEASE(_texture);
+	return NULL;
 }

@@ -45,6 +45,8 @@ slD3D11ShaderSolid::~slD3D11ShaderSolid()
 
 bool slD3D11ShaderSolid::init(){
 	const char* text =
+		"Texture2D tex2d_1;\n"
+		"SamplerState tex2D_sampler_1;\n"
 		"struct VSIn{\n"
 		"   float3 position : POSITION;\n"
 		"	float2 uv : TEXCOORD;\n"
@@ -86,8 +88,8 @@ bool slD3D11ShaderSolid::init(){
 		"	float diff = max(dot(input.normal, -lightDir), 0.0);\n"
 
 		"   PSOut output;\n"
-		//"   output.color = tex2d_1.Sample(tex2D_sampler_1, input.uv) * BaseColor;\n"
-		"   output.color = BaseColor;\n"
+		"   output.color = tex2d_1.Sample(tex2D_sampler_1, input.uv) * BaseColor;\n"
+		//"   output.color = BaseColor;\n"
 		//"	output.color.w += input.vColor.w;\n"
 		//"	if(output.color.w>1.f) output.color.w = 1.f;\n"
 		//"	output.color.xyz = lerp(output.color.xyz, input.vColor.xyz, input.vColor.www);\n"
@@ -124,7 +126,14 @@ void slD3D11ShaderSolid::SetData(const slMat4& WVP, const slMat4& W)
 	m_cbDataV.WVP = WVP;
 }
 
-void slD3D11ShaderSolid::SetConstants(slMaterial* material){
+void slD3D11ShaderSolid::SetConstants(slMaterial* material) {
+
+	if (material->m_maps[0].m_texture)
+	{
+		slGSD3D11Texture* _t = (slGSD3D11Texture*)material->m_maps[0].m_texture;
+		m_gs->m_d3d11DevCon->PSSetShaderResources(0, 1, &_t->m_textureResView);
+		m_gs->m_d3d11DevCon->PSSetSamplers(0, 1, &_t->m_samplerState);
+	}
 
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;

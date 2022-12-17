@@ -25,57 +25,57 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
-class slImage;
-class slColor;
-class slImageLoader;
-struct slTextureInfo;
+#include "slowlib.h"
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+#include "slowlib.imageloaderimpl.h"
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+slImageLoaderImpl::slImageLoaderImpl(){}
+slImageLoaderImpl::~slImageLoaderImpl(){}
 
-template<typename _type>
-struct slListNode;
+uint32_t slImageLoaderImpl::GetSupportedFilesCount()
+{
+	return 1;
+}
 
-template<typename _type>
-class slList;
+slString slImageLoaderImpl::GetSupportedFileExtension(uint32_t i)
+{
+	switch (i)
+	{
+	case 0:
+		return "bmp";
+	}
+	return "-";
+}
 
-#endif
+slString slImageLoaderImpl::GetSupportedFileName(uint32_t i)
+{
+	switch (i)
+	{
+	case 0:
+		return "Windows Bitmap";
+	}
+	return "-";
+}
+
+slImage* slImageLoaderImpl::Load(const char* path)
+{
+	size_t len = strlen(path);
+	if (len > 4)
+	{
+		// find last '.'
+		size_t last_dot = 0;
+		for (size_t i = 0; i < len; ++i)
+		{
+			if (path[i] == '.')
+				last_dot = i;
+		}
+		if (last_dot)
+		{
+			if (strcmp(".bmp", &path[last_dot]) == 0)
+				return LoadBMP(path);
+		}
+	}
+	return nullptr;
+}
+

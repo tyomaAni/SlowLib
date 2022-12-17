@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
 #include "slowlib.base/gs/slMaterial.h"
+#include "slowlib.base/gs/slImage.h"
+#include "slowlib.base/gs/slImageLoader.h"
+#include "slowlib.base/gs/slTexture.h"
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/containers/slArray.h"
@@ -95,12 +98,16 @@ class MyModel {
 	slGS* m_gs = 0;
 	slArray<slGPUMesh*> m_meshBuffers;
 	slMaterial m_material;
+	slTexture* m_texture = 0;
 	slMat4 m_W;
 	slMat4 m_WVP;
 public:
 	MyModel(slGS* gs):m_gs(gs) {}
 	~MyModel() 
 	{
+		if (m_texture)
+			slDestroy(m_texture);
+
 		for (size_t i = 0; i < m_meshBuffers.m_size; ++i)
 		{
 			slDestroy(m_meshBuffers.m_data[i]);
@@ -131,7 +138,18 @@ public:
 	bool Load(const char* p)
 	{
 		m_cb.m_model = this;
-		slFramework::LoadMesh(p, &m_cb);
+		slFramework::SummonMesh(p, &m_cb);
+
+		slImage* image = slFramework::SummonImage("D:\\moon_64.bmp");
+		if (image)
+		{
+			printf("Image %ix%i\n", image->m_info.m_width, image->m_info.m_height);
+			slTextureInfo ti;
+			m_texture = m_gs->SummonTexture(image, ti);
+			m_material.m_maps[0].m_texture = m_texture;
+			slDestroy(image);
+		}
+
 		return m_meshBuffers.m_size > 0;
 	}
 
@@ -187,14 +205,14 @@ int main(int argc, char * argv[])
 	slFramework::SetMatrix(slMatrixType::ViewProjection, &camera->m_viewProjectionMatrix);
 
 	MyModel* mm = slCreate<MyModel>(gs);
-	if (mm->Load(slFramework::GetPathA("..\\data\\4_objs.obj").c_str()))
+	if (mm->Load(slFramework::GetPathA("..\\data\\box.obj").c_str()))
 	{
 		printf("LOADED!\n");
 	}
 	mm->SetPosition(globalPosition);
 
-	float* dt = slFramework::GetDeltaTime();
 
+	float* dt = slFramework::GetDeltaTime();
 	while (g_isRun)
 	{
 		slFramework::Update();
@@ -272,8 +290,8 @@ int main(int argc, char * argv[])
 			/*slString path = slFramework::GetAppPath() + "4_objs.obj";
 			slStringA stra;
 			path.to_utf8(stra);
-			slFramework::LoadMesh(stra.data(), &mlcb);*/
-			slFramework::LoadMesh(slFramework::GetPathA("..\\data\\4_objs.obj").c_str(), &mlcb);
+			slFramework::SummonMesh(stra.data(), &mlcb);*/
+			slFramework::SummonMesh(slFramework::GetPathA("..\\data\\4_objs.obj").c_str(), &mlcb);
 		}
 
 

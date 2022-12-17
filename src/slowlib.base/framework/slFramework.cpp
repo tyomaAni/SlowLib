@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/gs/slImageLoader.h"
 #include "slowlib.base/geometry/slMeshLoader.h"
 #include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/scene/slCamera.h"
@@ -71,15 +72,25 @@ extern "C"
 {
 	slGS* SL_CDECL slGSD3D11_create();
 	slMeshLoader* SL_CDECL slMeshLoaderOBJ_create();
+	slImageLoader* SL_CDECL slImageLoaderDefault_create();
 }
 SL_LINK_LIBRARY("slowlib.d3d11");
 SL_LINK_LIBRARY("slowlib.meshloader");
+SL_LINK_LIBRARY("slowlib.imageloader");
 
 
 slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy()
 {
+	if (g_framework->m_imageLoaders.size())
+	{
+		for (auto o : g_framework->m_imageLoaders)
+		{
+			slDestroy(o);
+		}
+		g_framework->m_imageLoaders.clear();
+	}
 	if (g_framework->m_meshLoaders.size())
 	{
 		for (auto o : g_framework->m_meshLoaders)
@@ -121,6 +132,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 
 		g_framework->m_gss.push_back(slGSD3D11_create());
 		g_framework->m_meshLoaders.push_back(slMeshLoaderOBJ_create());
+		g_framework->m_imageLoaders.push_back(slImageLoaderDefault_create());
 	}
 }
 
@@ -302,7 +314,7 @@ slMeshLoader* slFramework::GetMeshLoader(uint32_t i)
 	return g_framework->m_meshLoaders[i];
 }
 
-void slFramework::LoadMesh(const char* path, slMeshLoaderCallback* cb)
+void slFramework::SummonMesh(const char* path, slMeshLoaderCallback* cb)
 {
 	slStringA stra;
 	std::filesystem::path p = path;
@@ -370,4 +382,41 @@ uint64_t slFramework::FileSize(const slString& p)
 slPolygonMesh* slFramework::SummonPolygonMesh()
 {
 	return slCreate<slPolygonMesh>();
+}
+
+uint32_t slFramework::GetImageLoadersNum()
+{
+	return (uint32_t)g_framework->m_imageLoaders.size();
+}
+
+slImageLoader* slFramework::GetImageLoader(uint32_t i)
+{
+	SL_ASSERT_ST(i < g_framework->m_imageLoaders.size());
+	return g_framework->m_imageLoaders[i];
+}
+
+slImage* slFramework::SummonImage(const char* path)
+{
+	slStringA stra;
+	std::filesystem::path p = path;
+	auto e = p.extension();
+	uint32_t mln = GetImageLoadersNum();
+	for (uint32_t i = 0; i < mln; ++i)
+	{
+		auto il = GetImageLoader(i);
+		auto sfc = il->GetSupportedFilesCount();
+		for (uint32_t o = 0; o < sfc; ++o)
+		{
+			slString sfe = il->GetSupportedFileExtension(o);
+			sfe.insert(U".", 0);
+			sfe.to_lower();
+			sfe.to_utf8(stra);
+			auto stre = lowercase(e.generic_string());
+			if (strcmp((const char*)stra.m_data, stre.c_str()) == 0)
+			{
+				return il->Load(path);
+			}
+		}
+	}
+	return NULL;
 }

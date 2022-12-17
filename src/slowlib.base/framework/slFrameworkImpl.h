@@ -47,6 +47,7 @@ public:
 	
 	std::vector<slGS*> m_gss;
 	std::vector<slMeshLoader*> m_meshLoaders;
+	std::vector<slImageLoader*> m_imageLoaders;
 
 	slMat4* m_matrixPtrs[(uint32_t)slMatrixType::_count];
 
