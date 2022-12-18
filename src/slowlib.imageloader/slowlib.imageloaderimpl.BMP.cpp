@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 
 #include "slowlib.imageloaderimpl.h"
+#include "slowlib.base/common/slFileBuffer.h"
 
 #pragma pack(push,2)
 struct BitmapHeader {
@@ -72,46 +73,54 @@ struct BitmapInfoHeader_v5 {
 	uint32_t	bV5Reserved;
 };
 
+slImage* slImageLoaderImpl::LoadBMP(const char* path)
+{
+	SL_ASSERT_ST(path);
+
+	slImage* img = 0;
+	uint32_t file_size = 0;
+	uint8_t* ptr = slFramework::SummonFileBuffer(path, &file_size, false);
+	if (ptr)
+	{
+		img = LoadBMP(path, ptr, (uint32_t)file_size);
+		slDestroy(ptr);
+	}
+	return img;
+}
+
 // 32bitRGBA
 // 32bitRGB
 // 24bit
 // 16bit565RGB
 // 16bit5551RGBA
 // 16bit5551RGB
-slImage* slImageLoaderImpl::LoadBMP(const char* path)
+slImage* slImageLoaderImpl::LoadBMP(const char* path, uint8_t* buffer, uint32_t bufferSz)
 {
 	SL_ASSERT_ST(path);
+	SL_ASSERT_ST(buffer);
+	SL_ASSERT_ST(bufferSz);
 
-	FILE* file = 0;
-	fopen_s(&file, path, "rb");
-	if (!file)
-	{
-		slLog::PrintWarning("BMP: Image could not be opened\n");
-		return NULL;
-	}
+	slZeroDecl(BitmapHeader, header);
+	slZeroDecl(BitmapInfoHeader_v5, info);
 
-	slZeroDecl(BitmapHeader,header);
-	slZeroDecl(BitmapInfoHeader_v5,info);
+	slFileBuffer file(buffer, bufferSz);
 
-	if (fread(&header, 1, sizeof(BitmapHeader), file) != sizeof(BitmapHeader))
+	if (file.Read(&header, sizeof(BitmapHeader)) != sizeof(BitmapHeader))
 	{
 		slLog::PrintWarning("BMP: Not a correct BMP file\n");
-		fclose(file);
 		return 0;
 	}
 
 	if (header.bfType != 19778)
 	{
 		slLog::PrintWarning("BMP: Not a correct BMP file\n");
-		fclose(file);
 		return 0;
 	}
 
-	fread(&info, 1, sizeof(BitmapInfoHeader_v5), file);
+	file.Read(&info, sizeof(BitmapInfoHeader_v5));
 	if (info.bV5Size < 40U)
 	{
 		slLog::PrintWarning("BMP: Bad header size\n");
-		fclose(file);
 		return 0;
 	}
 
@@ -123,7 +132,6 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		info.bV5BitCount != 32u)
 	{
 		slLog::PrintWarning("BMP: Bad bit count\n");
-		fclose(file);
 		return 0;
 	}
 
@@ -133,7 +141,7 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 	imageInfo.m_width = static_cast<uint32_t>(info.bV5Width);
 	imageInfo.m_height = static_cast<uint32_t>(info.bV5Height);
 	imageInfo.m_bits = info.bV5BitCount;
-	
+
 	bool flipPixel = false;
 
 	if (imageInfo.m_bits == 24u)
@@ -145,8 +153,8 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		image->m_dataSize = imageInfo.m_pitch * imageInfo.m_height;
 		image->m_data = (uint8_t*)slMemory::malloc(image->m_dataSize);
 
-		fseek(file, header.bfOffBits, SEEK_SET);
-		fread(image->m_data, 1, image->m_dataSize, file);
+		file.Seek(header.bfOffBits, SEEK_SET);
+		file.Read(image->m_data, image->m_dataSize);
 		flipPixel = true;
 	}
 	else if (imageInfo.m_bits == 32u)
@@ -157,20 +165,19 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		if (info.bV5Compression == 3 || info.bV5Compression == 0) // BI_BITFIELDS BI_RGB
 		{
 			imageInfo.m_pitch = imageInfo.m_width * 4;
-			fseek(file, offset, SEEK_SET);
+			file.Seek(offset, SEEK_SET);
 			imageInfo.m_format = slImageFormat::r8g8b8a8;
 
 			image = slCreate<slImage>();
 			image->m_dataSize = imageInfo.m_pitch * imageInfo.m_height;
 			image->m_data = (uint8_t*)slMemory::malloc(image->m_dataSize);
 
-			fread(image->m_data, 1, image->m_dataSize, file);
+			file.Read(image->m_data, image->m_dataSize);
 			image->FlipPixel();
 		}
 		else
 		{
 			slLog::PrintWarning("BMP: unsupported format\n");
-			fclose(file);
 			return 0;
 		}
 	}
@@ -179,7 +186,6 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		if (info.bV5Size != 40 && info.bV5Size != 56 && info.bV5Size != 108)
 		{
 			slLog::PrintWarning("BMP: unsupported format\n");
-			fclose(file);
 			return 0;
 		}
 
@@ -215,29 +221,29 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		{
 			imageInfo.m_format = slImageFormat::x1r5g5b5;
 		}
-		fseek(file, 70, SEEK_SET);
+		file.Seek(70, SEEK_SET);
 		image = slCreate<slImage>();
 		image->m_dataSize = imageInfo.m_pitch * imageInfo.m_height;
 		image->m_data = (uint8_t*)slMemory::malloc(image->m_dataSize);
 
-		fread(image->m_data, 1, image->m_dataSize, file);
+		file.Read(image->m_data, image->m_dataSize);
 	}
 	else if (imageInfo.m_bits == 8)
 	{
-		fseek(file, 54u, SEEK_SET);
+		file.Seek(54u, SEEK_SET);
 
 		uint32_t colorNum = 256;
-		if(info.bV5ClrUsed)
+		if (info.bV5ClrUsed)
 			colorNum = info.bV5ClrUsed;
 
 		struct rgba {
 			uint8_t r, g, b, a;
 		};
 		rgba colors[256];
-		fread(colors, 1, colorNum * sizeof(rgba), file);
-		long pos = ftell(file);
+		file.Read(colors, colorNum * sizeof(rgba));
+		long pos = file.Tell();
 
-		fseek(file, header.bfOffBits, SEEK_SET);
+		file.Seek(header.bfOffBits, SEEK_SET);
 
 		//uint32_t rleDataSz = header.bfSize - header.bfOffBits;
 
@@ -252,15 +258,15 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 		rgba* _rgba = (rgba*)image->m_data;
 		uint32_t dSz = imageInfo.m_width * imageInfo.m_height;
 		char8_t* data = new char8_t[dSz];
-		fread(data, dSz, 1, file);
+		file.Read(data, dSz);
 
 		if (info.bV5Compression)
 		{
-			
+
 		}
 		else
 		{
-			for(uint32_t i = 0; i < dSz; ++i)
+			for (uint32_t i = 0; i < dSz; ++i)
 			{
 				char8_t b = data[i];
 

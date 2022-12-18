@@ -58,7 +58,7 @@ slString slMeshLoaderImpl::GetSupportedFileName(uint32_t i)
 	return "-";
 }
 
-void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb)
+slMeshLoaderImpl::extension slMeshLoaderImpl::_GetExtension(const char* path)
 {
 	size_t len = strlen(path);
 	if (len > 4)
@@ -73,27 +73,34 @@ void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb)
 		if (last_dot)
 		{
 			if (strcmp(".obj", &path[last_dot]) == 0)
-				LoadOBJ(path, cb);
+				return extension::obj;
 		}
+	}
+	return extension::_bad;
+}
+
+void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb)
+{
+	auto e = _GetExtension(path);
+	switch (e)
+	{
+	case slMeshLoaderImpl::extension::_bad:
+		break;
+	case slMeshLoaderImpl::extension::obj:
+		LoadOBJ(path, cb);
+		break;
 	}
 }
 
 void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb, uint8_t* buffer, uint32_t bufferSz)
 {
-	size_t len = strlen(path);
-	if (len > 4)
+	auto e = _GetExtension(path);
+	switch (e)
 	{
-		// find last '.'
-		size_t last_dot = 0;
-		for (size_t i = 0; i < len; ++i)
-		{
-			if (path[i] == '.')
-				last_dot = i;
-		}
-		if (last_dot)
-		{
-			if (strcmp(".obj", &path[last_dot]) == 0)
-				LoadOBJ(path, cb, buffer, bufferSz);
-		}
+	case slMeshLoaderImpl::extension::_bad:
+		break;
+	case slMeshLoaderImpl::extension::obj:
+		LoadOBJ(path, cb, buffer, bufferSz);
+		break;
 	}
 }

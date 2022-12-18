@@ -41,6 +41,7 @@ public:
 	virtual slString GetSupportedFileName(uint32_t) = 0;
 
 	virtual slImage* Load(const char* path) = 0;
+	virtual slImage* Load(const char* path, uint8_t* buffer, uint32_t bufferSz) = 0;
 };
 
 #endif

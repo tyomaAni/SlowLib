@@ -58,7 +58,7 @@ slString slImageLoaderImpl::GetSupportedFileName(uint32_t i)
 	return "-";
 }
 
-slImage* slImageLoaderImpl::Load(const char* path)
+slImageLoaderImpl::extension slImageLoaderImpl::_GetExtension(const char* path)
 {
 	size_t len = strlen(path);
 	if (len > 4)
@@ -73,9 +73,34 @@ slImage* slImageLoaderImpl::Load(const char* path)
 		if (last_dot)
 		{
 			if (strcmp(".bmp", &path[last_dot]) == 0)
-				return LoadBMP(path);
+				return slImageLoaderImpl::extension::bmp;
 		}
+	}
+	return extension::_bad;
+}
+
+slImage* slImageLoaderImpl::Load(const char* path)
+{
+	auto e = _GetExtension(path);
+	switch (e)
+	{
+	case slImageLoaderImpl::extension::_bad:
+		break;
+	case slImageLoaderImpl::extension::bmp:
+		return LoadBMP(path);
 	}
 	return nullptr;
 }
 
+slImage* slImageLoaderImpl::Load(const char* path, uint8_t* buffer, uint32_t bufferSz)
+{
+	auto e = _GetExtension(path);
+	switch (e)
+	{
+	case slImageLoaderImpl::extension::_bad:
+		break;
+	case slImageLoaderImpl::extension::bmp:
+		return LoadBMP(path, buffer, bufferSz);
+	}
+	return nullptr;
+}

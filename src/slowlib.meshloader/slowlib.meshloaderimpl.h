@@ -36,6 +36,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 struct OBJMaterial;
 class slMeshLoaderImpl : public slMeshLoader
 {
+	enum class extension { _bad, obj };
+	extension _GetExtension(const char* path);
+
 	void ImportOBJ_MTL(slArray<OBJMaterial*>& materials, const char* obj_fileName, const char* mtl_fileName, slMeshLoaderCallback* cb);
 	void LoadOBJ(const char* path, slMeshLoaderCallback*);
 	void LoadOBJ(const char* path, slMeshLoaderCallback*, uint8_t* buffer, uint32_t bufferSz);
