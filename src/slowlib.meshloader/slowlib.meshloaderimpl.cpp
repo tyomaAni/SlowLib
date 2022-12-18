@@ -78,3 +78,22 @@ void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb)
 	}
 }
 
+void slMeshLoaderImpl::Load(const char* path, slMeshLoaderCallback* cb, uint8_t* buffer, uint32_t bufferSz)
+{
+	size_t len = strlen(path);
+	if (len > 4)
+	{
+		// find last '.'
+		size_t last_dot = 0;
+		for (size_t i = 0; i < len; ++i)
+		{
+			if (path[i] == '.')
+				last_dot = i;
+		}
+		if (last_dot)
+		{
+			if (strcmp(".obj", &path[last_dot]) == 0)
+				LoadOBJ(path, cb, buffer, bufferSz);
+		}
+	}
+}

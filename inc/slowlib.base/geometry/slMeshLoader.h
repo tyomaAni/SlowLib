@@ -57,6 +57,7 @@ public:
 	virtual slString GetSupportedFileName(uint32_t) = 0;
 
 	virtual void Load(const char* path, slMeshLoaderCallback*) = 0;
+	virtual void Load(const char* path, slMeshLoaderCallback*, uint8_t* buffer, uint32_t bufferSz) = 0;
 };
 
 #endif

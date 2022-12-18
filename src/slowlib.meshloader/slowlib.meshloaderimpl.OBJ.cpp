@@ -152,112 +152,100 @@ void slMeshLoaderImpl::ImportOBJ_MTL(
 
 	slString mtlPath = relPath;
 	mtlPath += mtl_fileName;
+
+	slStringA utf8;
+	mtlPath.to_utf8(utf8);
+	uint32_t file_size = 0;
+	uint8_t* ptr = slFramework::SummonFileBuffer(utf8.c_str(), &file_size, true);
 	
-	if (slFramework::FileExist(mtlPath))
+	if (ptr)
 	{
-		slStringA utf8;
-		mtlPath.to_utf8(utf8);
+		OBJMaterial* curMaterial = 0;
 
-		FILE* file = 0;
-		fopen_s(&file, utf8.data(), "rb");
-		if (file)
+		while (*ptr)
 		{
-			auto file_size = (size_t)slFramework::FileSize(utf8.data());
-
-			std::vector<unsigned char> file_byte_array((unsigned int)file_size + 2);
-			unsigned char* ptr = file_byte_array.data();
-
-			fread(ptr, 1, file_size, file);
-			fclose(file);
-
-			ptr[(unsigned int)file_size] = ' ';
-			ptr[(unsigned int)file_size + 1] = 0;
-
-			OBJMaterial* curMaterial = 0;
-
-			while (*ptr)
+			switch (*ptr)
 			{
-				switch (*ptr)
+			case '#':
+			case 'd':
+			case 'T':
+			case 'i':
+			case 'K':
+				ptr = OBJNextLine(ptr);
+				break;
+			case 'n':
+			{
+				slStringA mtlWord;
+				ptr = OBJReadWord(ptr, mtlWord);
+
+				if (OBJStringEqual(mtlWord, "newmtl"))
 				{
-				case '#':
-				case 'd':
-				case 'T':
-				case 'i':
-				case 'K':
+					curMaterial = new OBJMaterial;
+					materials.push_back(curMaterial);
+
+					ptr = OBJReadWord(ptr, curMaterial->m_name);
+				}
+			}break;
+			case 'N':
+			{
+				slStringA word;
+				ptr = OBJReadWord(ptr, word);
+				if (OBJStringEqual(word, "Ns"))
+				{
+					ptr = OBJSkipSpaces(ptr);
+					ptr = OBJReadFloat(ptr, curMaterial->m_specularExponent);
+				}
+				else if (OBJStringEqual(word, "Ni"))
+				{
+					ptr = OBJSkipSpaces(ptr);
+					ptr = OBJReadFloat(ptr, curMaterial->m_refraction);
+				}
+				else
 					ptr = OBJNextLine(ptr);
-					break;
-				case 'n':
+
+			}break;
+			case 'm':
+			{
+				slStringA word;
+				ptr = OBJReadWord(ptr, word);
+				if (OBJStringEqual(word, "map_Kd"))
 				{
-					slStringA mtlWord;
-					ptr = OBJReadWord(ptr, mtlWord);
+					ptr = OBJReadLastWord(ptr, word);
 
-					if (OBJStringEqual(mtlWord, "newmtl"))
-					{
-						curMaterial = new OBJMaterial;
-						materials.push_back(curMaterial);
+					slString mapPath;
+					mapPath.append(word.data());
 
-						ptr = OBJReadWord(ptr, curMaterial->m_name);
-					}
-				}break;
-				case 'N':
-				{
-					slStringA word;
-					ptr = OBJReadWord(ptr, word);
-					if (OBJStringEqual(word, "Ns"))
+					if (!slFramework::FileExist(mapPath))
 					{
-						ptr = OBJSkipSpaces(ptr);
-						ptr = OBJReadFloat(ptr, curMaterial->m_specularExponent);
-					}
-					else if (OBJStringEqual(word, "Ni"))
-					{
-						ptr = OBJSkipSpaces(ptr);
-						ptr = OBJReadFloat(ptr, curMaterial->m_refraction);
-					}
-					else
-						ptr = OBJNextLine(ptr);
-
-				}break;
-				case 'm':
-				{
-					slStringA word;
-					ptr = OBJReadWord(ptr, word);
-					if (OBJStringEqual(word, "map_Kd"))
-					{
-						ptr = OBJReadLastWord(ptr, word);
-
-						slString mapPath;
+						mapPath = relPath;
 						mapPath.append(word.data());
 
-						if (!slFramework::FileExist(mapPath))
-						{
-							mapPath = relPath;
-							mapPath.append(word.data());
-
-							//if (g_sdk->FileExist(mapPath.data()))
-							//	printf("OK\n");
-						}
-
-						mapPath.to_utf8(curMaterial->m_map_diffuse);
-
-						/*ptr = OBJSkipSpaces(ptr);
-						if (*ptr == L'-')
-						{
-							ptr = OBJReadWord(ptr, word);
-							if (OBJStringEqual(word, "-bm"))
-							{
-
-							}
-						}*/
+						//if (g_sdk->FileExist(mapPath.data()))
+						//	printf("OK\n");
 					}
-					else
-						ptr = OBJNextLine(ptr);
-				}break;
-				default:
-					++ptr;
-					break;
+
+					mapPath.to_utf8(curMaterial->m_map_diffuse);
+
+					/*ptr = OBJSkipSpaces(ptr);
+					if (*ptr == L'-')
+					{
+						ptr = OBJReadWord(ptr, word);
+						if (OBJStringEqual(word, "-bm"))
+						{
+
+						}
+					}*/
 				}
+				else
+					ptr = OBJNextLine(ptr);
+			}break;
+			default:
+				++ptr;
+				break;
 			}
 		}
+
+		slDestroy(ptr);
 	}
 }
 
@@ -274,28 +262,15 @@ OBJMaterial* OBJGetMaterial(
 	return 0;
 }
 
-void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
+void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb, uint8_t* buffer, uint32_t bufferSz)
 {
-	SL_ASSERT_ST(path);
 	SL_ASSERT_ST(cb);
+	SL_ASSERT_ST(buffer);
+	SL_ASSERT_ST(bufferSz);
 
 	slArray<OBJMaterial*> obj_materials;
-
-	FILE* file = 0;
-	fopen_s(&file, path, "rb");
-	if (!file)
-		return;
-
-	auto file_size = (size_t)slFramework::FileSize(path);
-
-	std::vector<unsigned char> file_byte_array((unsigned int)file_size + 2);
-
-	unsigned char* ptr = file_byte_array.data();
-	fread(ptr, 1, file_size, file);
-	fclose(file);
-
-	ptr[(unsigned int)file_size] = ' ';
-	ptr[(unsigned int)file_size + 1] = 0;
+	
+	uint8_t* ptr = buffer;
 
 	bool groupBegin = false;
 	bool isModel = false;
@@ -538,6 +513,21 @@ void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
 		delete obj_materials.m_data[i];
 	}
 }
+
+void slMeshLoaderImpl::LoadOBJ(const char* path, slMeshLoaderCallback* cb)
+{
+	SL_ASSERT_ST(path);
+	SL_ASSERT_ST(cb);
+
+	uint32_t file_size = 0;
+	uint8_t * ptr = slFramework::SummonFileBuffer(path, &file_size, true);
+	if (ptr)
+	{
+		LoadOBJ(path, cb, ptr, (uint32_t)file_size);
+		slDestroy(ptr);
+	}
+}
+
 unsigned char* OBJNextLine(unsigned char* ptr)
 {
 	while (*ptr)

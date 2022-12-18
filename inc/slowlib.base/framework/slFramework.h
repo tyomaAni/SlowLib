@@ -133,6 +133,10 @@ public:
 	static uint32_t GetImageLoadersNum();
 	static slImageLoader* GetImageLoader(uint32_t);
 	static slImage* SummonImage(const char*);
+
+	// read or unzip file into buffer
+	// if isText then will be added ' ' and 0 at the end
+	static uint8_t* SummonFileBuffer(const char* path, uint32_t* szOut, bool isText);
 };
 
 #endif

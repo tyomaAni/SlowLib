@@ -38,6 +38,7 @@ class slMeshLoaderImpl : public slMeshLoader
 {
 	void ImportOBJ_MTL(slArray<OBJMaterial*>& materials, const char* obj_fileName, const char* mtl_fileName, slMeshLoaderCallback* cb);
 	void LoadOBJ(const char* path, slMeshLoaderCallback*);
+	void LoadOBJ(const char* path, slMeshLoaderCallback*, uint8_t* buffer, uint32_t bufferSz);
 public:
 	slMeshLoaderImpl();
 	virtual ~slMeshLoaderImpl();
@@ -47,6 +48,7 @@ public:
 	virtual slString GetSupportedFileName(uint32_t) final;
 
 	virtual void Load(const char* path, slMeshLoaderCallback*) final;
+	virtual void Load(const char* path, slMeshLoaderCallback*, uint8_t* buffer, uint32_t bufferSz) final;
 };
 
 

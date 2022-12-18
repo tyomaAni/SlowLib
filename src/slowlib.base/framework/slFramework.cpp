@@ -424,3 +424,46 @@ slImage* slFramework::SummonImage(const char* path)
 	}
 	return NULL;
 }
+
+uint8_t* slFramework::SummonFileBuffer(const char* path, uint32_t* szOut, bool isText)
+{
+	SL_ASSERT_ST(path);
+	SL_ASSERT_ST(szOut);
+
+	*szOut = 0;
+	
+	std::filesystem::path p = path;
+
+	if (std::filesystem::exists(p))
+	{
+		*szOut = (uint32_t)std::filesystem::file_size(p);
+		if (*szOut)
+		{
+			FILE* f = 0;
+			fopen_s(&f, path, "rb");
+			if (f)
+			{
+				if (isText)
+					*szOut += 2;
+
+				uint8_t* data = (uint8_t*)slMemory::malloc(*szOut);
+				fread(data, *szOut, 1, f);
+				fclose(f);
+
+				if (isText)
+				{
+					data[*szOut - 2] = ' ';
+					data[*szOut - 1] = 0;
+				}
+
+				return data;
+			}
+			else
+			{
+				slLog::PrintError("Unable to open file in %s : %i\n", SL_FUNCTION, SL_LINE);
+			}
+		}
+	}
+
+	return slArchiveSystem::ZipUnzip(path, szOut, 0);
+}
