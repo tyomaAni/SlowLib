@@ -35,7 +35,7 @@ slImageLoaderImpl::~slImageLoaderImpl(){}
 
 uint32_t slImageLoaderImpl::GetSupportedFilesCount()
 {
-	return 1;
+	return 6;
 }
 
 slString slImageLoaderImpl::GetSupportedFileExtension(uint32_t i)
@@ -44,6 +44,16 @@ slString slImageLoaderImpl::GetSupportedFileExtension(uint32_t i)
 	{
 	case 0:
 		return "bmp";
+	case 1:
+		return "png";
+	case 2:
+		return "jpg";
+	case 3:
+		return "jpeg";
+	case 4:
+		return "jfif";
+	case 5:
+		return "tga";
 	}
 	return "-";
 }
@@ -54,6 +64,14 @@ slString slImageLoaderImpl::GetSupportedFileName(uint32_t i)
 	{
 	case 0:
 		return "Windows Bitmap";
+	case 1:
+		return "Portable Network Graphics";
+	case 2:
+	case 3:
+	case 4:
+		return "JPEG";
+	case 5:
+		return "Truevision TGA";
 	}
 	return "-";
 }
@@ -74,6 +92,16 @@ slImageLoaderImpl::extension slImageLoaderImpl::_GetExtension(const char* path)
 		{
 			if (strcmp(".bmp", &path[last_dot]) == 0)
 				return slImageLoaderImpl::extension::bmp;
+			if (strcmp(".png", &path[last_dot]) == 0)
+				return slImageLoaderImpl::extension::png;
+			if (strcmp(".tga", &path[last_dot]) == 0)
+				return slImageLoaderImpl::extension::tga;
+			if (strcmp(".jpeg", &path[last_dot]) == 0)
+				return slImageLoaderImpl::extension::jpg;
+			if (strcmp(".jpg", &path[last_dot]) == 0)
+				return slImageLoaderImpl::extension::jpg;
+			if (strcmp(".jfif", &path[last_dot]) == 0)
+				return slImageLoaderImpl::extension::jpg;
 		}
 	}
 	return extension::_bad;
@@ -88,6 +116,12 @@ slImage* slImageLoaderImpl::Load(const char* path)
 		break;
 	case slImageLoaderImpl::extension::bmp:
 		return LoadBMP(path);
+	case slImageLoaderImpl::extension::jpg:
+		return LoadJPG(path);
+	case slImageLoaderImpl::extension::png:
+		return LoadPNG(path);
+	case slImageLoaderImpl::extension::tga:
+		return LoadTGA(path);
 	}
 	return nullptr;
 }
@@ -101,6 +135,12 @@ slImage* slImageLoaderImpl::Load(const char* path, uint8_t* buffer, uint32_t buf
 		break;
 	case slImageLoaderImpl::extension::bmp:
 		return LoadBMP(path, buffer, bufferSz);
+	case slImageLoaderImpl::extension::jpg:
+		return LoadJPG(path, buffer, bufferSz);
+	case slImageLoaderImpl::extension::png:
+		return LoadPNG(path, buffer, bufferSz);
+	case slImageLoaderImpl::extension::tga:
+		return LoadTGA(path, buffer, bufferSz);
 	}
 	return nullptr;
 }

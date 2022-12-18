@@ -40,6 +40,8 @@ public:
 	slFrameworkImpl() {}
 	~slFrameworkImpl() {}
 
+	bool m_imageLoaderConverToRGBA8 = true;
+
 	slString m_appPath;
 	slStringA m_fileExistString;
 	slStringA m_fileSizeString;

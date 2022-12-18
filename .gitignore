@@ -55,3 +55,7 @@ build/minizip/Debug
 build/minizip/Release
 build/zlib/Debug
 build/zlib/Release
+build/libjpeg/Debug
+build/libjpeg/Release
+build/libpng/Debug
+build/libpng/Release

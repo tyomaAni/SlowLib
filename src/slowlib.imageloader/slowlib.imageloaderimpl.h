@@ -34,11 +34,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class slImageLoaderImpl : public slImageLoader
 {
-	enum class extension{_bad, bmp};
+	enum class extension{_bad, bmp, png, jpg, tga};
 	extension _GetExtension(const char* path);
 
 	slImage* LoadBMP(const char* path);
 	slImage* LoadBMP(const char* path, uint8_t* buffer, uint32_t bufferSz);
+	slImage* LoadPNG(const char* path);
+	slImage* LoadPNG(const char* path, uint8_t* buffer, uint32_t bufferSz);
+	slImage* LoadJPG(const char* path);
+	slImage* LoadJPG(const char* path, uint8_t* buffer, uint32_t bufferSz);
+	slImage* LoadTGA(const char* path);
+	slImage* LoadTGA(const char* path, uint8_t* buffer, uint32_t bufferSz);
 public:
 	slImageLoaderImpl();
 	virtual ~slImageLoaderImpl();

@@ -289,10 +289,13 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path, uint8_t* buffer, uint32_t 
 	if (image)
 	{
 		image->m_info = imageInfo;
-		image->ConvertTo(slImageFormat::r8g8b8a8);
-		image->FlipVertical();
-		if (flipPixel)
-			image->FlipPixel();
+		if (slFramework::GetImageLoaderConvertToRGBA8())
+		{
+			image->ConvertTo(slImageFormat::r8g8b8a8);
+			image->FlipVertical();
+			if (flipPixel)
+				image->FlipPixel();
+		}
 	}
 
 	return image;

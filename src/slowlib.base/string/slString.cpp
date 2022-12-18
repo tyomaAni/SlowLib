@@ -1182,6 +1182,7 @@ bool slString::operator!=(const slString& other) const
 
 void slString::to_utf8(slStringA& stra) const
 {
+	stra.clear();
 	UC uc;
 	auto ut = &g_UnicodeChars[0];
 	for (size_t i = 0; i < m_size; ++i)
@@ -1201,6 +1202,7 @@ void slString::to_utf8(slStringA& stra) const
 
 void slString::to_utf16(slStringW& strw) const
 {
+	strw.clear();
 	UC uc;
 	auto ut = &g_UnicodeChars[0];
 	for (size_t i = 0; i < m_size; ++i)

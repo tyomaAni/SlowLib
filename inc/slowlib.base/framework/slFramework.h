@@ -128,7 +128,11 @@ public:
 	static slPolygonMesh* SummonPolygonMesh();
 
 	static slString GetAppPath();
-	static slStringA GetPathA(const slString&);
+
+	// app path + `path`
+	// if file not exist, pop_front removing . \\ / from `path` and return it.
+	// so we can use files from zip archive
+	static slStringA GetPathA(const slString& path);
 
 	static uint32_t GetImageLoadersNum();
 	static slImageLoader* GetImageLoader(uint32_t);
@@ -137,6 +141,9 @@ public:
 	// read or unzip file into buffer
 	// if isText then will be added ' ' and 0 at the end
 	static uint8_t* SummonFileBuffer(const char* path, uint32_t* szOut, bool isText);
+
+	static void SetImageLoaderConvertToRGBA8(bool);
+	static bool GetImageLoaderConvertToRGBA8();
 };
 
 #endif

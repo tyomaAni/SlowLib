@@ -141,7 +141,7 @@ public:
 		m_cb.m_model = this;
 		slFramework::SummonMesh(p, &m_cb);
 
-		slImage* image = slFramework::SummonImage("D:\\moon_64.bmp");
+		slImage* image = slFramework::SummonImage(slFramework::GetPathA("../data/textures/tga.tga").c_str());
 		if (image)
 		{
 			printf("Image %ix%i\n", image->m_info.m_width, image->m_info.m_height);
@@ -185,6 +185,8 @@ int main(int argc, char * argv[])
 	slWindow * window = slFramework::SummonWindow(&windowCallback, 800, 600);
 	window->SetVisible(true);
 
+	slArchiveSystem::ZipAdd(slFramework::GetPathA("..\\data\\demo.zip").c_str());
+
 	auto inputData = slInput::GetData();
 
 	double dd = 0.0;
@@ -206,7 +208,7 @@ int main(int argc, char * argv[])
 	slFramework::SetMatrix(slMatrixType::ViewProjection, &camera->m_viewProjectionMatrix);
 
 	MyModel* mm = slCreate<MyModel>(gs);
-	if (mm->Load(slFramework::GetPathA("..\\data\\box.obj").c_str()))
+	if (mm->Load(slFramework::GetPathA("../data/models/box.obj").c_str()))
 	{
 		printf("LOADED!\n");
 	}

@@ -80,6 +80,8 @@ SL_LINK_LIBRARY("slowlib.meshloader");
 SL_LINK_LIBRARY("slowlib.imageloader");
 SL_LINK_LIBRARY("zlib");
 SL_LINK_LIBRARY("minizip");
+SL_LINK_LIBRARY("libpng");
+SL_LINK_LIBRARY("libjpeg");
 
 
 slFrameworkImpl* g_framework = 0;
@@ -130,6 +132,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 		GetModuleFileName(0, pth, 1000);
 		g_framework->m_appPath = pth;
 		g_framework->m_appPath.pop_back_before(U'\\');
+		g_framework->m_appPath.replace(U'\\', U'/');
 #else
 #error OMG
 #endif
@@ -162,7 +165,35 @@ slStringA slFramework::GetPathA(const slString& v)
 	p.append(v);
 	slStringA stra;
 	p.to_utf8(stra);
+
+	if (!std::filesystem::exists(stra.c_str()))
+	{
+		p.assign(v);
+
+		while(p.size())
+		{
+			if (p[0] == U'.'
+				|| p[0] == U'\\'
+				|| p[0] == U'/')
+				p.pop_front();
+			else
+				break;
+		}
+
+		p.to_utf8(stra);
+	}
+
 	return stra;
+}
+
+void slFramework::SetImageLoaderConvertToRGBA8(bool v)
+{
+	g_framework->m_imageLoaderConverToRGBA8 = v;
+}
+
+bool slFramework::GetImageLoaderConvertToRGBA8()
+{
+	return g_framework->m_imageLoaderConverToRGBA8;
 }
 
 void slFramework::Update()
