@@ -43,6 +43,9 @@
     <Filter Include="Source Files\gs">
       <UniqueIdentifier>{9d01bffc-d65c-4d53-a15c-e2932701f3c5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\archive">
+      <UniqueIdentifier>{644fe548-380b-4c1c-8dea-da8e216a04a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp">
@@ -101,6 +104,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\gs\slImage.cpp">
       <Filter>Source Files\gs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\archive\slArchive.cpp">
+      <Filter>Source Files\archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\archive\fastlz.c">
+      <Filter>Source Files\archive</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

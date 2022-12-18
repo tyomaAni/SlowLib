@@ -54,6 +54,9 @@ class slImage;
 class slColor;
 class slImageLoader;
 struct slTextureInfo;
+struct slCompressionInfo;
+struct slArchiveZipFile;
+class slArchiveSystem;
 
 template<typename T>
 class slVec2_t;

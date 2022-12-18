@@ -18,10 +18,19 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\minizip\ioapi.c" />
+    <ClCompile Include="..\..\src\minizip\iowin32.c" />
+    <ClCompile Include="..\..\src\minizip\miniunz.c" />
+    <ClCompile Include="..\..\src\minizip\minizip.c" />
+    <ClCompile Include="..\..\src\minizip\mztools.c" />
+    <ClCompile Include="..\..\src\minizip\unzip.c" />
+    <ClCompile Include="..\..\src\minizip\zip.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{5157fbaa-af59-4c3a-93ce-05f132088bbc}</ProjectGuid>
+    <ProjectGuid>{D6D930BE-DBA4-46FC-B638-6C85A2ECDB6E}</ProjectGuid>
     <RootNamespace>slowlibbase</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -94,10 +103,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../../inc/;../../src/minizip/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../inc/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -114,10 +123,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../../inc/;../../src/minizip/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../inc/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -135,10 +144,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../../inc/;../../src/minizip/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../inc/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -155,10 +164,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SL_LIB_EXPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>../../inc/;../../src/minizip/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../inc/;../../src/zlib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
@@ -172,29 +181,6 @@
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\slowlib.base\archive\fastlz.c" />
-    <ClCompile Include="..\..\src\slowlib.base\archive\slArchive.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\common\slAssert.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\common\slLog.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\framework\slFramework.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slMesh.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygonCreator.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolygon.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyMesh.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyTriangle.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\geometry\slRay.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\gs\slImage.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\input\slInput.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\math\slMath.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\memory\slMemory.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\scene\slCamera.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\slowlib.base.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\string\slString.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\system\slStacktracer.cpp" />
-    <ClCompile Include="..\..\src\slowlib.base\system\slWindow.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -101,6 +101,8 @@ void slStringA::reallocate(size_t new_allocated)
 	m_allocated = new_allocated;
 }
 slStringA::slStringA(){}
+slStringA::slStringA(const char* s) : slStringA() { assign(s); }
+slStringA::slStringA(const char8_t* s) : slStringA() { assign(s); }
 slStringA::slStringA(const slStringA& s) : slStringA(){assign(s);}
 slStringA::slStringA(slStringA&& s) : slStringA(){this->operator=(std::move(s));}
 slStringA::~slStringA(){if (m_data) slMemory::free(m_data);}
@@ -118,10 +120,32 @@ void slStringA::assign(const slStringA& s) {
 	clear();
 	append(s);
 }
+void slStringA::assign(const char* s) {
+	clear();
+	append(s);
+}
+void slStringA::assign(const char8_t* s) {
+	clear();
+	append(s);
+}
 void slStringA::append(const slStringA& s) {
 	for (size_t i = 0; i < s.m_size; ++i)
 	{
 		push_back(s.m_data[i]);
+	}
+}
+void slStringA::append(const char* s) {
+	size_t l = strlen(s);
+	for (size_t i = 0; i < l; ++i)
+	{
+		push_back(s[i]);
+	}
+}
+void slStringA::append(const char8_t* s) {
+	size_t l = strlen((const char*)s);
+	for (size_t i = 0; i < l; ++i)
+	{
+		push_back(s[i]);
 	}
 }
 slStringA& slStringA::operator=(const slStringA& s) {

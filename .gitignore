@@ -51,3 +51,7 @@ build/slowlib.meshloader/Debug
 build/slowlib.meshloader/Release
 build/slowlib.imageloader/Debug
 build/slowlib.imageloader/Release
+build/minizip/Debug
+build/minizip/Release
+build/zlib/Debug
+build/zlib/Release

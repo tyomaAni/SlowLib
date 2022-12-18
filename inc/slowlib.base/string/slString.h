@@ -37,10 +37,16 @@ class slStringA
 public:
 	slStringA();
 	~slStringA();
+	slStringA(const char*);
+	slStringA(const char8_t*);
 	slStringA(const slStringA&);
 	slStringA(slStringA&&);
 	void assign(const slStringA&);
+	void assign(const char*);
+	void assign(const char8_t*);
 	void append(const slStringA&);
+	void append(const char*);
+	void append(const char8_t*);
 	void push_back(char8_t);
 	void clear();
 	const char8_t& operator[](size_t i) const { return m_data[i]; }

@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/geometry/slMeshLoader.h"
 #include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/scene/slCamera.h"
+#include "slowlib.base/archive/slArchive.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -77,12 +78,15 @@ extern "C"
 SL_LINK_LIBRARY("slowlib.d3d11");
 SL_LINK_LIBRARY("slowlib.meshloader");
 SL_LINK_LIBRARY("slowlib.imageloader");
+SL_LINK_LIBRARY("zlib");
+SL_LINK_LIBRARY("minizip");
 
 
 slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy()
 {
+	_onDestroy_archive();
 	if (g_framework->m_imageLoaders.size())
 	{
 		for (auto o : g_framework->m_imageLoaders)

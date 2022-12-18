@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/containers/slArray.h"
+#include "slowlib.base/archive/slArchive.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 

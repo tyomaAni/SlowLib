@@ -49,6 +49,11 @@ public:
 	std::vector<slMeshLoader*> m_meshLoaders;
 	std::vector<slImageLoader*> m_imageLoaders;
 
+	bool _compress_fastlz(slCompressionInfo* info);
+	bool _decompress_fastlz(slCompressionInfo* info);
+	std::vector<slArchiveZipFile*> m_zipFiles;
+	void _onDestroy_archive();
+
 	slMat4* m_matrixPtrs[(uint32_t)slMatrixType::_count];
 
 	slFrameworkCallback* m_callback = 0;

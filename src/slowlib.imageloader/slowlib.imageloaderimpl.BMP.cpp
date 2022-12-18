@@ -185,48 +185,37 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 
 		imageInfo.m_pitch = imageInfo.m_width * 2;
 
-		//if (info.bV5Size == 40U)
-		//{ // x1r5g5b5
-		//	fseek(file, 54u, SEEK_SET);
-		//	imageInfo.m_format = slImageFormat::x1r5g5b5;
-		//}
-		//else
-		//{
-			if (info.bV5RedMask == 3840 &&
-				info.bV5GreenMask == 240 &&
-				info.bV5BlueMask == 15)
+		if (info.bV5RedMask == 3840 &&
+			info.bV5GreenMask == 240 &&
+			info.bV5BlueMask == 15)
+		{
+			if (info.bV5AlphaMask)
 			{
-				if (info.bV5AlphaMask)
-				{
-					imageInfo.m_format = slImageFormat::a4r4g4b4;
-				}
-				else
-				{
-					imageInfo.m_format = slImageFormat::x4r4g4b4;
-				}
-			}
-			else if (info.bV5RedMask == 63488 &&
-				info.bV5GreenMask == 2016 &&
-				info.bV5BlueMask == 31)
-			{
-				imageInfo.m_format = slImageFormat::r5g6b5;
-			}
-			else if (info.bV5RedMask == 31744 &&
-				info.bV5GreenMask == 992 &&
-				info.bV5BlueMask == 31)
-			{
-				if (info.bV5AlphaMask)
-					imageInfo.m_format = slImageFormat::a1r5g5b5;
+				imageInfo.m_format = slImageFormat::a4r4g4b4;
 			}
 			else
 			{
-				imageInfo.m_format = slImageFormat::x1r5g5b5;
-				/*slLog::PrintWarning("BMP: unsupported format\n");
-				fclose(file);
-				return 0;*/
+				imageInfo.m_format = slImageFormat::x4r4g4b4;
 			}
-			fseek(file, 70, SEEK_SET);
-		//}
+		}
+		else if (info.bV5RedMask == 63488 &&
+			info.bV5GreenMask == 2016 &&
+			info.bV5BlueMask == 31)
+		{
+			imageInfo.m_format = slImageFormat::r5g6b5;
+		}
+		else if (info.bV5RedMask == 31744 &&
+			info.bV5GreenMask == 992 &&
+			info.bV5BlueMask == 31)
+		{
+			if (info.bV5AlphaMask)
+				imageInfo.m_format = slImageFormat::a1r5g5b5;
+		}
+		else
+		{
+			imageInfo.m_format = slImageFormat::x1r5g5b5;
+		}
+		fseek(file, 70, SEEK_SET);
 		image = slCreate<slImage>();
 		image->m_dataSize = imageInfo.m_pitch * imageInfo.m_height;
 		image->m_data = (uint8_t*)slMemory::malloc(image->m_dataSize);
@@ -267,89 +256,7 @@ slImage* slImageLoaderImpl::LoadBMP(const char* path)
 
 		if (info.bV5Compression)
 		{
-			//int howMuch = 0;
-			//int what = 0;
-			//uint32_t posInLine = 1;
-			//while (!feof(file))
-			//{
-			//	char8_t b = 0;
-			//	fread(&b, 1, 1, file);
-
-			//	if (b)
-			//	{
-			//		howMuch = b;
-			//		fread(&b, 1, 1, file);
-			//		what = b;
-
-			//		for (int i = 0; i < howMuch; ++i)
-			//		{
-			//			*_rgba = colors[what];
-			//			_rgba++;
-			//			++posInLine;
-
-			//			if (posInLine == imageInfo.m_width)
-			//				posInLine = 1;
-			//		}
-			//	}
-			//	else
-			//	{
-			//		fread(&b, 1, 1, file);
-			//		if (b)
-			//		{
-			//			if (b == 1) // 00 01
-			//				break;
-			//			else if (b == 2)
-			//			{
-			//				fread(&b, 1, 1, file);
-			//				int right = b;
-
-			//				fread(&b, 1, 1, file);
-			//				int up = b;
-
-			//				howMuch = right * up;
-			//				for (int i = 0; i < howMuch; ++i)
-			//				{
-			//					//*_rgba = colors[what];
-			//					_rgba++;
-			//					++posInLine;
-
-			//					if (posInLine == imageInfo.m_width)
-			//						posInLine = 1;
-			//				}
-			//			}
-			//			else if (b == 3)
-			//			{
-			//				howMuch = b;
-			//				for (int i = 0; i < howMuch; ++i)
-			//				{
-			//					fread(&b, 1, 1, file);
-			//					what = b;
-			//					*_rgba = colors[what];
-			//					_rgba++;
-			//					++posInLine;
-
-			//					if (posInLine == imageInfo.m_width)
-			//						posInLine = 1;
-			//				}
-			//				fread(&b, 1, 1, file); // read 00
-			//			}
-			//		}
-			//		else // 00 00
-			//		{
-			//			for (uint32_t i = posInLine - 1; i < imageInfo.m_width; ++i)
-			//			{
-			//				_rgba++;
-
-			//				++posInLine;
-			//				if (posInLine == imageInfo.m_width)
-			//				{
-			//					posInLine = 1;
-			//					break;
-			//				}
-			//			}
-			//		}
-			//	}
-			//}
+			
 		}
 		else
 		{
