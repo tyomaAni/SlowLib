@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.d3d11.shader.Line3D.h"
 #include "slowlib.d3d11.shader.Solid.h"
 #include "slowlib.d3d11.shader.MainTarget.h"
+#include "slowlib.d3d11.shader.GUIRectangle.h"
 
 #define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
 
@@ -50,6 +51,7 @@ class slGSD3D11 : public slGS
 	friend class slD3D11ShaderLine3D;
 	friend class slD3D11ShaderSolid;
 	friend class slD3D11ShaderMainTarget;
+	friend class slD3D11ShaderGUIRectangle;
 
 	slWindow* m_activeWindow = 0;
 	slPoint* m_activeWindowSize = 0;
@@ -82,6 +84,7 @@ class slGSD3D11 : public slGS
 	slD3D11ShaderLine3D* m_shaderLine3D = 0;
 	slD3D11ShaderSolid* m_shaderSolid = 0;
 	slD3D11ShaderMainTarget* m_shaderMainTarget = 0;
+	slD3D11ShaderGUIRectangle* m_shaderGUIRectangle = 0;
 	slGSD3D11ShaderBase* m_activeShader = 0;
 
 	bool createBackBuffer(float x, float y);
@@ -92,7 +95,10 @@ class slGSD3D11 : public slGS
 	slMaterial* m_currMaterial = 0;
 
 	slGSD3D11Texture* m_mainTargetRTT = 0;
-	//slGSD3D11Mesh* m_mainTargetMesh = 0;
+	slGSD3D11Texture* m_whiteTexture = 0;
+	slGSD3D11Texture* m_GUIRTT = 0;
+	
+	void updateGUIMatrix();
 
 public:
 	slGSD3D11();
@@ -130,6 +136,11 @@ public:
 	virtual slTexture* SummonTexture(slImage*, const slTextureInfo&) final;
 	virtual void SetRenderTarget(slTexture*) final;
 	virtual slTexture* SummonRenderTargetTexture(const slPoint& size, const slTextureInfo&) final;
+	virtual void BeginGUI() final;
+	virtual void DrawGUI() final;
+	virtual void EndGUI() final;
+	virtual void DrawGUIRectangle(const slRect& rect, const slColor& color1, const slColor& color2,
+		slTexture* t, slVec4f* UVs) final;
 
 	bool createShaders(
 		const char* vertexTarget,

@@ -134,4 +134,6 @@ using real_t = double;
 
 #define slZeroDecl(t,n) t n; memset(&n, 0, sizeof(n))
 
+#define SLSAFE_DESTROY(x) if(x){slDestroy(x);x=0;}
+
 #endif

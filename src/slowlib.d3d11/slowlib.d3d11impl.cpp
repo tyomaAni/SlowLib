@@ -74,6 +74,10 @@ bool slGSD3D11::CreateShaders()
 	if (!m_shaderMainTarget->init())
 		return false;
 
+	m_shaderGUIRectangle = slCreate<slD3D11ShaderGUIRectangle>(this);
+	if (!m_shaderGUIRectangle->init())
+		return false;
+
 	return true;
 }
 
@@ -310,12 +314,14 @@ bool slGSD3D11::createGeometryShaders(const char* target,
 
 void slGSD3D11::Shutdown()
 {
-	if (m_mainTargetRTT) {slDestroy(m_mainTargetRTT); m_mainTargetRTT = 0;}
-	//if (m_mainTargetMesh) slDestroy(m_mainTargetMesh);
+	SLSAFE_DESTROY(m_whiteTexture);
+	SLSAFE_DESTROY(m_mainTargetRTT);
+	SLSAFE_DESTROY(m_GUIRTT);
 
-	if (m_shaderSolid) { slDestroy(m_shaderSolid); m_shaderSolid = 0; }
-	if (m_shaderLine3D) { slDestroy(m_shaderLine3D); m_shaderLine3D = 0; }
-	if (m_shaderMainTarget) {slDestroy(m_shaderMainTarget); m_shaderMainTarget = 0;}
+	SLSAFE_DESTROY(m_shaderSolid);
+	SLSAFE_DESTROY(m_shaderLine3D);
+	SLSAFE_DESTROY(m_shaderMainTarget);
+	SLSAFE_DESTROY(m_shaderGUIRectangle);
 
 	SLD3DSAFE_RELEASE(m_depthStencilView);
 	SLD3DSAFE_RELEASE(m_blendStateAlphaDisabled);
@@ -539,8 +545,6 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	viewport.TopLeftY = 0.0f;
 	m_d3d11DevCon->RSSetViewports(1, &viewport);
 
-	// shaders here
-
 	m_d3d11DevCon->OMSetDepthStencilState(m_depthStencilStateEnabled, 0);
 
 	if (!CreateShaders())
@@ -555,6 +559,14 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 		return false;
 	}
 
+	{
+		slImage img;
+		img.Create(2, 2);
+		img.Fill(ColorWhite);
+		slTextureInfo tinf;
+		m_whiteTexture = (slGSD3D11Texture*)SummonTexture(&img, tinf);
+	}
+
 	return true;
 }
 
@@ -566,11 +578,17 @@ bool slGSD3D11::InitWindow(slWindow* w)
 
 bool slGSD3D11::updateMainTarget()
 {
-	if (m_mainTargetRTT) slDestroy(m_mainTargetRTT);
+	updateGUIMatrix();
+
+	SLSAFE_DESTROY(m_mainTargetRTT);
 
 	slTextureInfo tinf;
 	m_mainTargetRTT = (slGSD3D11Texture*)SummonRenderTargetTexture(
 		slPoint((uint32_t)m_mainTargetSize.x, (uint32_t)m_mainTargetSize.y), 
+		tinf);
+
+	m_GUIRTT = (slGSD3D11Texture*)SummonRenderTargetTexture(
+		slPoint((uint32_t)m_activeWindowSize->x, (uint32_t)m_activeWindowSize->y),
 		tinf);
 
 	m_d3d11DevCon->OMSetRenderTargets(0, 0, 0);
@@ -1308,5 +1326,64 @@ slTexture* slGSD3D11::SummonRenderTargetTexture(const slPoint& size, const slTex
 	inf.m_type = slTextureType::RTT;
 
 	return SummonTexture(&img, inf);
+}
+
+void slGSD3D11::updateGUIMatrix()
+{
+	m_shaderGUIRectangle->m_cbDataFrame.ProjMtx.m_data[0].set(2.0f / m_activeWindowSize->x, 0.0f, 0.0f, 0.0f);
+	m_shaderGUIRectangle->m_cbDataFrame.ProjMtx.m_data[1].set(0.0f, 2.0f / -m_activeWindowSize->y, 0.0f, 0.0f);
+	m_shaderGUIRectangle->m_cbDataFrame.ProjMtx.m_data[2].set(0.0f, 0.0f, 0.5f, 0.0f);
+	m_shaderGUIRectangle->m_cbDataFrame.ProjMtx.m_data[3].set(-1.f, 1.f, 0.5f, 1.0f);
+}
+
+void slGSD3D11::BeginGUI()
+{
+	const float cc[4] = { 0.f,0.f,0.f,0.f };
+	SetRenderTarget(m_GUIRTT);
+	UseDepth(false);
+	m_d3d11DevCon->ClearRenderTargetView(m_currentTargetView, cc);
+	SetActiveShader(m_shaderGUIRectangle);
+	m_shaderGUIRectangle->SetOnFrame();
+}
+
+void slGSD3D11::DrawGUI()
+{
+	// draw elements/widgets here
+}
+
+void slGSD3D11::DrawGUIRectangle(const slRect& rct, const slColor& color1, const slColor& color2,
+	slTexture* t, slVec4f* UVs)
+{
+	slGSD3D11Texture* d3dt = m_whiteTexture;
+	
+	if (t)
+		d3dt = (slGSD3D11Texture*)t;
+
+	m_shaderGUIRectangle->m_cbDataElement.Color1 = color1;
+	m_shaderGUIRectangle->m_cbDataElement.Color2 = color2;
+
+	m_shaderGUIRectangle->m_cbDataElement.Corners.x = (float)(rct.left);
+	m_shaderGUIRectangle->m_cbDataElement.Corners.y = (float)(rct.top);
+	m_shaderGUIRectangle->m_cbDataElement.Corners.z = (float)(rct.right);
+	m_shaderGUIRectangle->m_cbDataElement.Corners.w = (float)(rct.bottom);
+
+	m_shaderGUIRectangle->m_cbDataElement.UVs.x = 0.f;
+	m_shaderGUIRectangle->m_cbDataElement.UVs.y = 0.f;
+	m_shaderGUIRectangle->m_cbDataElement.UVs.z = 1.f;
+	m_shaderGUIRectangle->m_cbDataElement.UVs.w = 1.f;
+
+	if (UVs)
+		m_shaderGUIRectangle->m_cbDataElement.UVs = *UVs;
+
+	m_shaderGUIRectangle->SetOnElement(d3dt);
+
+	m_d3d11DevCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	m_d3d11DevCon->Draw(1, 0);
+}
+
+void slGSD3D11::EndGUI()
+{
+	SetRenderTarget(m_mainTargetRTT);
+	UseDepth(true);
 }
 

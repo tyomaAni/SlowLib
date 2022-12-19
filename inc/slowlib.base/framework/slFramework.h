@@ -37,6 +37,9 @@ struct slPoint {
 	int32_t y = 0;
 };
 struct slRect {
+	slRect() {}
+	slRect(int32_t l, int32_t t, int32_t r, int32_t b)
+		: left(l), top(t), right(r), bottom(b){}
 	int32_t left = 0;
 	int32_t top = 0;
 	int32_t right = 0;

@@ -46,6 +46,8 @@ bool slD3D11ShaderMainTarget::init(){
 	const char* text =
 		"Texture2D tex2d_1;\n"
 		"SamplerState tex2D_sampler_1;\n"
+		"Texture2D tex2d_2;\n" // GUI
+		"SamplerState tex2D_sampler_2;\n" // GUI
 		"struct VSIn{\n"
 		"   float3 position : POSITION;\n"
 		"   float2 uv : TEXCOORD;\n"
@@ -69,6 +71,10 @@ bool slD3D11ShaderMainTarget::init(){
 		"}\n"
 		"PSOut PSMain(VSOut input){\n"
 		"   PSOut output;\n"
+		
+		"   float4 GUIColor = tex2d_2.Sample(tex2D_sampler_2, input.uv);\n"
+		"   if(GUIColor.w){output.color = GUIColor;}else\n"
+		
 		"   output.color = tex2d_1.Sample(tex2D_sampler_1, input.uv);\n"
 		"   return output;\n"
 		"}\n"
@@ -103,7 +109,7 @@ bool slD3D11ShaderMainTarget::init(){
 		text,
 		"VSMain",
 		"PSMain",
-		slMeshVertexType::Triangle,
+		slMeshVertexType::Null,
 		&this->m_vShader,
 		&this->m_pShader,
 		&this->m_vLayout))
@@ -125,6 +131,9 @@ void slD3D11ShaderMainTarget::SetConstants(slMaterial* material) {
 
 	m_gs->m_d3d11DevCon->PSSetShaderResources(0, 1, &m_gs->m_mainTargetRTT->m_textureResView);
 	m_gs->m_d3d11DevCon->PSSetSamplers(0, 1, &m_gs->m_mainTargetRTT->m_samplerState);
+
+	m_gs->m_d3d11DevCon->PSSetShaderResources(1, 1, &m_gs->m_GUIRTT->m_textureResView);
+	m_gs->m_d3d11DevCon->PSSetSamplers(1, 1, &m_gs->m_GUIRTT->m_samplerState);
 
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;

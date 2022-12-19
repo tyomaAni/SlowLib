@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.cpp" />
+    <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.shader.GUIRectangle.cpp" />
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.shader.Line3D.cpp" />
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.shader.MainTarget.cpp" />
     <ClCompile Include="..\..\src\slowlib.d3d11\slowlib.d3d11.shader.Solid.cpp" />

@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/geometry/slGeometry.h"
 #include "slowlib.base/containers/slArray.h"
 #include "slowlib.base/archive/slArchive.h"
+#include "slowlib.base/GUI/slGUI.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 
@@ -214,8 +215,6 @@ int main(int argc, char * argv[])
 
 	auto inputData = slInput::GetData();
 
-	double dd = 0.0;
-
 	// m_gs will be auto destroyed, do not call slDestroy(m_gs);
 	app.m_gs = slFramework::SummonGS(slFramework::GetGSUID(0));
 	if (app.m_gs)
@@ -244,6 +243,8 @@ int main(int argc, char * argv[])
 
 	app.m_gs->UseBlend(true);
 	app.m_gs->UseBlend(false);
+	
+	windowCallback.OnSize(app.m_window);
 
 	float* dt = slFramework::GetDeltaTime();
 	while (g_isRun)
@@ -326,6 +327,10 @@ int main(int argc, char * argv[])
 
 		if (app.m_gs)
 		{
+			app.m_gs->BeginGUI();
+			app.m_gs->DrawGUIRectangle(slRect(0, 0, 100, 30), ColorRed, ColorBlue, 0, 0);
+			app.m_gs->EndGUI();
+
 			app.m_gs->BeginDraw();
 			app.m_gs->ClearAll();
 

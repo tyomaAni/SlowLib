@@ -96,6 +96,14 @@ public:
 
 	virtual void SetRenderTarget(slTexture*) = 0;
 	virtual slTexture* SummonRenderTargetTexture(const slPoint& size, const slTextureInfo&) = 0;
+
+	// GUI drawing must be outside BeginDraw EndDraw
+	virtual void BeginGUI() = 0;
+	virtual void DrawGUI() = 0;
+	// t and UVs is optional
+	virtual void DrawGUIRectangle(const slRect& rect, const slColor& color1, const slColor& color2,
+		slTexture* t, slVec4f* UVs) = 0;
+	virtual void EndGUI() = 0;
 };
 
 #endif
