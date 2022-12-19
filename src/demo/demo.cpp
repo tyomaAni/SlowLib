@@ -214,6 +214,8 @@ int main(int argc, char * argv[])
 	}
 	mm->SetPosition(globalPosition);
 
+	gs->UseBlend(true);
+	gs->UseBlend(false);
 
 	float* dt = slFramework::GetDeltaTime();
 	while (g_isRun)

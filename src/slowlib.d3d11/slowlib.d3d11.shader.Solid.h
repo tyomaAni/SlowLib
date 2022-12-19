@@ -49,8 +49,14 @@ public:
 	}m_cbDataV;
 	struct cbP
 	{
+		enum {
+			FLAG_NOBLEND = 0x1
+		};
+
 		slVec4 SunPosition;
 		slColor BaseColor;
+		float alphaDiscard = 0.5f;
+		float paddingf[3];
 	}m_cbDataP;
 	virtual void SetConstants(slMaterial* material);
 

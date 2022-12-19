@@ -67,6 +67,8 @@ class slGSD3D11 : public slGS
 	ID3D11Texture2D* m_depthStencilBuffer = 0;
 	ID3D11RenderTargetView* m_MainTargetView = 0;
 	ID3D11RenderTargetView* m_currentTargetView = 0;
+	
+	ID3D11BlendState* m_currentBlendState = 0;
 
 	// it for this: you have fullscreen window but you can use lower `resolution`
 	// I need to use Render Target Texture for this

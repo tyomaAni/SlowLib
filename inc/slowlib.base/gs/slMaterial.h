@@ -45,6 +45,7 @@ struct slMaterial
 {
 	slShaderType m_shader = slShaderType::Solid;
 	float m_opacity = 1.f;
+	float m_alphaDiscard = 0.5f;
 	slColor m_colorDiffuse = ColorWhite;
 	slColor m_colorAmbient = ColorGray;
 	slColor m_colorSpecular = ColorWhite;

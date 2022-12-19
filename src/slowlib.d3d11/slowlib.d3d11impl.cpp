@@ -690,9 +690,11 @@ bool slGSD3D11::UseBlend(bool v)
 {
 	const float blend_factor[4] = { 1.f, 1.f, 1.f, 1.f };
 	if (v)
-		m_d3d11DevCon->OMSetBlendState(m_blendStateAlphaEnabled, blend_factor, 0xffffffff);
+		m_currentBlendState = m_blendStateAlphaEnabled;
 	else
-		m_d3d11DevCon->OMSetBlendState(m_blendStateAlphaDisabled, blend_factor, 0xffffffff);
+		m_currentBlendState = m_blendStateAlphaDisabled;
+
+	m_d3d11DevCon->OMSetBlendState(m_currentBlendState, blend_factor, 0xffffffff);
 
 	static bool old = true;
 	bool n = old;

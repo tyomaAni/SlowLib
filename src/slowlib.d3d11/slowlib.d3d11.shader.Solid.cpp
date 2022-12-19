@@ -62,7 +62,9 @@ bool slD3D11ShaderSolid::init(){
 		"cbuffer cbPixel{\n"
 		"	double4 SunPosition;\n"
 		"	float4 BaseColor;\n"
+		"	float alphaDiscard;\n"
 		"};\n"
+		"#define FLAG_NOBLEND 0x1\n"
 		"struct VSOut{\n"
 		"   float4 pos : SV_POSITION;\n"
 		"	float2 uv : TEXCOORD0;\n"
@@ -95,7 +97,9 @@ bool slD3D11ShaderSolid::init(){
 		//"	output.color.xyz = lerp(output.color.xyz, input.vColor.xyz, input.vColor.www);\n"
 		"	if(diff>1.f) diff = 1.f;\n"
 		"	output.color.xyz *= diff;\n"
-		"	output.color.w = 1.f;\n"
+		//"	if((flags & FLAG_NOBLEND) == FLAG_NOBLEND){\n"
+		"	if(output.color.w < alphaDiscard) discard;\n"
+		//"	}\n"
 		//"	if(output.color.w == 0.f) if(input.vColor.w!=1.f)discard;\n"
 		"    return output;\n"
 		"}\n";
@@ -145,6 +149,8 @@ void slD3D11ShaderSolid::SetConstants(slMaterial* material) {
 		m_gs->m_d3d11DevCon->VSSetConstantBuffers(0, 1, &m_cbV);
 	}
 
+	m_cbDataP.alphaDiscard = material->m_alphaDiscard;
+	
 	m_cbDataP.BaseColor = material->m_colorDiffuse;
 	m_cbDataP.SunPosition = material->m_sunPosition;
 
