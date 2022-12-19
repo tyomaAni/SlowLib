@@ -43,6 +43,12 @@ SL_LINK_LIBRARY("slowlib.base");
 #include <Windows.h>
 
 bool g_isRun = true;
+struct App
+{
+	slWindow* m_window = 0;
+	slGS* m_gs = 0;
+	slCamera* m_camera = 0;
+};
 
 class FrameworkCallback : public slFrameworkCallback
 {
@@ -62,6 +68,23 @@ public:
 	WindowCallback() {}
 	virtual ~WindowCallback() {}
 	
+	virtual void OnSizing(slWindow* w) override 
+	{
+	}
+
+	virtual void OnSize(slWindow* w) override
+	{
+		App* app = (App*)w->GetUserData();
+		if (app)
+		{
+			if (w->GetCurrentSize()->x && w->GetCurrentSize()->y)
+				app->m_camera->m_aspect = (float)w->GetCurrentSize()->x / (float)w->GetCurrentSize()->y;
+			app->m_gs->UpdateMainRenderTarget(slVec3f((float)w->GetCurrentSize()->x * 0.25f, (float)w->GetCurrentSize()->y * 0.25f, 0.f));
+			app->m_gs->SetViewport(0, 0, w->GetCurrentSize()->x, w->GetCurrentSize()->y);
+			app->m_gs->SetScissorRect(slVec4f(0.f, 0.f, (float)w->GetCurrentSize()->x, (float)w->GetCurrentSize()->y), 0);
+		}
+	}
+
 	virtual void OnClose(slWindow* w) override 
 	{
 		w->SetVisible(false);
@@ -182,8 +205,10 @@ int main(int argc, char * argv[])
 	WindowCallback windowCallback;
 
 	slFramework::Start(&frameworkCallback);
-	slWindow * window = slFramework::SummonWindow(&windowCallback, 800, 600);
-	window->SetVisible(true);
+	App app;
+
+	app.m_window = slFramework::SummonWindow(&windowCallback, 800, 600);
+	app.m_window->SetVisible(true);
 
 	slArchiveSystem::ZipAdd(slFramework::GetPathA("..\\data\\demo.zip").c_str());
 
@@ -191,37 +216,40 @@ int main(int argc, char * argv[])
 
 	double dd = 0.0;
 
-	slGS* gs = slFramework::SummonGS(slFramework::GetGSUID(0));
-	if (gs)
+	// m_gs will be auto destroyed, do not call slDestroy(m_gs);
+	app.m_gs = slFramework::SummonGS(slFramework::GetGSUID(0));
+	if (app.m_gs)
 	{
-		gs->Init(window, 0);
-		gs->SetClearColor(0.f, 0.f, 1.f, 1.f);
+		app.m_gs->Init(app.m_window, 0);
+		app.m_gs->SetClearColor(0.f, 0.f, 1.f, 1.f);
+		app.m_window->SetUserData(&app);
 	}
 
 	slVec3 globalPosition;
 	globalPosition.set(99990000.f, 0.f, 0.f);
 	
-	slCamera* camera = slFramework::SummonCamera();
-	camera->m_position = globalPosition + slVec3(10.f, 10.f, 10.f);
-	camera->m_target = globalPosition;
-	camera->Update();
-	slFramework::SetMatrix(slMatrixType::ViewProjection, &camera->m_viewProjectionMatrix);
+	app.m_camera = slFramework::SummonCamera();
+	app.m_camera->m_position = globalPosition + slVec3(10.f, 10.f, 10.f);
+	app.m_camera->m_target = globalPosition;
+	app.m_camera->m_aspect = (float)app.m_window->GetCurrentSize()->x / (float)app.m_window->GetCurrentSize()->y;
+	app.m_camera->Update();
+	slFramework::SetMatrix(slMatrixType::ViewProjection, &app.m_camera->m_viewProjectionMatrix);
 
-	MyModel* mm = slCreate<MyModel>(gs);
+	MyModel* mm = slCreate<MyModel>(app.m_gs);
 	if (mm->Load(slFramework::GetPathA("../data/models/box.obj").c_str()))
 	{
 		printf("LOADED!\n");
 	}
 	mm->SetPosition(globalPosition);
 
-	gs->UseBlend(true);
-	gs->UseBlend(false);
+	app.m_gs->UseBlend(true);
+	app.m_gs->UseBlend(false);
 
 	float* dt = slFramework::GetDeltaTime();
 	while (g_isRun)
 	{
 		slFramework::Update();
-		camera->Update();
+		app.m_camera->Update();
 
 		Sleep(1);
 		//frameworkCallback.OnMessage();
@@ -235,58 +263,54 @@ int main(int argc, char * argv[])
 			Beep(600, 100);
 
 		if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
-			windowCallback.OnClose(window);
+			windowCallback.OnClose(app.m_window);
 
 		if (slInput::IsKeyRelease(slInput::KEY_HOME))
-			window->SetBorderless(true);
+			app.m_window->SetBorderless(true);
 		if (slInput::IsKeyRelease(slInput::KEY_END))
-			window->SetBorderless(false);
+			app.m_window->SetBorderless(false);
 		
 		if (slInput::IsKeyRelease(slInput::KEY_INSERT))
-			window->SetNoResize(true);
+			app.m_window->SetNoResize(true);
 		if (slInput::IsKeyRelease(slInput::KEY_DELETE))
-			window->SetNoResize(false);
+			app.m_window->SetNoResize(false);
 
 		if (slInput::IsKeyRelease(slInput::KEY_PGUP))
-			window->SetNoMinimize(true);
+			app.m_window->SetNoMinimize(true);
 		if (slInput::IsKeyRelease(slInput::KEY_PGDOWN))
-			window->SetNoMinimize(false);
+			app.m_window->SetNoMinimize(false);
 
 		if (slInput::IsKeyRelease(slInput::KEY_F1))
-			window->ToFullscreenMode();
+			app.m_window->ToFullscreenMode();
 		if (slInput::IsKeyRelease(slInput::KEY_F2))
-			window->ToWindowMode();
+			app.m_window->ToWindowMode();
 
 		if (slInput::IsKeyHold(slInput::KEY_A))
 		{
 			double d = 13.33 * (double)(*dt);
-			camera->m_position.x += d;
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.x += d;
+			wprintf(L"%f %f %f\n", app.m_camera->m_position.x, app.m_camera->m_position.y, app.m_camera->m_position.z);
 		}
 		if (slInput::IsKeyHold(slInput::KEY_D))
 		{
-			camera->m_position.x -= 10.0 * (double)(*dt);
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.x -= 10.0 * (double)(*dt);
+			wprintf(L"%f %f %f\n", app.m_camera->m_position.x, app.m_camera->m_position.y, app.m_camera->m_position.z);
 		}
 		if (slInput::IsKeyHold(slInput::KEY_W))
 		{
-			camera->m_position.z += 10.0 * (double)(*dt);
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.z += 10.0 * (double)(*dt);
 		}
 		if (slInput::IsKeyHold(slInput::KEY_S))
 		{
-			camera->m_position.z -= 10.0 * (double)(*dt);
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.z -= 10.0 * (double)(*dt);
 		}
 		if (slInput::IsKeyHold(slInput::KEY_Q))
 		{
-			camera->m_position.y += 10.0 * (double)(*dt);
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.y += 10.0 * (double)(*dt);
 		}
 		if (slInput::IsKeyHold(slInput::KEY_E))
 		{
-			camera->m_position.y -= 10.0 * (double)(*dt);
-			wprintf(L"%f %f %f\n", camera->m_position.x, camera->m_position.y, camera->m_position.z);
+			app.m_camera->m_position.y -= 10.0 * (double)(*dt);
 		}
 		if (slInput::IsKeyHit(slInput::KEY_END))
 		{
@@ -300,26 +324,26 @@ int main(int argc, char * argv[])
 		}
 
 
-		if (gs)
+		if (app.m_gs)
 		{
-			gs->BeginDraw();
-			gs->ClearAll();
+			app.m_gs->BeginDraw();
+			app.m_gs->ClearAll();
 
-			gs->DrawLine3D(slVec3(globalPosition.x + 1.f, globalPosition.y, globalPosition.z), slVec3(globalPosition.x -1.f, globalPosition.y, globalPosition.z), ColorRed);
-			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y + 1.f, globalPosition.z), slVec3(globalPosition.x, globalPosition .y -1.f, globalPosition.z), ColorYellow);
-			gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y, globalPosition.z + 1.f), slVec3(globalPosition.x, globalPosition.y, globalPosition.z -1.f), ColorLime);
+			app.m_gs->DrawLine3D(slVec3(globalPosition.x + 1.f, globalPosition.y, globalPosition.z), slVec3(globalPosition.x -1.f, globalPosition.y, globalPosition.z), ColorRed);
+			app.m_gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y + 1.f, globalPosition.z), slVec3(globalPosition.x, globalPosition .y -1.f, globalPosition.z), ColorYellow);
+			app.m_gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y, globalPosition.z + 1.f), slVec3(globalPosition.x, globalPosition.y, globalPosition.z -1.f), ColorLime);
 
-			mm->Draw(camera);
+			mm->Draw(app.m_camera);
 
-			gs->EndDraw();
-			gs->SwapBuffers();
+			app.m_gs->EndDraw();
+			app.m_gs->SwapBuffers();
 		}
 	}
 	
 	slDestroy(mm);
 
-	if (window)
-		slDestroy(window);
+	if (app.m_window)
+		slDestroy(app.m_window);
 
 	slFramework::Stop();
 	return EXIT_SUCCESS;

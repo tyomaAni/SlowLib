@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Simple typeswithout methods
 struct slPoint {
+	slPoint() {}
+	slPoint(int32_t X, int32_t Y) : x(X), y(Y){}
 	int32_t x = 0;
 	int32_t y = 0;
 };

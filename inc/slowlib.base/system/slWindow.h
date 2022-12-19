@@ -29,6 +29,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEWINDOW_H__
 #define __SL_SLOWLIBBASEWINDOW_H__
 
+#include "slowlib.base/common/slUserData.h"
+
 class slWindowCallback
 {
 public:
@@ -37,7 +39,8 @@ public:
 
 	virtual void OnActivate(slWindow*) {}
 	virtual void OnDeactivate(slWindow*) {}
-	virtual void OnSize(slWindow*) {}
+	virtual void OnSize(slWindow*) {}   // after resizing
+	virtual void OnSizing(slWindow*) {} // when resizing
 	virtual void OnMinimize(slWindow*) {}
 	virtual void OnMaximize(slWindow*) {}
 	virtual void OnRestore(slWindow*) {}
@@ -61,12 +64,12 @@ struct slWindowCommonData
 	void* m_implementation = 0;
 };
 
-class slWindow
+class slWindow : public slUserData
 {
 	slWindowCommonData m_data;
 public:
 	slWindow(slWindowCallback* cb, int sx, int sy);
-	~slWindow();
+	virtual ~slWindow();
 
 	void SetTitle(const char*);
 	void SetVisible(bool v);
@@ -88,6 +91,7 @@ public:
 	void OnActivate();
 	void OnDeactivate();
 	void OnSize();
+	void OnSizing();
 	void OnMinimize();
 	void OnMaximize();
 	void OnRestore();

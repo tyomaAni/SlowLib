@@ -30,11 +30,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEGS_H__
 #define __SL_SLOWLIBBASEGS_H__
 
+#include "slowlib.base/common/slUserData.h"
 #include "slowlib.base/common/slColor.h"
 #include "slowlib.base/gs/slGPUMesh.h"
 
 // Graphics System
-class slGS
+class slGS : public slUserData
 {
 public:
 	slGS() {}
@@ -92,6 +93,9 @@ public:
 	virtual void Draw() = 0;
 
 	virtual slTexture* SummonTexture(slImage*, const slTextureInfo&) = 0;
+
+	virtual void SetRenderTarget(slTexture*) = 0;
+	virtual slTexture* SummonRenderTargetTexture(const slPoint& size, const slTextureInfo&) = 0;
 };
 
 #endif

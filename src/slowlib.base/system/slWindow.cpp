@@ -84,7 +84,11 @@ slWindow::slWindow(slWindowCallback* cb, int sx, int sy)
 
     m_data.m_creationSize.x = sx;
     m_data.m_creationSize.y = sy;
-    m_data.m_currentSize = m_data.m_creationSize;
+    //m_data.m_currentSize = m_data.m_creationSize;
+    RECT rc;
+    GetClientRect(w32->m_hWnd, &rc);
+    GetCurrentSize()->x = rc.right - rc.left;
+    GetCurrentSize()->y = rc.bottom - rc.top;
 
     RAWINPUTDEVICE device;
     device.usUsagePage = 0x01;
@@ -308,6 +312,12 @@ void slWindow::OnSize()
     m_data.m_cb->OnSize(this);
 }
 
+void slWindow::OnSizing()
+{
+    SL_ASSERT_ST(m_data.m_cb);
+    m_data.m_cb->OnSizing(this);
+}
+
 void slWindow::OnMinimize()
 {
     SL_ASSERT_ST(m_data.m_cb);
@@ -440,8 +450,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
         if (pW)
         {
-            pW->OnSize();
-
             int wmId = LOWORD(wParam);
             switch (wmId)
             {
@@ -455,25 +463,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 pW->OnMaximize();
                 break;
             }
-        
+
             RECT rc;
             GetClientRect(hWnd, &rc);
             pW->GetCurrentSize()->x = rc.right - rc.left;
             pW->GetCurrentSize()->y = rc.bottom - rc.top;
+
+            pW->OnSize();
         }
 
     }return DefWindowProc(hWnd, message, wParam, lParam);
-    /*case WM_SIZING:
+    case WM_SIZING:
     {
         if (pW)
         {
-            pW->OnSize();
             RECT rc;
             GetClientRect(hWnd, &rc);
             pW->GetCurrentSize()->x = rc.right - rc.left;
             pW->GetCurrentSize()->y = rc.bottom - rc.top;
+
+            pW->OnSizing();
         }
-    }break;*/
+    }break;
     case WM_COMMAND:
     {
         /*int wmId = LOWORD(wParam);

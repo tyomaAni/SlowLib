@@ -70,6 +70,10 @@ bool slGSD3D11::CreateShaders()
 	if (!m_shaderSolid->init())
 		return false;
 
+	m_shaderMainTarget = slCreate<slD3D11ShaderMainTarget>(this);
+	if (!m_shaderMainTarget->init())
+		return false;
+
 	return true;
 }
 
@@ -306,9 +310,12 @@ bool slGSD3D11::createGeometryShaders(const char* target,
 
 void slGSD3D11::Shutdown()
 {
-	
+	if (m_mainTargetRTT) {slDestroy(m_mainTargetRTT); m_mainTargetRTT = 0;}
+	//if (m_mainTargetMesh) slDestroy(m_mainTargetMesh);
+
 	if (m_shaderSolid) { slDestroy(m_shaderSolid); m_shaderSolid = 0; }
-	if (m_shaderLine3D) {slDestroy(m_shaderLine3D); m_shaderLine3D = 0;}
+	if (m_shaderLine3D) { slDestroy(m_shaderLine3D); m_shaderLine3D = 0; }
+	if (m_shaderMainTarget) {slDestroy(m_shaderMainTarget); m_shaderMainTarget = 0;}
 
 	SLD3DSAFE_RELEASE(m_depthStencilView);
 	SLD3DSAFE_RELEASE(m_blendStateAlphaDisabled);
@@ -335,8 +342,6 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	m_activeWindowSize = w->GetCurrentSize();
 	m_mainTargetSize.x = (float)m_activeWindowSize->x;
 	m_mainTargetSize.y = (float)m_activeWindowSize->y;
-
-	
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 	auto hr = D3D11CreateDevice(
@@ -544,6 +549,12 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 		return false;
 	}
 
+	if (!updateMainTarget())
+	{
+		slLog::PrintError("Can't create main target\n");
+		return false;
+	}
+
 	return true;
 }
 
@@ -555,6 +566,13 @@ bool slGSD3D11::InitWindow(slWindow* w)
 
 bool slGSD3D11::updateMainTarget()
 {
+	if (m_mainTargetRTT) slDestroy(m_mainTargetRTT);
+
+	slTextureInfo tinf;
+	m_mainTargetRTT = (slGSD3D11Texture*)SummonRenderTargetTexture(
+		slPoint((uint32_t)m_mainTargetSize.x, (uint32_t)m_mainTargetSize.y), 
+		tinf);
+
 	m_d3d11DevCon->OMSetRenderTargets(0, 0, 0);
 
 	if (m_depthStencilBuffer)
@@ -750,11 +768,9 @@ void slGSD3D11::SetClearColor(float r, float g, float b, float a)
 
 void slGSD3D11::BeginDraw()
 {
-	m_currentTargetView = m_MainTargetView;
+	m_currentTargetView = m_mainTargetRTT->m_RTV;
 	m_d3d11DevCon->OMSetRenderTargets(1, &m_currentTargetView, m_depthStencilView);
-	//SetViewport(0, 0, m_mainTargetSize.x, m_mainTargetSize.y);
-	SetViewport(0, 0, m_activeWindowSize->x, m_activeWindowSize->y);
-
+	SetViewport(0, 0, (uint32_t)m_mainTargetSize.x, (uint32_t)m_mainTargetSize.y);
 }
 
 void slGSD3D11::ClearDepth()
@@ -775,7 +791,17 @@ void slGSD3D11::ClearAll()
 
 void slGSD3D11::EndDraw()
 {
+	m_d3d11DevCon->OMSetRenderTargets(1, &m_MainTargetView, m_depthStencilView);
+	m_currentTargetView = m_MainTargetView;
+	SetViewport(0, 0, (uint32_t)m_activeWindowSize->x, (uint32_t)m_activeWindowSize->y);
+	SetScissorRect(slVec4f(0.f, 0.f, (float)m_activeWindowSize->x, (float)m_activeWindowSize->y), 0);
+	ClearColor();
 
+	SetActiveShader(m_shaderMainTarget);
+	m_shaderMainTarget->SetConstants(0);
+
+	m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
+	m_d3d11DevCon->Draw(1, 0);
 }
 
 void slGSD3D11::SwapBuffers()
@@ -1255,3 +1281,32 @@ fail:;
 	SLD3DSAFE_RELEASE(_texture);
 	return NULL;
 }
+
+void slGSD3D11::SetRenderTarget(slTexture* t)
+{
+	if (t)
+	{
+		slGSD3D11Texture* gst = (slGSD3D11Texture*)t;
+		m_d3d11DevCon->OMSetRenderTargets(1, &gst->m_RTV, m_depthStencilView);
+		m_currentTargetView = gst->m_RTV;
+	}
+	else
+	{
+		m_d3d11DevCon->OMSetRenderTargets(1, &m_mainTargetRTT->m_RTV, m_depthStencilView);
+		m_currentTargetView = m_mainTargetRTT->m_RTV;
+	}
+}
+
+slTexture* slGSD3D11::SummonRenderTargetTexture(const slPoint& size, const slTextureInfo& ti)
+{
+	slImage img;
+	img.m_info.m_width = size.x;
+	img.m_info.m_height = size.y;
+
+	slTextureInfo inf;
+	inf = ti;
+	inf.m_type = slTextureType::RTT;
+
+	return SummonTexture(&img, inf);
+}
+
