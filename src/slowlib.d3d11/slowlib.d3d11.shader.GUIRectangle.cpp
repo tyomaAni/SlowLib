@@ -78,7 +78,6 @@ bool slD3D11ShaderGUIRectangle::init(){
 		"PSOut PSMain(VSOut input){\n"
 		"   PSOut output;\n"
 		"   output.color = tex2d_1.Sample(tex2D_sampler_1, input.uv) * input.color;\n"
-		"   output.color.w = 1.f;\n"
 		"   return output;\n"
 		"}\n"
 		"[maxvertexcount(4)]\n"

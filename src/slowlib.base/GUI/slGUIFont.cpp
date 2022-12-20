@@ -26,27 +26,46 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#include "slowlib.h"
+#include "slowlib.base/GUI/slGUI.h"
 
-#include "slowlib.base/GUI/slGUIFont.h"
-
-class slGUIDrawTextCallback : public slUserData
+slGUIFont::slGUIFont() 
 {
-public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
+	slGUIFontGlyph g;
+	g.m_symbol = 0;
+	AddGlyph(g);
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
+	for (uint32_t i = 0; i < 0x32000; ++i)
+	{
+		m_glyphMap[i] = m_glyphs.m_data[0];
+	}
+}
 
-class slGUI
+slGUIFont::~slGUIFont()
 {
-public:
+	for (size_t i = 0; i < m_glyphs.m_size; ++i)
+	{
+		slDestroy(m_glyphs.m_data[i]);
+	}
+}
 
-};
+void slGUIFont::AddTexture(slTexture* t)
+{
+	SL_ASSERT_ST(t);
+	m_textures.push_back(t);
+}
 
+void slGUIFont::AddGlyph(const slGUIFontGlyph& g)
+{
+	// create new
+	slGUIFontGlyph* newG = slCreate<slGUIFontGlyph>();
+	// copy data
+	*newG = g;
+	// save it
+	m_glyphs.push_back(newG);
+	// save address
+	m_glyphMap[g.m_symbol] = newG;
 
-#endif
+	if ((int32_t)g.m_height > m_maxSize.y) m_maxSize.y = g.m_height;
+	if ((int32_t)g.m_width > m_maxSize.x) m_maxSize.x = g.m_width;
+}

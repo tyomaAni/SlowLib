@@ -57,6 +57,8 @@ struct slTextureInfo;
 struct slCompressionInfo;
 struct slArchiveZipFile;
 class slArchiveSystem;
+class slGUIFont;
+class slGUIDrawTextCallback;
 
 template<typename T>
 class slVec2_t;

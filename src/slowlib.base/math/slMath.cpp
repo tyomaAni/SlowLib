@@ -948,3 +948,7 @@ void slMath::lookAtLH(slMat4& m, const slVec4& eye, const slVec4& center, const 
 	m.m_data[3].z = -dot(f, eye);
 }
 
+float slMath::coordToUV(float value, float textureSz)
+{
+	return value * (1.f / textureSz);
+}

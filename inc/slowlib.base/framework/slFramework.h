@@ -149,6 +149,8 @@ public:
 
 	static void SetImageLoaderConvertToRGBA8(bool);
 	static bool GetImageLoaderConvertToRGBA8();
+
+	static slGUIFont* SummonFont();
 };
 
 #endif

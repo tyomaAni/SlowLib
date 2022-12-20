@@ -176,6 +176,8 @@ public:
 
 	static void perspectiveLH(slMat4&, real_t FOV, real_t aspect, real_t Near, real_t Far);
 	static void lookAtLH(slMat4&, const slVec4& eye, const slVec4& center, const slVec4& up);
+
+	static float coordToUV(float value, float textureSz);
 };
 
 #endif

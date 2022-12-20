@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/archive/slArchive.h"
+#include "slowlib.base/GUI/slGUI.h"
 
 #include <stdio.h>
 #include <time.h>
@@ -497,4 +498,9 @@ uint8_t* slFramework::SummonFileBuffer(const char* path, uint32_t* szOut, bool i
 	}
 
 	return slArchiveSystem::ZipUnzip(path, szOut, 0);
+}
+
+slGUIFont* slFramework::SummonFont()
+{
+	return slCreate<slGUIFont>();
 }

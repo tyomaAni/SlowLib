@@ -46,6 +46,9 @@
     <Filter Include="Source Files\archive">
       <UniqueIdentifier>{644fe548-380b-4c1c-8dea-da8e216a04a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\GUI">
+      <UniqueIdentifier>{ba09a7d5-ca05-4048-b3af-ccaa20fc15dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\slowlib.base\system\slDll.cpp">
@@ -110,6 +113,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\slowlib.base\archive\fastlz.c">
       <Filter>Source Files\archive</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIFont.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
