@@ -1349,26 +1349,13 @@ void slGSD3D11::BeginGUI()
 	m_d3d11DevCon->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 }
 
-void slGSD3D11::DrawGUI()
-{
-	// draw elements/widgets here
-}
-
-void slGSD3D11::DrawGUIRectangle(const slRect& rct, const slColor& color1, const slColor& color2,
+void slGSD3D11::DrawGUIRectangle(const slVec4f& rect, const slColor& color1, const slColor& color2,
 	slTexture* t, slVec4f* UVs)
-{
-	drawGUIRectangle(rct, color1, color2, t ? (slGSD3D11Texture*)t : m_whiteTexture, UVs);
-}
-void slGSD3D11::drawGUIRectangle(const slRect& rct, const slColor& color1, const slColor& color2,
-	slGSD3D11Texture* t, slVec4f* UVs)
 {
 	m_shaderGUIRectangle->m_cbDataElement.Color1 = color1;
 	m_shaderGUIRectangle->m_cbDataElement.Color2 = color2;
 
-	m_shaderGUIRectangle->m_cbDataElement.Corners.x = (float)(rct.left);
-	m_shaderGUIRectangle->m_cbDataElement.Corners.y = (float)(rct.top);
-	m_shaderGUIRectangle->m_cbDataElement.Corners.z = (float)(rct.right);
-	m_shaderGUIRectangle->m_cbDataElement.Corners.w = (float)(rct.bottom);
+	m_shaderGUIRectangle->m_cbDataElement.Corners = rect;
 
 	m_shaderGUIRectangle->m_cbDataElement.UVs.x = 0.f;
 	m_shaderGUIRectangle->m_cbDataElement.UVs.y = 0.f;
@@ -1378,9 +1365,20 @@ void slGSD3D11::drawGUIRectangle(const slRect& rct, const slColor& color1, const
 	if (UVs)
 		m_shaderGUIRectangle->m_cbDataElement.UVs = *UVs;
 
-	m_shaderGUIRectangle->SetOnElement(t);
+	m_shaderGUIRectangle->SetOnElement(dynamic_cast<slGSD3D11Texture*>(t ? t : m_whiteTexture));
 
 	m_d3d11DevCon->Draw(1, 0);
+}
+
+void slGSD3D11::DrawGUIRectangle(const slRect& rct, const slColor& color1, const slColor& color2,
+	slTexture* t, slVec4f* UVs)
+{
+	slVec4f r;
+	r.x = (float)rct.left;
+	r.y = (float)rct.top;
+	r.z = (float)rct.right;
+	r.w = (float)rct.bottom;
+	DrawGUIRectangle(r, color1, color2, dynamic_cast<slGSD3D11Texture*>(t ? t : m_whiteTexture), UVs);
 }
 
 void slGSD3D11::DrawGUICharacter(char32_t ch, slGUIFont* font, const slVec2f& position, const slColor& color)
@@ -1390,14 +1388,14 @@ void slGSD3D11::DrawGUICharacter(char32_t ch, slGUIFont* font, const slVec2f& po
 
 	slGUIFontGlyph* g = font->GetGlyphMap()[ch];
 
-	slRect rct;
-	rct.left = (int32_t)position.x;
-	rct.top = (int32_t)position.y;
+	slVec4f rct;
+	rct.x = position.x;
+	rct.y = position.y;
 
-	rct.right = rct.left + g->m_width;
-	rct.bottom = rct.top + g->m_height;
+	rct.z = rct.x + g->m_width;
+	rct.w = rct.y + g->m_height;
 
-	drawGUIRectangle(rct, color, color, (slGSD3D11Texture*)font->GetTexture(g->m_textureSlot), 
+	DrawGUIRectangle(rct, color, color, (slGSD3D11Texture*)font->GetTexture(g->m_textureSlot),
 		&g->m_UV);
 }
 
@@ -1416,14 +1414,14 @@ void slGSD3D11::DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f
 
 		slGUIFontGlyph* g = font->GetGlyphMap()[text[i]];
 
-		slRect rct;
-		rct.left = (int32_t)position.x;
-		rct.top = (int32_t)position.y;
+		slVec4f rct;
+		rct.x = position.x;
+		rct.y = position.y;
 
-		rct.right = rct.left + g->m_width;
-		rct.bottom = rct.top + g->m_height;
+		rct.z = rct.x + g->m_width;
+		rct.w = rct.y + g->m_height;
 
-		drawGUIRectangle(rct, *color, *color, (slGSD3D11Texture*)font->GetTexture(g->m_textureSlot),
+		DrawGUIRectangle(rct, *color, *color, (slGSD3D11Texture*)font->GetTexture(g->m_textureSlot),
 			&g->m_UV);
 
 		position.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;

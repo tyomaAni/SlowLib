@@ -25,40 +25,33 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-
 #pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#ifndef __SL_SLOWLIBBASEHIERARCHY_H__
+#define __SL_SLOWLIBBASEHIERARCHY_H__
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
+#include "slowlib.base/containers/slList.h"
 
-class slGUIDrawTextCallback : public slUserData
+class slHierarchy
 {
+	slHierarchy* m_parent = 0;
+	slList<slHierarchy*> m_children;
 public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
+	slHierarchy() {}
+	virtual ~slHierarchy() {}
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
+	void SetParent(slHierarchy* o)
+	{
+		if (m_parent)
+			m_parent->m_children.erase_first(this);
 
-struct slGUIState
-{
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
+		m_parent = o;
 
-class slGUIRootElement : public slGUIElement
-{
-public:
-	slGUIRootElement();
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
+		if (o)
+			m_parent->m_children.push_back(this);
+	}
+
+	virtual slHierarchy* GetParent() { return m_parent; }
+	virtual slList<slHierarchy*>* GetChildren() { return &m_children; }
 };
 
 #endif

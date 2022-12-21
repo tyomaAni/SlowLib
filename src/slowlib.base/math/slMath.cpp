@@ -912,6 +912,9 @@ void slMath::invert(slMat4& m)
 
 void slMath::perspectiveLH(slMat4& m, real_t FOV, real_t aspect, real_t Near, real_t Far)
 {
+	SL_ASSERT_ST(FOV != 0.f);
+	SL_ASSERT_ST(aspect != 0.f);
+
 	real_t S = ::sin(0.5 * FOV);
 	real_t C = ::cos(0.5 * FOV);
 	real_t H = C / S;
@@ -950,5 +953,29 @@ void slMath::lookAtLH(slMat4& m, const slVec4& eye, const slVec4& center, const 
 
 float slMath::coordToUV(float value, float textureSz)
 {
+	SL_ASSERT_ST(textureSz!=0.f);
 	return value * (1.f / textureSz);
 }
+
+bool slMath::pointInRect(const slPoint& p, const slRect& r)
+{
+	if ((p.x >= r.left) && (p.x <= r.right) && (p.y >= r.top) && (p.y <= r.bottom))
+		return true; 
+	return false;
+}
+
+bool slMath::pointInRect(const slPoint& p, const slVec4f& r)
+{
+	if ((p.x >= r.x) && (p.x <= r.z) && (p.y >= r.y) && (p.y <= r.w))
+		return true;
+	return false;
+}
+
+bool slMath::pointInRect(const slVec2f& p, const slVec4f& r)
+{
+	if ((p.x >= r.x) && (p.x <= r.z) && (p.y >= r.y) && (p.y <= r.w))
+		return true;
+	return false;
+}
+
+

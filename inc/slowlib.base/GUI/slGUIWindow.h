@@ -27,38 +27,50 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#ifndef __SL_SLOWLIBBASEGUIWND_H__
+#define __SL_SLOWLIBBASEGUIWND_H__
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
 
-class slGUIDrawTextCallback : public slUserData
+class slGUIWindow : public slUserData, public slGUICommon
 {
 public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
+	enum
+	{
+		windowFlag_withCloseButton = 0x1,
+		windowFlag_withCollapseButton = 0x2,
+		windowFlag_withTitleBar = 0x4,
+		windowFlag_canMove = 0x8,
+		windowFlag_canResize = 0x10,
+		windowFlag_canDock = 0x20,
+		windowFlag_canToTop = 0x40,
+	};
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
+private:
+	slGUIElement* m_rootElement = 0;
 
-struct slGUIState
-{
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
+	slVec2f m_position;
+	slVec2f m_size;
+	slVec2f m_sizeMinimum = slVec2f(100.f, 30.f);
 
-class slGUIRootElement : public slGUIElement
-{
+	slString m_title;
+	uint32_t m_windowFlags = 0;
 public:
-	slGUIRootElement();
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
+	slGUIWindow();
+	virtual ~slGUIWindow();
+
+	// need Rebuild
+	void SetPositionAndSize(const slVec2f& p, const slVec2f& sz);
+	
+	void SetSizeMinimum(const slVec2f& sz) { m_sizeMinimum = sz; }
+
+	slGUIElement* GetRootElement() { return m_rootElement; }
+
+	virtual void Rebuild() override;
+	virtual void Update(slInputData*) override;
+	virtual void Draw(slGS* gs, float dt) override;
+	
+	void SetTitle(const char32_t*);
 };
+
 
 #endif

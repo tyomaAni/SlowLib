@@ -137,16 +137,14 @@ public:
 	virtual void SetRenderTarget(slTexture*) final;
 	virtual slTexture* SummonRenderTargetTexture(const slPoint& size, const slTextureInfo&) final;
 	virtual void BeginGUI() final;
-	virtual void DrawGUI() final;
 	virtual void EndGUI() final;
 	virtual void DrawGUIRectangle(const slRect& rect, const slColor& color1, const slColor& color2,
+		slTexture* t, slVec4f* UVs) final;
+	virtual void DrawGUIRectangle(const slVec4f& rect, const slColor& color1, const slColor& color2,
 		slTexture* t, slVec4f* UVs) final;
 	virtual void DrawGUICharacter(char32_t, slGUIFont*, const slVec2f& position, const slColor&) final;
 	virtual void DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f& position,
 		slGUIDrawTextCallback*) final;
-
-	void drawGUIRectangle(const slRect& rect, const slColor& color1, const slColor& color2,
-		slGSD3D11Texture* t, slVec4f* UVs);
 
 	bool createShaders(
 		const char* vertexTarget,

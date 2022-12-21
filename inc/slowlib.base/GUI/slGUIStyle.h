@@ -27,38 +27,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#ifndef __SL_SLOWLIBBASEGUISTYLE_H__
+#define __SL_SLOWLIBBASEGUISTYLE_H__
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
+#include "slowlib.base/common/slColor.h"
 
-class slGUIDrawTextCallback : public slUserData
+enum class slGUIStyleTheme
 {
-public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
-
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
+	Light,
+	Dark
 };
 
-struct slGUIState
+struct slGUIStyle
 {
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
-
-class slGUIRootElement : public slGUIElement
-{
-public:
-	slGUIRootElement();
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
+	slColor m_windowBGColor1;
+	slColor m_windowBGColor2;
+	slColor m_windowBorderColor;
+	slColor m_windowTitleBGColor1;
+	slColor m_windowTitleBGColor2;
+	slColor m_windowTitleTextColor;
 };
 
 #endif

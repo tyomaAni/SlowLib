@@ -178,6 +178,10 @@ public:
 	static void lookAtLH(slMat4&, const slVec4& eye, const slVec4& center, const slVec4& up);
 
 	static float coordToUV(float value, float textureSz);
+
+	static bool pointInRect(const slPoint&, const slRect&);
+	static bool pointInRect(const slPoint&, const slVec4f&);
+	static bool pointInRect(const slVec2f&, const slVec4f&);
 };
 
 #endif

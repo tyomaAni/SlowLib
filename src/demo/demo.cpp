@@ -374,6 +374,9 @@ int main(int argc, char * argv[])
 	myFont->AddGlyph(U'$', slVec2f(233, 39), slPoint(8, 15), 0, slPoint(256, 256));
 	myFont->AddGlyph(U' ', slVec2f(225, 39), slPoint(8, 15), 0, slPoint(256, 256));
 	
+	auto guiWindow = slFramework::SummonGUIWindow();
+	guiWindow->SetPositionAndSize(slVec2f(100.f, 100.f), slVec2f(300.f));
+	slFramework::RebuildGUI();
 	
 	GUIDrawTextCallback textDrawCallback(myFont);
 
@@ -461,6 +464,7 @@ int main(int argc, char * argv[])
 		if (app.m_gs)
 		{
 			app.m_gs->BeginGUI();
+			slFramework::DrawGUI(app.m_gs);
 			app.m_gs->DrawGUIRectangle(slRect(0, 0, 100, 30), ColorRed, ColorBlue, 0, 0);
 			app.m_gs->DrawGUICharacter(U'A', myFont, slVec2f(10.f, 10.f), ColorWhite);
 			app.m_gs->DrawGUICharacter(U'B', myFont, slVec2f(20.f, 10.f), ColorLime);

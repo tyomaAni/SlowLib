@@ -99,9 +99,10 @@ public:
 
 	// GUI drawing must be outside BeginDraw EndDraw
 	virtual void BeginGUI() = 0;
-	virtual void DrawGUI() = 0;
 	// t and UVs is optional
 	virtual void DrawGUIRectangle(const slRect& rect, const slColor& color1, const slColor& color2,
+		slTexture* t, slVec4f* UVs) = 0;
+	virtual void DrawGUIRectangle(const slVec4f& rect, const slColor& color1, const slColor& color2,
 		slTexture* t, slVec4f* UVs) = 0;
 	virtual void DrawGUICharacter(char32_t, slGUIFont*, const slVec2f& position, const slColor&) = 0;
 	virtual void DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f& position,

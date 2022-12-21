@@ -27,38 +27,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#ifndef __SL_SLOWLIBBASEGUIELMNT_H__
+#define __SL_SLOWLIBBASEGUIELMNT_H__
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
+#include "slowlib.base/common/slHierarchy.h"
+#include "slowlib.base/GUI/slGUICommon.h"
 
-class slGUIDrawTextCallback : public slUserData
+class slGUIElement : public slUserData, public slHierarchy, public slGUICommon
 {
+protected:
+	slGUIWindow* m_window = 0;
 public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
+	slGUIElement();
+	virtual ~slGUIElement();
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
+	slGUIWindow* GetWindow() { return m_window; }
 
-struct slGUIState
-{
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
+	slVec4f m_margin;
 
-class slGUIRootElement : public slGUIElement
-{
-public:
-	slGUIRootElement();
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
+	slVec2f m_scroll = 0.f;
+	slVec2f m_scrollLimit = 0.f;
+
+	enum Alignment
+	{
+		LeftTop,
+		Top,
+		RightTop,
+		Right,
+		RightBottom,
+		Bottom,
+		LeftBottom,
+		Left,
+		Center
+	};
+	Alignment m_alignment = Alignment::LeftTop;
+
+	virtual void OnMouseEnter();
+	virtual void OnMouseLeave();
+	virtual void OnClickLMB();
+	virtual void OnClickRMB();
+	virtual void OnClickMMB();
+	virtual void OnClickX1MB();
+	virtual void OnClickX2MB();
+	virtual void OnReleaseLMB();
+	virtual void OnReleaseRMB();
+	virtual void OnReleaseMMB();
+	virtual void OnReleaseX1MB();
+	virtual void OnReleaseX2MB();
+
+	// Make this element last for drawing, first for input.
+	// It will be like on top of all other elements.
+	// It's just changing the order.
+	virtual void ToTop();
+
 };
 
 #endif

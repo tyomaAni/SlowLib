@@ -26,39 +26,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#include "slowlib.h"
+#include "slowlib.base/GUI/slGUI.h"
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
+slGUIRootElement::slGUIRootElement(){}
+slGUIRootElement::~slGUIRootElement(){}
+void slGUIRootElement::Rebuild(){}
+void slGUIRootElement::Update(slInputData*){}
+void slGUIRootElement::Draw(slGS* gs, float dt){}
 
-class slGUIDrawTextCallback : public slUserData
-{
-public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
-
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
-
-struct slGUIState
-{
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
-
-class slGUIRootElement : public slGUIElement
-{
-public:
-	slGUIRootElement();
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
-};
-
-#endif

@@ -59,6 +59,11 @@ struct slArchiveZipFile;
 class slArchiveSystem;
 class slGUIFont;
 class slGUIDrawTextCallback;
+class slGUIElement;
+class slGUIWindow;
+struct slGUIStyle;
+enum class slGUIStyleTheme;
+struct slGUIState;
 
 template<typename T>
 class slVec2_t;

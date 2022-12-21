@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SL_FRMIMPL_H_
 #define _SL_FRMIMPL_H_
 
+#include "slowlib.base/GUI/slGUI.h"
+#include "slowlib.base/containers/slList.h"
+
 #include <vector>
 
 void slInputUpdatePre(slInputData* id);
@@ -62,6 +65,12 @@ public:
 	slInputData m_input;
 	float m_deltaTime = 0.f;
 	void OnDestroy();
+
+	slGUIStyle m_GUIStyleThemeLight;
+	slGUIStyle m_GUIStyleThemeDark;
+	slList<slGUIWindow*> m_GUIWindows;
+	slGUIState m_GUIState;
+	void UpdateGUI();
 };
 
 #endif

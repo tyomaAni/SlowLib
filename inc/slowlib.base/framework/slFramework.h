@@ -151,6 +151,18 @@ public:
 	static bool GetImageLoaderConvertToRGBA8();
 
 	static slGUIFont* SummonFont();
+
+	static slGUIStyle* GetGUIStyle(const slGUIStyleTheme&);
+	static slGUIWindow* SummonGUIWindow();
+	// Destroy GUI window and all elements in this window
+	static void DestroyGUIWindow(slGUIWindow*);
+	// also will be destroyed all children
+	static void DestroyGUIElement(slGUIElement*);
+	static slGUIState* GetGUIState();
+	
+	static void DrawGUI(slGS*);
+	static void RebuildGUI();
+
 };
 
 #endif

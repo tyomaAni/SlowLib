@@ -89,6 +89,22 @@ slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy()
 {
+	if (g_framework->m_GUIWindows.m_head)
+	{
+		auto cw = g_framework->m_GUIWindows.m_head;
+		auto lw = cw->m_left;
+
+		while (1)
+		{
+			auto nw = cw->m_right;
+
+			slFramework::DestroyGUIWindow(cw->m_data);
+			if (cw == lw)
+				break;
+			cw = nw;
+		}
+		g_framework->m_GUIWindows.clear();
+	}
 	_onDestroy_archive();
 	if (g_framework->m_imageLoaders.size())
 	{
@@ -213,6 +229,8 @@ void slFramework::Update()
 #endif
 
 	slInputUpdatePost(&g_framework->m_input);
+
+	g_framework->UpdateGUI();
 
 	static clock_t then = 0;
 	clock_t now = clock();
@@ -504,3 +522,132 @@ slGUIFont* slFramework::SummonFont()
 {
 	return slCreate<slGUIFont>();
 }
+
+slGUIStyle* slFramework::GetGUIStyle(const slGUIStyleTheme& theme)
+{
+	switch (theme)
+	{
+	case slGUIStyleTheme::Light:
+		return &g_framework->m_GUIStyleThemeLight;
+	case slGUIStyleTheme::Dark:
+		return &g_framework->m_GUIStyleThemeDark;
+	}
+	return &g_framework->m_GUIStyleThemeLight;
+}
+
+slGUIWindow* slFramework::SummonGUIWindow()
+{
+	slGUIWindow* newWindow = slCreate<slGUIWindow>();
+	g_framework->m_GUIWindows.push_back(newWindow);
+	return newWindow;
+}
+
+
+void DestroyGUIElement_internal(slGUIElement* e)
+{
+	if (e->GetChildren()->m_head)
+	{
+		auto children = e->GetChildren();
+		if (children->m_head)
+		{
+			auto curr = children->m_head;
+			auto last = curr->m_left;
+			while (1)
+			{
+				DestroyGUIElement_internal(dynamic_cast<slGUIElement*>(curr->m_data));
+				if (curr == last)
+					break;
+				curr = curr->m_right;
+			}
+		}
+	}
+
+	slDestroy(e);
+}
+
+void _DestroyGUIElement(slGUIElement* e)
+{
+	e->SetParent(0);
+	DestroyGUIElement_internal(e);
+}
+void slFramework::DestroyGUIElement(slGUIElement* e)
+{
+	SL_ASSERT_ST(e);
+	if (e->GetWindow()->GetRootElement() == e)
+		return;
+	_DestroyGUIElement(e);
+}
+
+void slFramework::DestroyGUIWindow(slGUIWindow* w)
+{
+	SL_ASSERT_ST(w);
+	_DestroyGUIElement(w->GetRootElement());
+	g_framework->m_GUIWindows.erase_first(w);
+	slDestroy(w);
+}
+
+void slFrameworkImpl::UpdateGUI()
+{
+	if (m_GUIWindows.m_head)
+	{
+		// reset it here, it will set in Update if cursor in window rect
+		m_GUIState.m_windowUnderCursor = 0;
+
+		auto last = m_GUIWindows.m_head;
+		auto curr = last->m_left;
+		while (1)
+		{
+			if(curr->m_data->IsVisible() && !m_GUIState.m_windowUnderCursor)
+			{
+				curr->m_data->Update(&m_input);
+			}
+
+			if (curr == last)
+				break;
+			curr = curr->m_left;
+		}
+	}
+}
+
+slGUIState* slFramework::GetGUIState()
+{
+	return &g_framework->m_GUIState;
+}
+
+void slFramework::DrawGUI(slGS* gs)
+{
+	if (g_framework->m_GUIWindows.m_head)
+	{
+		auto last = g_framework->m_GUIWindows.m_head;
+		auto curr = last->m_left;
+		while (1)
+		{
+			if (curr->m_data->IsVisible())
+			{
+				curr->m_data->Draw(gs, g_framework->m_deltaTime);
+			}
+
+			if (curr == last)
+				break;
+			curr = curr->m_left;
+		}
+	}
+}
+
+void slFramework::RebuildGUI()
+{
+	if (g_framework->m_GUIWindows.m_head)
+	{
+		auto last = g_framework->m_GUIWindows.m_head;
+		auto curr = last->m_left;
+		while (1)
+		{
+			curr->m_data->Rebuild();
+
+			if (curr == last)
+				break;
+			curr = curr->m_left;
+		}
+	}
+}
+
