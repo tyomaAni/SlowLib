@@ -64,6 +64,7 @@ class slGUIWindow;
 struct slGUIStyle;
 enum class slGUIStyleTheme;
 struct slGUIState;
+class slGUIButton;
 
 template<typename T>
 class slVec2_t;

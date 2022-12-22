@@ -40,12 +40,27 @@ enum class slGUIStyleTheme
 
 struct slGUIStyle
 {
-	slColor m_windowBGColor1;
-	slColor m_windowBGColor2;
-	slColor m_windowBorderColor;
-	slColor m_windowTitleBGColor1;
-	slColor m_windowTitleBGColor2;
-	slColor m_windowTitleTextColor;
+	slColor m_windowActiveBGColor1;
+	slColor m_windowActiveBGColor2;
+	slColor m_windowActiveBorderColor;
+	slColor m_windowActiveTitleBGColor1;
+	slColor m_windowActiveTitleBGColor2;
+	slColor m_windowActiveTitleTextColor;
+
+	slColor m_buttonBGColor1;
+	slColor m_buttonBGColor2;
+	slColor m_buttonBorderColor;
+	slColor m_buttonTextColor;
+	slColor m_buttonDisabledBGColor1;
+	slColor m_buttonDisabledBGColor2;
+	slColor m_buttonDisabledBorderColor;
+	slColor m_buttonDisabledTextColor;
+	slColor m_buttonMouseHoverBGColor1;
+	slColor m_buttonMouseHoverBGColor2;
+	slColor m_buttonMouseHoverTextColor;
+	slColor m_buttonMousePressBGColor1;
+	slColor m_buttonMousePressBGColor2;
+	slColor m_buttonMousePressTextColor;
 };
 
 #endif

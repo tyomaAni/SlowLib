@@ -29,9 +29,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/GUI/slGUI.h"
 
-slGUIRootElement::slGUIRootElement(){}
+slGUIRootElement::slGUIRootElement(slGUIWindow* w) :
+	slGUIElement::slGUIElement(w) 
+{}
 slGUIRootElement::~slGUIRootElement(){}
-void slGUIRootElement::Rebuild(){}
+void slGUIRootElement::Rebuild()
+{
+	slGUIElement::Rebuild();
+}
 void slGUIRootElement::Update(slInputData*){}
 void slGUIRootElement::Draw(slGS* gs, float dt){}
 

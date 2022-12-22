@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __SL_SLOWLIBBASEWINDOW_H__
 
 #include "slowlib.base/common/slUserData.h"
+#include "slowlib.base/math/slVector.h"
 
 class slWindowCallback
 {
@@ -55,9 +56,9 @@ struct slWindowCommonData
 	slPoint m_borderSize;
 	slPoint m_borderSizeCurrent;
 	slPoint m_sizeMinimum;
-	slPoint m_currentSize;
-	slPoint m_creationSize;
-	slPoint m_sizePreFullscreen;
+	slVec2f m_currentSize;
+	slVec2f m_creationSize;
+	slVec2f m_sizePreFullscreen;
 	bool m_isVisible = false;
 	bool m_isFullscreen = false;
 
@@ -82,7 +83,7 @@ public:
 	void SetNoMinimize(bool);
 	slPoint* GetSizeMinimum();
 	slPoint* GetBorderSize();
-	slPoint* GetCurrentSize();
+	slVec2f* GetCurrentSize();
 	
 	void ToFullscreenMode();
 	void ToWindowMode();

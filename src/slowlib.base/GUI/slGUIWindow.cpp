@@ -35,7 +35,7 @@ extern slFrameworkImpl* g_framework;
 
 slGUIWindow::slGUIWindow()
 {
-	m_rootElement = dynamic_cast<slGUIElement*>(slCreate<slGUIRootElement>());
+	m_rootElement = dynamic_cast<slGUIElement*>(slCreate<slGUIRootElement>(this));
 }
 
 slGUIWindow::~slGUIWindow()
@@ -77,16 +77,29 @@ void _slGUIWindow_RebuildElement(slGUIElement* e)
 
 void slGUIWindow::Rebuild()
 {
-	_slGUIWindow_RebuildElement(m_rootElement);
-
 	// calculate rects
 	m_buildRect.x = m_position.x;
 	m_buildRect.y = m_position.y;
 	m_buildRect.z = m_buildRect.x + m_size.x;
 	m_buildRect.w = m_buildRect.y + m_size.y;
-	
-	m_activeRect = m_buildRect;
+	if (m_buildRect.x > m_buildRect.z)
+		m_buildRect.x = m_buildRect.z;
+	if (m_buildRect.y > m_buildRect.w)
+		m_buildRect.y = m_buildRect.w;
+
 	m_clipRect = m_buildRect;
+	m_activeRect = m_clipRect;
+
+	// rebuild root here
+	m_rootElement->m_buildRect.x = m_buildRect.x;
+	m_rootElement->m_buildRect.y = m_buildRect.y;
+	m_rootElement->m_buildRect.z = m_buildRect.x + m_size.x;
+	m_rootElement->m_buildRect.w = m_buildRect.y + m_size.y;
+	m_rootElement->m_clipRect = m_rootElement->m_buildRect;
+	m_rootElement->m_activeRect = m_rootElement->m_clipRect;
+
+	// then rebuild other elements
+	_slGUIWindow_RebuildElement(m_rootElement);
 }
 
 void _slGUIWindow_UpdateElement(slInputData* in, slGUIElement* e)
@@ -114,30 +127,31 @@ void _slGUIWindow_UpdateElement(slInputData* in, slGUIElement* e)
 void slGUIWindow::Update(slInputData* input)
 {
 	if (slMath::pointInRect(input->mousePosition, m_activeRect))
-	{
 		g_framework->m_GUIState.m_windowUnderCursor = this;
 
-		_slGUIWindow_UpdateElement(input, m_rootElement);
-	}
+	_slGUIWindow_UpdateElement(input, m_rootElement);
 }
 
 void _slGUIWindow_DrawElement(slGS* gs, slGUIElement* e, float dt)
 {
-	e->Draw(gs, dt);
-
-	if (e->GetChildren()->m_head)
+	if (e->IsVisible())
 	{
-		auto children = e->GetChildren();
-		if (children->m_head)
+		e->Draw(gs, dt);
+
+		if (e->GetChildren()->m_head)
 		{
-			auto curr = children->m_head;
-			auto last = curr->m_left;
-			while (1)
+			auto children = e->GetChildren();
+			if (children->m_head)
 			{
-				_slGUIWindow_DrawElement(gs, dynamic_cast<slGUIElement*>(curr->m_data), dt);
-				if (curr == last)
-					break;
-				curr = curr->m_right;
+				auto curr = children->m_head;
+				auto last = curr->m_left;
+				while (1)
+				{
+					_slGUIWindow_DrawElement(gs, dynamic_cast<slGUIElement*>(curr->m_data), dt);
+					if (curr == last)
+						break;
+					curr = curr->m_right;
+				}
 			}
 		}
 	}
@@ -145,7 +159,8 @@ void _slGUIWindow_DrawElement(slGS* gs, slGUIElement* e, float dt)
 
 void slGUIWindow::Draw(slGS* gs, float dt)
 {
-	gs->DrawGUIRectangle(m_buildRect, ColorWhite, ColorLime, 0, 0);
+	if(IsDrawBG())
+		gs->DrawGUIRectangle(m_buildRect, m_style->m_windowActiveBGColor1, m_style->m_windowActiveBGColor2, 0, 0);
 
 	_slGUIWindow_DrawElement(gs, m_rootElement, dt);
 }

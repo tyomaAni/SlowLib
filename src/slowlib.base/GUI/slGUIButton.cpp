@@ -26,40 +26,54 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#include "slowlib.h"
+#include "slowlib.base/GUI/slGUI.h"
+#include "slowlib.base/gs/slGS.h"
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
-#include "slowlib.base/GUI/slGUIButton.h"
-
-class slGUIDrawTextCallback : public slUserData
+slGUIButton::slGUIButton(slGUIWindow* w)
+	: 
+	slGUIElement::slGUIElement(w) 
 {
-public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
+	
+	SetParent(w->GetRootElement());
+}
+slGUIButton::~slGUIButton(){}
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
-
-struct slGUIState
+void slGUIButton::Rebuild()
 {
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
+	slGUIElement::Rebuild();
+}
 
-class slGUIRootElement : public slGUIElement
+void slGUIButton::Update(slInputData* id)
 {
-public:
-	slGUIRootElement(slGUIWindow*);
-	virtual ~slGUIRootElement();
-	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
-	virtual void Draw(slGS* gs, float dt) final;
-};
+	slGUIElement::Update(id);
+}
 
-#endif
+void slGUIButton::Draw(slGS* gs, float dt)
+{
+	gs->SetScissorRect(m_clipRect, 0);
+	if (IsDrawBG())
+	{
+		if (IsEnabled())
+		{
+			if (IsClickedLMB())
+			{
+				gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMousePressBGColor1, m_style->m_buttonMousePressBGColor2, 0, 0);
+			}
+			else
+			{
+				if(IsCursorInRect())
+					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMouseHoverBGColor1, m_style->m_buttonMouseHoverBGColor2, 0, 0);
+				else
+					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonBGColor1, m_style->m_buttonBGColor2, 0, 0);
+			}
+		}
+		else
+			gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonDisabledBGColor1, m_style->m_buttonDisabledBGColor2, 0, 0);
+	}
+}
+
+void slGUIButton::SetText(const slString& s)
+{
+	m_text = s;
+}

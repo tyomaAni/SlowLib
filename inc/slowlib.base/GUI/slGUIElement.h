@@ -38,48 +38,39 @@ class slGUIElement : public slUserData, public slHierarchy, public slGUICommon
 protected:
 	slGUIWindow* m_window = 0;
 public:
-	slGUIElement();
+	slGUIElement(slGUIWindow*);
 	virtual ~slGUIElement();
 
 	slGUIWindow* GetWindow() { return m_window; }
 
+	// basic rebuild, common for all elements
+	virtual void Rebuild() override;
+	virtual void Update(slInputData*) override;
+
+	//// basic things for OnMouseEnter OnClickLMB and other
+	//virtual void Update(slInputData*) override;
+
+
 	slVec4f m_margin;
+	slVec2f m_size;
 
 	slVec2f m_scroll = 0.f;
 	slVec2f m_scrollLimit = 0.f;
 
 	enum Alignment
 	{
-		LeftTop,
-		Top,
-		RightTop,
-		Right,
-		RightBottom,
-		Bottom,
-		LeftBottom,
-		Left,
-		Center
+		Left = 0x1,
+		Top = 0x2,
+		Right = 0x4,
+		Bottom = 0x8,
+		Center = Left | Top | Right | Bottom
 	};
-	Alignment m_alignment = Alignment::LeftTop;
-
-	virtual void OnMouseEnter();
-	virtual void OnMouseLeave();
-	virtual void OnClickLMB();
-	virtual void OnClickRMB();
-	virtual void OnClickMMB();
-	virtual void OnClickX1MB();
-	virtual void OnClickX2MB();
-	virtual void OnReleaseLMB();
-	virtual void OnReleaseRMB();
-	virtual void OnReleaseMMB();
-	virtual void OnReleaseX1MB();
-	virtual void OnReleaseX2MB();
+	Alignment m_alignment = Alignment::Center;
 
 	// Make this element last for drawing, first for input.
 	// It will be like on top of all other elements.
 	// It's just changing the order.
 	virtual void ToTop();
-
 };
 
 #endif

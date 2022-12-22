@@ -158,6 +158,29 @@ void slFramework::Start(slFrameworkCallback* cb)
 		g_framework->m_meshLoaders.push_back(slMeshLoaderOBJ_create());
 		g_framework->m_imageLoaders.push_back(slImageLoaderDefault_create());
 	}
+
+	g_framework->m_GUIStyleThemeLight.m_windowActiveBGColor1 = 0xE1E6F7;
+	g_framework->m_GUIStyleThemeLight.m_windowActiveBGColor2 = 0xEFEFFF;
+	g_framework->m_GUIStyleThemeLight.m_windowActiveBorderColor = 0xE1E6F7;
+	g_framework->m_GUIStyleThemeLight.m_windowActiveTitleBGColor1 = 0xB5CCFF;
+	g_framework->m_GUIStyleThemeLight.m_windowActiveTitleBGColor2 = 0xBFCFFF;
+	g_framework->m_GUIStyleThemeLight.m_windowActiveTitleTextColor = 0x0;
+	g_framework->m_GUIStyleThemeLight.m_buttonBGColor1 = 0x999999;
+	g_framework->m_GUIStyleThemeLight.m_buttonBGColor2 = 0x666666;
+	g_framework->m_GUIStyleThemeLight.m_buttonBorderColor = 0x999999;
+	g_framework->m_GUIStyleThemeLight.m_buttonTextColor = 0x0;
+	g_framework->m_GUIStyleThemeLight.m_buttonDisabledBGColor1 = 0x999999;
+	g_framework->m_GUIStyleThemeLight.m_buttonDisabledBGColor2 = 0x666666;
+	g_framework->m_GUIStyleThemeLight.m_buttonDisabledBorderColor = 0x999999;
+	g_framework->m_GUIStyleThemeLight.m_buttonDisabledTextColor = 0x555555;
+	g_framework->m_GUIStyleThemeLight.m_buttonMouseHoverBGColor1 = 0xAAAAAA;
+	g_framework->m_GUIStyleThemeLight.m_buttonMouseHoverBGColor2 = 0x777777;
+	g_framework->m_GUIStyleThemeLight.m_buttonMouseHoverTextColor = 0x222222;
+	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor1 = 0x777777;
+	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor2 = 0x444444;
+	g_framework->m_GUIStyleThemeLight.m_buttonMousePressTextColor = 0x0;
+
+	g_framework->m_GUIStyleThemeDark = g_framework->m_GUIStyleThemeLight;
 }
 
 void slFramework::Stop()
@@ -538,6 +561,7 @@ slGUIStyle* slFramework::GetGUIStyle(const slGUIStyleTheme& theme)
 slGUIWindow* slFramework::SummonGUIWindow()
 {
 	slGUIWindow* newWindow = slCreate<slGUIWindow>();
+	newWindow->SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
 	g_framework->m_GUIWindows.push_back(newWindow);
 	return newWindow;
 }
@@ -650,4 +674,12 @@ void slFramework::RebuildGUI()
 		}
 	}
 }
+
+//slGUIButton* slFramework::SummonGUIButton(slGUIWindow* w)
+//{
+//	SL_ASSERT_ST(w);
+//	slGUIButton* b = slCreate<slGUIButton>(w);
+//	b->SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
+//	return b;
+//}
 

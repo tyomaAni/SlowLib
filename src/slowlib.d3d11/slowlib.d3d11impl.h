@@ -54,7 +54,7 @@ class slGSD3D11 : public slGS
 	friend class slD3D11ShaderGUIRectangle;
 
 	slWindow* m_activeWindow = 0;
-	slPoint* m_activeWindowSize = 0;
+	slVec2f* m_activeWindowSize = 0;
 	
 	IDXGISwapChain* m_SwapChain = 0;
 	ID3D11Device* m_d3d11Device = 0;

@@ -347,8 +347,8 @@ bool slGSD3D11::Init(slWindow* w, const char* parameters)
 	slLog::PrintInfo("Init video driver - D3D11...\n");
 	m_activeWindow = w;
 	m_activeWindowSize = w->GetCurrentSize();
-	m_mainTargetSize.x = (float)m_activeWindowSize->x;
-	m_mainTargetSize.y = (float)m_activeWindowSize->y;
+	m_mainTargetSize.x = m_activeWindowSize->x;
+	m_mainTargetSize.y = m_activeWindowSize->y;
 
 	D3D_FEATURE_LEVEL featureLevel = D3D_FEATURE_LEVEL_11_0;
 	auto hr = D3D11CreateDevice(

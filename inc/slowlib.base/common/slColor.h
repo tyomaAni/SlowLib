@@ -120,6 +120,11 @@ public:
 		setAsInteger(uint_data);
 	}
 
+	slColor(int32_t int_data) // 0xFF112233 ARGB
+	{
+		setAsInteger(0xFF000000 | (uint32_t)int_data);
+	}
+
 	float x() { return m_data[0]; }
 	float y() { return m_data[1]; }
 	float z() { return m_data[2]; }

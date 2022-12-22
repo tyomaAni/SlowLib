@@ -27,39 +27,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEGUI_H__
-#define __SL_SLOWLIBBASEGUI_H__
+#ifndef __SL_SLOWLIBBASEGUIBTN_H__
+#define __SL_SLOWLIBBASEGUIBTN_H__
 
-#include "slowlib.base/GUI/slGUIStyle.h"
-#include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
-#include "slowlib.base/GUI/slGUIButton.h"
+#include "slowlib.base/string/slString.h"
 
-class slGUIDrawTextCallback : public slUserData
+class slGUIButton : public slGUIElement
 {
+	slString m_text;
 public:
-	slGUIDrawTextCallback() {}
-	virtual ~slGUIDrawTextCallback() {}
-
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
-};
-
-struct slGUIState
-{
-	slGUIWindow* m_windowUnderCursor = 0;
-	slGUIWindow* m_activeWindow = 0;
-};
-
-class slGUIRootElement : public slGUIElement
-{
-public:
-	slGUIRootElement(slGUIWindow*);
-	virtual ~slGUIRootElement();
+	slGUIButton(slGUIWindow*);
+	virtual ~slGUIButton();
 	virtual void Rebuild() final;
 	virtual void Update(slInputData*) final;
 	virtual void Draw(slGS* gs, float dt) final;
+	
+	virtual void SetText(const slString&);
 };
 
 #endif

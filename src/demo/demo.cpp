@@ -49,6 +49,7 @@ struct App
 	slWindow* m_window = 0;
 	slGS* m_gs = 0;
 	slCamera* m_camera = 0;
+	slGUIWindow* m_GUIWindow = 0;
 };
 
 class FrameworkCallback : public slFrameworkCallback
@@ -79,10 +80,12 @@ public:
 		if (app)
 		{
 			if (w->GetCurrentSize()->x && w->GetCurrentSize()->y)
-				app->m_camera->m_aspect = (float)w->GetCurrentSize()->x / (float)w->GetCurrentSize()->y;
-			app->m_gs->UpdateMainRenderTarget(slVec3f((float)w->GetCurrentSize()->x * 0.25f, (float)w->GetCurrentSize()->y * 0.25f, 0.f));
-			app->m_gs->SetViewport(0, 0, w->GetCurrentSize()->x, w->GetCurrentSize()->y);
-			app->m_gs->SetScissorRect(slVec4f(0.f, 0.f, (float)w->GetCurrentSize()->x, (float)w->GetCurrentSize()->y), 0);
+				app->m_camera->m_aspect = w->GetCurrentSize()->x / w->GetCurrentSize()->y;
+			app->m_gs->UpdateMainRenderTarget(slVec3f(w->GetCurrentSize()->x * 0.25f, w->GetCurrentSize()->y * 0.25f, 0.f));
+			app->m_gs->SetViewport(0, 0, (uint32_t)w->GetCurrentSize()->x, (uint32_t)w->GetCurrentSize()->y);
+			app->m_gs->SetScissorRect(slVec4f(0.f, 0.f, w->GetCurrentSize()->x, w->GetCurrentSize()->y), 0);
+			app->m_GUIWindow->SetPositionAndSize(slVec2f(100.f), slVec2f(w->GetCurrentSize()->x - 500.f, w->GetCurrentSize()->y - 300.f));
+			app->m_GUIWindow->Rebuild();
 		}
 	}
 
@@ -226,6 +229,54 @@ public:
 		}
 
 		return &m_colorWhite;
+	}
+};
+
+class MyButton : public slGUIButton
+{
+public:
+	MyButton(slGUIWindow* w)
+		:
+		slGUIButton(w)
+	{}
+	virtual ~MyButton() {}
+
+	virtual void OnMouseEnter() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+
+	virtual void OnMouseLeave() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+
+	virtual void OnClickLMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+
+	virtual void OnClickRMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+
+	virtual void OnClickMMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+
+	virtual void OnReleaseLMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+	virtual void OnReleaseRMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
+	}
+	virtual void OnReleaseMMB() final
+	{
+		slLog::PrintInfo("%s\n", SL_FUNCTION);
 	}
 };
 
@@ -375,7 +426,13 @@ int main(int argc, char * argv[])
 	myFont->AddGlyph(U' ', slVec2f(225, 39), slPoint(8, 15), 0, slPoint(256, 256));
 	
 	auto guiWindow = slFramework::SummonGUIWindow();
-	guiWindow->SetPositionAndSize(slVec2f(100.f, 100.f), slVec2f(300.f));
+	app.m_GUIWindow = guiWindow;
+	guiWindow->SetPositionAndSize(slVec2f(100.f, 100.f), slVec2f(300.f, 300.f));
+	guiWindow->SetDrawBG(true);
+	//auto btn = slFramework::SummonGUIButton(guiWindow);
+	auto btn = slCreate<MyButton>(guiWindow);
+	btn->m_margin.set(10.f);
+	
 	slFramework::RebuildGUI();
 	
 	GUIDrawTextCallback textDrawCallback(myFont);
@@ -390,14 +447,6 @@ int main(int argc, char * argv[])
 
 		Sleep(1);
 		//frameworkCallback.OnMessage();
-
-		if(slInput::IsLMBHold())
-			wprintf(L"%i %i %c[%u]\n", inputData->mousePosition.x, inputData->mousePosition.y, (wchar_t)inputData->character, (uint32_t)inputData->character);
-
-		if (slInput::IsLMBHit())
-			Beep(400, 100);
-		if (slInput::IsLMBRelease())
-			Beep(600, 100);
 
 		if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
 			windowCallback.OnClose(app.m_window);
@@ -465,6 +514,8 @@ int main(int argc, char * argv[])
 		{
 			app.m_gs->BeginGUI();
 			slFramework::DrawGUI(app.m_gs);
+			app.m_gs->SetScissorRect(slVec4f(0.f,0.f, 
+				app.m_window->GetCurrentSize()->x, app.m_window->GetCurrentSize()->y), 0);
 			app.m_gs->DrawGUIRectangle(slRect(0, 0, 100, 30), ColorRed, ColorBlue, 0, 0);
 			app.m_gs->DrawGUICharacter(U'A', myFont, slVec2f(10.f, 10.f), ColorWhite);
 			app.m_gs->DrawGUICharacter(U'B', myFont, slVec2f(20.f, 10.f), ColorLime);

@@ -33,20 +33,31 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class slGUICommon
 {
 public:
-	enum
+	enum : uint32_t
 	{
 		flag_visible = 0x1,
 		flag_enabled = 0x2,
 		flag_drawBG = 0x4,
+
+		// for internal use, can read but not set
+		flag_clickedX2MB = 0x4000000,
+		flag_clickedX1MB = 0x8000000,
+		flag_clickedMMB = 0x10000000,
+		flag_clickedRMB = 0x20000000,
+		flag_clickedLMB = 0x40000000,
+		flag_cursorInRect = 0x80000000,
 	};
 
 protected:
 	slGUIStyle* m_style = 0;
+	slGUIDrawTextCallback* m_textDrawCallback = 0;
 
 	uint32_t m_flags = flag_visible | flag_enabled | flag_drawBG;
 public:
-	slGUICommon() {}
-	virtual ~slGUICommon() {}
+	slGUICommon();
+	virtual ~slGUICommon();
+
+	virtual void SetDrawTextCallback(slGUIDrawTextCallback* cb) { m_textDrawCallback = cb; }
 
 	virtual void SetStyle(slGUIStyle* s)
 	{
@@ -74,6 +85,13 @@ public:
 			m_flags &= ~slGUICommon::flag_enabled;
 	}
 	virtual bool IsEnabled() { return (m_flags & flag_enabled); }
+	
+	virtual bool IsCursorInRect() { return (m_flags & flag_cursorInRect); }
+	virtual bool IsClickedLMB() { return (m_flags & flag_clickedLMB); }
+	virtual bool IsClickedRMB() { return (m_flags & flag_clickedRMB); }
+	virtual bool IsClickedMMB() { return (m_flags & flag_clickedMMB); }
+	virtual bool IsClickedX1MB() { return (m_flags & flag_clickedX1MB); }
+	virtual bool IsClickedX2MB() { return (m_flags & flag_clickedX2MB); }
 
 	virtual void SetDrawBG(bool v) {
 		if (v)
@@ -94,11 +112,25 @@ public:
 	// Better to call this after GUI creation and after changing widow size
 	virtual void Rebuild() = 0;
 	
-	// all mouse things, click things
-	virtual void Update(slInputData*) = 0;
-	
 	// draw it
 	virtual void Draw(slGS* gs, float dt) = 0;
+
+	// all mouse things, click things.
+	// basic things is correct for elements and for window so implement it
+	virtual void Update(slInputData*);
+
+	virtual void OnMouseEnter();
+	virtual void OnMouseLeave();
+	virtual void OnClickLMB();
+	virtual void OnClickRMB();
+	virtual void OnClickMMB();
+	virtual void OnClickX1MB();
+	virtual void OnClickX2MB();
+	virtual void OnReleaseLMB();
+	virtual void OnReleaseRMB();
+	virtual void OnReleaseMMB();
+	virtual void OnReleaseX1MB();
+	virtual void OnReleaseX2MB();
 
 	slVec4f m_buildRect;  // build element using this
 	slVec4f m_clipRect;   // clip using this

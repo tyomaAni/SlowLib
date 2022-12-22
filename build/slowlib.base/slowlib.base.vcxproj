@@ -185,6 +185,8 @@
     <ClCompile Include="..\..\src\slowlib.base\geometry\slPolyTriangle.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\geometry\slRay.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\gs\slImage.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIButton.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUICommon.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIElement.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIFont.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIRootElement.cpp" />

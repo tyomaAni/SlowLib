@@ -82,13 +82,13 @@ slWindow::slWindow(slWindowCallback* cb, int sx, int sy)
     m_data.m_borderSize.y = (GetSystemMetrics(SM_CYFRAME) + GetSystemMetrics(SM_CYCAPTION) + padding);
     m_data.m_borderSizeCurrent = m_data.m_borderSize;
 
-    m_data.m_creationSize.x = sx;
-    m_data.m_creationSize.y = sy;
+    m_data.m_creationSize.x = (float)sx;
+    m_data.m_creationSize.y = (float)sy;
     //m_data.m_currentSize = m_data.m_creationSize;
     RECT rc;
     GetClientRect(w32->m_hWnd, &rc);
-    GetCurrentSize()->x = rc.right - rc.left;
-    GetCurrentSize()->y = rc.bottom - rc.top;
+    GetCurrentSize()->x = (float)(rc.right - rc.left);
+    GetCurrentSize()->y = (float)(rc.bottom - rc.top);
 
     RAWINPUTDEVICE device;
     device.usUsagePage = 0x01;
@@ -241,8 +241,8 @@ void slWindow::ToFullscreenMode()
     {
         m_data.m_sizePreFullscreen = m_data.m_currentSize;
 
-        m_data.m_currentSize.x = mi.rcMonitor.right - mi.rcMonitor.left;
-        m_data.m_currentSize.y = mi.rcMonitor.bottom - mi.rcMonitor.top;
+        m_data.m_currentSize.x = (float)(mi.rcMonitor.right - mi.rcMonitor.left);
+        m_data.m_currentSize.y = (float)(mi.rcMonitor.bottom - mi.rcMonitor.top);
      //   _set_current_rect();
 
         SetWindowLong(w32->m_hWnd, GWL_STYLE, WS_POPUP);
@@ -301,7 +301,7 @@ slPoint* slWindow::GetBorderSize()
     return &m_data.m_borderSize;
 }
 
-slPoint* slWindow::GetCurrentSize()
+slVec2f* slWindow::GetCurrentSize()
 {
     return &m_data.m_currentSize;
 }
@@ -466,8 +466,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             RECT rc;
             GetClientRect(hWnd, &rc);
-            pW->GetCurrentSize()->x = rc.right - rc.left;
-            pW->GetCurrentSize()->y = rc.bottom - rc.top;
+            pW->GetCurrentSize()->x = (float)(rc.right - rc.left);
+            pW->GetCurrentSize()->y = (float)(rc.bottom - rc.top);
 
             pW->OnSize();
         }
@@ -479,8 +479,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             RECT rc;
             GetClientRect(hWnd, &rc);
-            pW->GetCurrentSize()->x = rc.right - rc.left;
-            pW->GetCurrentSize()->y = rc.bottom - rc.top;
+            pW->GetCurrentSize()->x = (float)(rc.right - rc.left);
+            pW->GetCurrentSize()->y = (float)(rc.bottom - rc.top);
 
             pW->OnSizing();
         }

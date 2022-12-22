@@ -318,7 +318,8 @@ void slInputUpdatePre(slInputData* id)
 	id->mouseButtonFlags1 = 0;
 	id->mouseWheelDelta = 0;
 	id->character = 0;
-	slInput::DisableLMBDown();
+	/// ???
+	/*slInput::DisableLMBDown();
 	slInput::DisableRMBDown();
 	slInput::DisableMMBDown();
 	slInput::DisableX1MBDown();
@@ -327,7 +328,7 @@ void slInputUpdatePre(slInputData* id)
 	slInput::DisableRMBUp();
 	slInput::DisableMMBUp();
 	slInput::DisableX1MBUp();
-	slInput::DisableX2MBUp();
+	slInput::DisableX2MBUp();*/
 	id->keyFlagsHit[0] = 0;
 	id->keyFlagsHit[1] = 0;
 	id->keyFlagsRelease[0] = 0;

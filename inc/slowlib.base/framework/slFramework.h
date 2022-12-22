@@ -162,6 +162,7 @@ public:
 	
 	static void DrawGUI(slGS*);
 	static void RebuildGUI();
+	//static slGUIButton* SummonGUIButton(slGUIWindow*);
 
 };
 

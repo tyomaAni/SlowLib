@@ -126,5 +126,11 @@
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIElement.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIButton.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUICommon.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

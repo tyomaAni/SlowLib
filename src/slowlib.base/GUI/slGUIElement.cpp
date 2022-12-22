@@ -29,18 +29,67 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/GUI/slGUI.h"
 
-slGUIElement::slGUIElement() {}
+slGUIElement::slGUIElement(slGUIWindow* w) 
+{
+	SL_ASSERT_ST(w);
+	SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
+}
 slGUIElement::~slGUIElement() {}
-void slGUIElement::OnMouseEnter() {}
-void slGUIElement::OnMouseLeave() {}
-void slGUIElement::OnClickLMB() {}
-void slGUIElement::OnClickRMB() {}
-void slGUIElement::OnClickMMB() {}
-void slGUIElement::OnClickX1MB() {}
-void slGUIElement::OnClickX2MB() {}
-void slGUIElement::OnReleaseLMB() {}
-void slGUIElement::OnReleaseRMB() {}
-void slGUIElement::OnReleaseMMB() {}
-void slGUIElement::OnReleaseX1MB() {}
-void slGUIElement::OnReleaseX2MB() {}
+
 void slGUIElement::ToTop() {}
+
+void slGUIElement::Rebuild()
+{
+	slGUIElement* parent = dynamic_cast<slGUIElement*>(GetParent());
+	if (parent)
+	{
+		// build buildRect using margin
+		m_buildRect.x = parent->m_buildRect.x + m_margin.x;
+		m_buildRect.y = parent->m_buildRect.y + m_margin.y;
+		
+		// if width or height != 0 then do not use m_margin
+		if (m_size.x != 0.f)
+			m_buildRect.z = m_buildRect.x + m_size.x;
+		else
+			m_buildRect.z = parent->m_buildRect.z - m_margin.z;
+
+		if (m_size.y != 0.f)
+			m_buildRect.w = m_buildRect.y + m_size.y;
+		else
+			m_buildRect.w = parent->m_buildRect.w - m_margin.w;
+
+		if (m_buildRect.x > m_buildRect.z)
+			m_buildRect.x = m_buildRect.z;
+		if (m_buildRect.y > m_buildRect.w)
+			m_buildRect.y = m_buildRect.w;
+
+		// scrolling here somewhere
+		
+		// usuially m_clipRect is == m_buildRect;
+		m_clipRect = m_buildRect;
+
+		// but parent has own clip rect
+		if (m_clipRect.x < parent->m_clipRect.x)
+			m_clipRect.x = parent->m_clipRect.x;
+		if (m_clipRect.y < parent->m_clipRect.y)
+			m_clipRect.y = parent->m_clipRect.y;
+		if (m_clipRect.z > parent->m_clipRect.z)
+			m_clipRect.z = parent->m_clipRect.z;
+		if (m_clipRect.w > parent->m_clipRect.w)
+			m_clipRect.w = parent->m_clipRect.w;
+
+		m_activeRect = m_clipRect;
+
+
+		// maybe here callback
+		// OnRects(); or OnRebuild();
+	}
+	// else
+	// only root element without parent
+	// rebuild root in slGUIWindow::Rebuild();
+}
+
+void slGUIElement::Update(slInputData* id)
+{
+	slGUICommon::Update(id);
+}
