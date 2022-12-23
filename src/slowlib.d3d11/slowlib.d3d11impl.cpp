@@ -1409,8 +1409,8 @@ void slGSD3D11::DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f
 
 	for (uint32_t i = 0; i < textSz; ++i)
 	{
-		slGUIFont* font = cb->OnFont(text[i]);
-		slColor* color = cb->OnColor(text[i]);
+		slGUIFont* font = cb->OnFont(cb->m_reason, text[i]);
+		slColor* color = cb->OnColor(cb->m_reason, text[i]);
 
 		slGUIFontGlyph* g = font->GetGlyphMap()[text[i]];
 

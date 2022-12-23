@@ -30,18 +30,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/GUI/slGUI.h"
 #include "slowlib.base/gs/slGS.h"
 
-slGUIButton::slGUIButton(slGUIWindow* w)
-	: 
-	slGUIElement::slGUIElement(w) 
+slGUIFont* slGUIButtonTextDrawCallback::OnFont(uint32_t r, char32_t)
 {
-	
-	SetParent(w->GetRootElement());
+	return slFramework::GetDefaultFont(0);
 }
+
+slColor* slGUIButtonTextDrawCallback::OnColor(uint32_t r, char32_t)
+{
+	switch (r)
+	{
+	case slGUIDrawTextCallback::Reason_pressed:
+		return &m_button->GetStyle()->m_buttonMousePressTextColor;
+	case slGUIDrawTextCallback::Reason_mouseAbove:
+		return &m_button->GetStyle()->m_buttonMouseHoverTextColor;
+	case slGUIDrawTextCallback::Reason_disabled:
+		return &m_button->GetStyle()->m_buttonDisabledTextColor;
+	}
+	return &m_button->GetStyle()->m_buttonTextColor;
+}
+
+slGUIButton::slGUIButton(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
+	: 
+	slGUIElement::slGUIElement(w, position, size) 
+{
+	SetParent(w->GetRootElement());
+	m_defaultTextDrawCallback.m_button = this;
+	m_textDrawCallback = dynamic_cast<slGUIDrawTextCallback*>(&m_defaultTextDrawCallback);
+}
+
 slGUIButton::~slGUIButton(){}
 
 void slGUIButton::Rebuild()
 {
 	slGUIElement::Rebuild();
+	UpdateTextPosition();
 }
 
 void slGUIButton::Update(slInputData* id)
@@ -59,21 +81,56 @@ void slGUIButton::Draw(slGS* gs, float dt)
 			if (IsClickedLMB())
 			{
 				gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMousePressBGColor1, m_style->m_buttonMousePressBGColor2, 0, 0);
+				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_pressed;
+				gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
 			}
 			else
 			{
-				if(IsCursorInRect())
+				if (IsCursorInRect())
+				{
 					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMouseHoverBGColor1, m_style->m_buttonMouseHoverBGColor2, 0, 0);
+					m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_mouseAbove;
+					gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
+				}
 				else
+				{
 					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonBGColor1, m_style->m_buttonBGColor2, 0, 0);
+					m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_default;
+					gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
+				}
 			}
 		}
 		else
+		{
 			gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonDisabledBGColor1, m_style->m_buttonDisabledBGColor2, 0, 0);
+			m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_disabled;
+			gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
+		}
 	}
+}
+
+void slGUIButton::UpdateTextPosition()
+{
+	m_textPosition.x = m_buildRect.x;
+	m_textPosition.y = m_buildRect.y;
+	
+	auto tsz = m_textDrawCallback->GetTextSize(m_text.c_str());
+	m_textPosition.y = m_buildRect.y + tsz.y;
+
+	slVec2f buttonCenter;
+	buttonCenter.x = (m_buildRect.z - m_buildRect.x) * 0.5f;
+	buttonCenter.y = (m_buildRect.w - m_buildRect.y) * 0.5f;
+
+	slVec2f textHalfLen;
+	textHalfLen.x = tsz.x * 0.5f;
+	textHalfLen.y = tsz.y * 0.5f;
+
+	m_textPosition.x = m_buildRect.x + buttonCenter.x - textHalfLen.x;
+	m_textPosition.y = m_buildRect.y + buttonCenter.y - textHalfLen.y;
 }
 
 void slGUIButton::SetText(const slString& s)
 {
 	m_text = s;
+	UpdateTextPosition();
 }

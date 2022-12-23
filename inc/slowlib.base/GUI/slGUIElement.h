@@ -37,22 +37,17 @@ class slGUIElement : public slUserData, public slHierarchy, public slGUICommon
 {
 protected:
 	slGUIWindow* m_window = 0;
+
 public:
-	slGUIElement(slGUIWindow*);
+	slGUIElement(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIElement();
 
 	slGUIWindow* GetWindow() { return m_window; }
 
 	// basic rebuild, common for all elements
 	virtual void Rebuild() override;
+	// basic things for OnMouseEnter OnClickLMB and other
 	virtual void Update(slInputData*) override;
-
-	//// basic things for OnMouseEnter OnClickLMB and other
-	//virtual void Update(slInputData*) override;
-
-
-	slVec4f m_margin;
-	slVec2f m_size;
 
 	slVec2f m_scroll = 0.f;
 	slVec2f m_scrollLimit = 0.f;
@@ -63,6 +58,10 @@ public:
 		Top = 0x2,
 		Right = 0x4,
 		Bottom = 0x8,
+		LeftTop = Left | Top,
+		RightTop = Top | Right,
+		LeftBottom = Left | Bottom,
+		RightBottom = Right | Bottom,
 		Center = Left | Top | Right | Bottom
 	};
 	Alignment m_alignment = Alignment::Center;

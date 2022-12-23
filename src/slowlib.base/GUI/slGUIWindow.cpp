@@ -33,9 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../framework/slFrameworkImpl.h"
 extern slFrameworkImpl* g_framework;
 
-slGUIWindow::slGUIWindow()
+slGUIWindow::slGUIWindow(const slVec2f& position, const slVec2f& size)
+	:
+	slGUICommon(position, size)
 {
-	m_rootElement = dynamic_cast<slGUIElement*>(slCreate<slGUIRootElement>(this));
+	m_rootElement = dynamic_cast<slGUIElement*>(slCreate<slGUIRootElement>(this, position, size));
 }
 
 slGUIWindow::~slGUIWindow()

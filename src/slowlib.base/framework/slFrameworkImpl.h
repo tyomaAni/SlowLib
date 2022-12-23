@@ -37,6 +37,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void slInputUpdatePre(slInputData* id);
 void slInputUpdatePost(slInputData* id);
 
+class DefaultGUIDrawTextCallback : public slGUIDrawTextCallback
+{
+public:
+	DefaultGUIDrawTextCallback() {}
+	virtual ~DefaultGUIDrawTextCallback() {}
+
+	virtual slGUIFont* OnFont(uint32_t, char32_t) final;
+	virtual slColor* OnColor(uint32_t, char32_t) final;
+};
+
 class slFrameworkImpl
 {
 public:
@@ -71,6 +81,11 @@ public:
 	slList<slGUIWindow*> m_GUIWindows;
 	slGUIState m_GUIState;
 	void UpdateGUI();
+
+	slGUIFont* m_GUIFontDefault = 0;
+	slArray<slTexture*> m_texturesForDestroy;
+	DefaultGUIDrawTextCallback m_defaultDrawTextCallback;
+	slColor m_colorWhite;
 };
 
 #endif

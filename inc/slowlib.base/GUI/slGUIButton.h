@@ -31,18 +31,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __SL_SLOWLIBBASEGUIBTN_H__
 
 #include "slowlib.base/string/slString.h"
+#include "slowlib.base/string/slString.h"
+
+class slGUIButtonTextDrawCallback : public slGUIDrawTextCallback
+{
+	friend class slGUIButton;
+	slGUIButton* m_button = 0;
+public:
+	slGUIButtonTextDrawCallback() {}
+	virtual ~slGUIButtonTextDrawCallback() {}
+
+	virtual slGUIFont* OnFont(uint32_t r, char32_t) override;
+	virtual slColor* OnColor(uint32_t r, char32_t) override;
+};
 
 class slGUIButton : public slGUIElement
 {
 	slString m_text;
+	slVec2f m_textPosition;
+	void UpdateTextPosition();
+	slGUIButtonTextDrawCallback m_defaultTextDrawCallback;
 public:
-	slGUIButton(slGUIWindow*);
+	slGUIButton(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIButton();
 	virtual void Rebuild() final;
 	virtual void Update(slInputData*) final;
 	virtual void Draw(slGS* gs, float dt) final;
 	
 	virtual void SetText(const slString&);
+	slGUIButtonTextDrawCallback* GetDefaultButtonTextDrawCallback() { return &m_defaultTextDrawCallback; }
 };
 
 #endif

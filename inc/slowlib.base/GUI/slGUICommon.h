@@ -53,9 +53,16 @@ protected:
 	slGUIDrawTextCallback* m_textDrawCallback = 0;
 
 	uint32_t m_flags = flag_visible | flag_enabled | flag_drawBG;
+
+	slVec2f m_position;
+	slVec2f m_size;
+	slVec4f m_buildRectOnCreation;
 public:
-	slGUICommon();
+	slGUICommon(const slVec2f& position, const slVec2f& size);
 	virtual ~slGUICommon();
+
+	const slVec4f& GetBuildRectOnCreation() { return m_buildRectOnCreation; }
+	void SetBuildRectOnCreation(const slVec4f& r) { m_buildRectOnCreation = r; }
 
 	virtual void SetDrawTextCallback(slGUIDrawTextCallback* cb) { m_textDrawCallback = cb; }
 

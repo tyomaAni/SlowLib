@@ -28,12 +28,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 #include "slowlib.base/gs/slGS.h"
+#include "slowlib.base/gs/slTexture.h"
 #include "slowlib.base/gs/slImageLoader.h"
 #include "slowlib.base/geometry/slMeshLoader.h"
 #include "slowlib.base/geometry/slPolyMesh.h"
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/archive/slArchive.h"
 #include "slowlib.base/GUI/slGUI.h"
+
+static uint8_t g_defaultFontPNG[] = {
+	#include "../data/font.inl"
+};
 
 #include <stdio.h>
 #include <time.h>
@@ -89,6 +94,12 @@ slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy()
 {
+	SLSAFE_DESTROY(m_GUIFontDefault);
+	for (size_t i = 0; i < m_texturesForDestroy.m_size; ++i)
+	{
+		SLSAFE_DESTROY(m_texturesForDestroy.m_data[i]);
+	}
+
 	if (g_framework->m_GUIWindows.m_head)
 	{
 		auto cw = g_framework->m_GUIWindows.m_head;
@@ -178,7 +189,7 @@ void slFramework::Start(slFrameworkCallback* cb)
 	g_framework->m_GUIStyleThemeLight.m_buttonMouseHoverTextColor = 0x222222;
 	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor1 = 0x777777;
 	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor2 = 0x444444;
-	g_framework->m_GUIStyleThemeLight.m_buttonMousePressTextColor = 0x0;
+	g_framework->m_GUIStyleThemeLight.m_buttonMousePressTextColor = 0xFF0000;
 
 	g_framework->m_GUIStyleThemeDark = g_framework->m_GUIStyleThemeLight;
 }
@@ -558,9 +569,9 @@ slGUIStyle* slFramework::GetGUIStyle(const slGUIStyleTheme& theme)
 	return &g_framework->m_GUIStyleThemeLight;
 }
 
-slGUIWindow* slFramework::SummonGUIWindow()
+slGUIWindow* slFramework::SummonGUIWindow(const slVec2f& position, const slVec2f& size)
 {
-	slGUIWindow* newWindow = slCreate<slGUIWindow>();
+	slGUIWindow* newWindow = slCreate<slGUIWindow>(position, size);
 	newWindow->SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
 	g_framework->m_GUIWindows.push_back(newWindow);
 	return newWindow;
@@ -675,11 +686,159 @@ void slFramework::RebuildGUI()
 	}
 }
 
-//slGUIButton* slFramework::SummonGUIButton(slGUIWindow* w)
-//{
-//	SL_ASSERT_ST(w);
-//	slGUIButton* b = slCreate<slGUIButton>(w);
-//	b->SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
-//	return b;
-//}
+slGUIFont* slFramework::GetDefaultFont(uint32_t i)
+{
+	return g_framework->m_GUIFontDefault;
+}
+
+void slFramework::InitDefaultFonts(slGS* gs)
+{
+	if (!g_framework->m_GUIFontDefault)
+	{
+		slImage* img = 0;
+
+		for (uint32_t i = 0; i < slFramework::GetImageLoadersNum(); ++i)
+		{
+			auto il = slFramework::GetImageLoader(i);
+			for (uint32_t o = 0; o < il->GetSupportedFilesCount(); ++o)
+			{
+				auto str = il->GetSupportedFileExtension(o);
+				if (str == U"png")
+				{
+					img = il->Load("something/file.png", g_defaultFontPNG, 9065);
+					goto outFromLoops;
+				}
+			}
+		}
+	outFromLoops:;
+		if (!img)
+			return;
+
+		slTextureInfo ti;
+		slTexture* myFontTexture = gs->SummonTexture(img, ti);
+		SLSAFE_DESTROY(img);
+
+		if (!myFontTexture)
+			return;
+
+		g_framework->m_texturesForDestroy.push_back(myFontTexture);
+
+		slGUIFont* myFont = slFramework::SummonFont();
+		myFont->AddTexture(myFontTexture);
+		myFont->AddGlyph(U'A', slVec2f(0, 0), slPoint(11, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'B', slVec2f(10, 0), slPoint(9, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'C', slVec2f(19, 0), slPoint(9, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'D', slVec2f(27, 0), slPoint(11, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'E', slVec2f(37, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'F', slVec2f(45, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'G', slVec2f(52, 0), slPoint(11, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'H', slVec2f(62, 0), slPoint(10, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'I', slVec2f(72, 0), slPoint(4, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'J', slVec2f(76, 0), slPoint(6, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'K', slVec2f(82, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'L', slVec2f(90, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'M', slVec2f(97, 0), slPoint(13, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'N', slVec2f(110, 0), slPoint(10, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'O', slVec2f(120, 0), slPoint(11, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'P', slVec2f(131, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'Q', slVec2f(139, 0), slPoint(12, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'R', slVec2f(151, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'S', slVec2f(159, 0), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'T', slVec2f(166, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'U', slVec2f(175, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'V', slVec2f(184, 0), slPoint(9, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'W', slVec2f(193, 0), slPoint(14, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'X', slVec2f(207, 0), slPoint(9, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'Y', slVec2f(216, 0), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'Z', slVec2f(224, 0), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'0', slVec2f(231, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'1', slVec2f(239, 0), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'2', slVec2f(247, 0), slPoint(7, 15), 0, slPoint(256, 256));
+
+		myFont->AddGlyph(U'3', slVec2f(1, 20), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'4', slVec2f(9, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'5', slVec2f(17, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'6', slVec2f(25, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'7', slVec2f(33, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'8', slVec2f(41, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'9', slVec2f(49, 20), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'a', slVec2f(57, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'b', slVec2f(65, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'c', slVec2f(73, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'd', slVec2f(80, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'e', slVec2f(89, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'f', slVec2f(96, 20), slPoint(6, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'g', slVec2f(102, 20), slPoint(6, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'h', slVec2f(109, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'i', slVec2f(117, 20), slPoint(3, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'j', slVec2f(120, 20), slPoint(4, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'k', slVec2f(125, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'l', slVec2f(132, 20), slPoint(3, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'm', slVec2f(136, 20), slPoint(12, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'n', slVec2f(148, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'o', slVec2f(157, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'p', slVec2f(165, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'q', slVec2f(173, 20), slPoint(8, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'r', slVec2f(182, 20), slPoint(6, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U's', slVec2f(188, 20), slPoint(5, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U't', slVec2f(194, 20), slPoint(5, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'u', slVec2f(199, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'v', slVec2f(207, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'w', slVec2f(214, 20), slPoint(12, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'x', slVec2f(226, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'y', slVec2f(233, 20), slPoint(7, 16), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'z', slVec2f(240, 20), slPoint(7, 16), 0, slPoint(256, 256));
+
+		myFont->AddGlyph(U'~', slVec2f(1, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'`', slVec2f(9, 39), slPoint(4, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'!', slVec2f(14, 39), slPoint(4, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'?', slVec2f(19, 39), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'\'', slVec2f(26, 39), slPoint(4, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'\"', slVec2f(30, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'@', slVec2f(37, 39), slPoint(13, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'#', slVec2f(50, 39), slPoint(9, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'№', slVec2f(59, 39), slPoint(15, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U';', slVec2f(75, 39), slPoint(3, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U':', slVec2f(80, 39), slPoint(3, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'%', slVec2f(84, 39), slPoint(11, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'&', slVec2f(95, 39), slPoint(10, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'^', slVec2f(106, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'<', slVec2f(114, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'>', slVec2f(121, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'(', slVec2f(130, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U')', slVec2f(134, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'[', slVec2f(140, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U']', slVec2f(144, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'{', slVec2f(150, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'}', slVec2f(154, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'*', slVec2f(160, 39), slPoint(6, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'.', slVec2f(167, 39), slPoint(3, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U',', slVec2f(171, 39), slPoint(3, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'/', slVec2f(174, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'\\', slVec2f(181, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'|', slVec2f(189, 39), slPoint(4, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'+', slVec2f(195, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'-', slVec2f(203, 39), slPoint(5, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'=', slVec2f(208, 39), slPoint(7, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'_', slVec2f(216, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'$', slVec2f(233, 39), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U' ', slVec2f(225, 39), slPoint(8, 15), 0, slPoint(256, 256));
+
+		g_framework->m_GUIFontDefault = myFont;
+	}
+}
+
+slGUIFont* DefaultGUIDrawTextCallback::OnFont(uint32_t, char32_t i) {
+	return g_framework->m_GUIFontDefault;
+}
+
+slColor* DefaultGUIDrawTextCallback::OnColor(uint32_t, char32_t i) {
+	return &g_framework->m_colorWhite;
+}
+
+
+slGUIDrawTextCallback* slFramework::GetDefaultDrawTextCallback()
+{
+	return &g_framework->m_defaultDrawTextCallback;
+}
 

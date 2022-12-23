@@ -29,7 +29,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/GUI/slGUI.h"
 
-slGUICommon::slGUICommon() {}
+slGUICommon::slGUICommon(const slVec2f& position, const slVec2f& size)
+{
+	m_position = position;
+	m_size = size;
+	m_buildRectOnCreation.x = position.x;
+	m_buildRectOnCreation.y = position.y;
+	m_buildRectOnCreation.z = position.x + size.x;
+	m_buildRectOnCreation.w = position.y + size.y;
+}
+
 slGUICommon::~slGUICommon() {}
 void slGUICommon::OnMouseEnter() {}
 void slGUICommon::OnMouseLeave() {}

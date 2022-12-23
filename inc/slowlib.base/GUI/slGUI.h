@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.base/GUI/slGUIStyle.h"
 #include "slowlib.base/GUI/slGUIFont.h"
-#include "slowlib.base/GUI/slGUIElement.h"
-#include "slowlib.base/GUI/slGUIWindow.h"
-#include "slowlib.base/GUI/slGUIButton.h"
 
 class slGUIDrawTextCallback : public slUserData
 {
@@ -42,9 +39,73 @@ public:
 	slGUIDrawTextCallback() {}
 	virtual ~slGUIDrawTextCallback() {}
 
-	virtual slGUIFont* OnFont(char32_t) = 0;
-	virtual slColor* OnColor(char32_t) = 0;
+	enum {
+		Reason_default,
+		Reason_mouseEnter,
+		Reason_mouseLeave,
+		Reason_mouseAbove,
+		Reason_pressed,
+		Reason_active,
+		Reason_disabled,
+		/*Reason_, // others
+		Reason_,*/
+	};
+
+	uint32_t m_reason = Reason_default;
+	virtual slGUIFont* OnFont(uint32_t, char32_t) = 0;
+	virtual slColor* OnColor(uint32_t, char32_t) = 0;
+
+	virtual slVec2f GetTextSize(const char32_t* text)
+	{
+		slVec2f sz, position;
+		slVec4f rct;
+		if (text)
+		{
+			if (text[0] != 0)
+			{
+				const char32_t* p = &text[0u];
+				while ((size_t)*p++)
+				{
+					auto font = OnFont(Reason_default, *p);
+					slGUIFontGlyph* g = font->GetGlyphMap()[*p];
+
+					rct.x = position.x;
+					rct.y = position.y;
+
+					rct.z = rct.x + g->m_width;
+					rct.w = rct.y + g->m_height;
+
+					position.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
+
+					switch (*p)
+					{
+					case U' ':
+						position.x += font->m_spaceSize;
+						break;
+					case U'\t':
+						position.x += font->m_tabSize;
+						break;
+					case U'\n':
+						position.y += font->m_lineSpacing + font->GetMaxSize().y;
+						position.x = 0.f;
+						break;
+					}
+
+					if (position.x > sz.x) sz.x = position.x;
+					if (position.y > sz.y) sz.y = position.y;
+					if (g->m_height > sz.y) sz.y = (float)g->m_height;
+				}
+			}
+		}
+		return sz;
+	}
 };
+
+
+#include "slowlib.base/GUI/slGUIElement.h"
+#include "slowlib.base/GUI/slGUIWindow.h"
+#include "slowlib.base/GUI/slGUIButton.h"
+
 
 struct slGUIState
 {
@@ -55,7 +116,7 @@ struct slGUIState
 class slGUIRootElement : public slGUIElement
 {
 public:
-	slGUIRootElement(slGUIWindow*);
+	slGUIRootElement(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIRootElement();
 	virtual void Rebuild() final;
 	virtual void Update(slInputData*) final;

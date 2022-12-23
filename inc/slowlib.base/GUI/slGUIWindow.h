@@ -55,7 +55,7 @@ private:
 	slString m_title;
 	uint32_t m_windowFlags = 0;
 public:
-	slGUIWindow();
+	slGUIWindow(const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIWindow();
 
 	// need Rebuild

@@ -153,7 +153,7 @@ public:
 	static slGUIFont* SummonFont();
 
 	static slGUIStyle* GetGUIStyle(const slGUIStyleTheme&);
-	static slGUIWindow* SummonGUIWindow();
+	static slGUIWindow* SummonGUIWindow(const slVec2f& position, const slVec2f& size);
 	// Destroy GUI window and all elements in this window
 	static void DestroyGUIWindow(slGUIWindow*);
 	// also will be destroyed all children
@@ -163,6 +163,10 @@ public:
 	static void DrawGUI(slGS*);
 	static void RebuildGUI();
 	//static slGUIButton* SummonGUIButton(slGUIWindow*);
+
+	static void InitDefaultFonts(slGS*);
+	static slGUIFont* GetDefaultFont(uint32_t);
+	static slGUIDrawTextCallback* GetDefaultDrawTextCallback();
 
 };
 
