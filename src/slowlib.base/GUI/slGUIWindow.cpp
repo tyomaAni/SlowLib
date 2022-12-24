@@ -75,29 +75,30 @@ void _slGUIWindow_RebuildElement(slGUIElement* e)
 			}
 		}
 	}
+	e->UpdateContentSize();
 }
 
 void slGUIWindow::Rebuild()
 {
 	// calculate rects
-	m_buildRect.x = m_position.x;
-	m_buildRect.y = m_position.y;
-	m_buildRect.z = m_buildRect.x + m_size.x;
-	m_buildRect.w = m_buildRect.y + m_size.y;
-	if (m_buildRect.x > m_buildRect.z)
-		m_buildRect.x = m_buildRect.z;
-	if (m_buildRect.y > m_buildRect.w)
-		m_buildRect.y = m_buildRect.w;
+	m_baseRect.x = m_position.x;
+	m_baseRect.y = m_position.y;
+	m_baseRect.z = m_baseRect.x + m_size.x;
+	m_baseRect.w = m_baseRect.y + m_size.y;
+	if (m_baseRect.x > m_baseRect.z)
+		m_baseRect.x = m_baseRect.z;
+	if (m_baseRect.y > m_baseRect.w)
+		m_baseRect.y = m_baseRect.w;
 
-	m_clipRect = m_buildRect;
+	m_clipRect = m_baseRect;
 	m_activeRect = m_clipRect;
 
 	// rebuild root here
-	m_rootElement->m_buildRect.x = m_buildRect.x;
-	m_rootElement->m_buildRect.y = m_buildRect.y;
-	m_rootElement->m_buildRect.z = m_buildRect.x + m_size.x;
-	m_rootElement->m_buildRect.w = m_buildRect.y + m_size.y;
-	m_rootElement->m_clipRect = m_rootElement->m_buildRect;
+	m_rootElement->m_baseRect.x = m_baseRect.x;
+	m_rootElement->m_baseRect.y = m_baseRect.y;
+	m_rootElement->m_baseRect.z = m_baseRect.x + m_size.x;
+	m_rootElement->m_baseRect.w = m_baseRect.y + m_size.y;
+	m_rootElement->m_clipRect = m_rootElement->m_baseRect;
 	m_rootElement->m_activeRect = m_rootElement->m_clipRect;
 
 	// then rebuild other elements
@@ -136,9 +137,11 @@ void slGUIWindow::Update(slInputData* input)
 
 void _slGUIWindow_DrawElement(slGS* gs, slGUIElement* e, float dt)
 {
+
 	if (e->IsVisible())
 	{
-		e->Draw(gs, dt);
+		if ((e->m_clipRect.x < e->m_clipRect.z) && (e->m_clipRect.y < e->m_clipRect.w))
+			e->Draw(gs, dt);
 
 		if (e->GetChildren()->m_head)
 		{
@@ -162,7 +165,7 @@ void _slGUIWindow_DrawElement(slGS* gs, slGUIElement* e, float dt)
 void slGUIWindow::Draw(slGS* gs, float dt)
 {
 	if(IsDrawBG())
-		gs->DrawGUIRectangle(m_buildRect, m_style->m_windowActiveBGColor1, m_style->m_windowActiveBGColor2, 0, 0);
+		gs->DrawGUIRectangle(m_baseRect, m_style->m_windowActiveBGColor1, m_style->m_windowActiveBGColor2, 0, 0);
 
 	_slGUIWindow_DrawElement(gs, m_rootElement, dt);
 }

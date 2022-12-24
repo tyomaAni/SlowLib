@@ -53,6 +53,27 @@ void slGUICommon::OnReleaseMMB() {}
 void slGUICommon::OnReleaseX1MB() {}
 void slGUICommon::OnReleaseX2MB() {}
 
+void slGUICommon::UpdateContentSize()
+{
+	m_contentSize.x = m_baseRect.z - m_baseRect.x;
+	m_contentSize.y = m_baseRect.w - m_baseRect.y;
+	UpdateScrollLimit();
+}
+void slGUICommon::UpdateScrollLimit()
+{
+	m_scrollLimit.x = 0.f;
+	m_scrollLimit.y = 0.f;
+	
+	slVec2f buildRectSize;
+	buildRectSize.x = m_baseRect.z - m_baseRect.x;
+	buildRectSize.y = m_baseRect.w - m_baseRect.y;
+
+	if (m_contentSize.x > buildRectSize.x)
+		m_scrollLimit.x = m_contentSize.x - buildRectSize.x;
+	if (m_contentSize.y > buildRectSize.y)
+		m_scrollLimit.y = m_contentSize.y - buildRectSize.y;
+}
+
 void slGUICommon::Update(slInputData* id)
 {
 	if (slMath::pointInRect(id->mousePosition, m_activeRect))
@@ -139,5 +160,6 @@ void slGUICommon::Update(slInputData* id)
 		m_flags &= ~slGUICommon::flag_clickedX1MB;
 	if (slInput::IsX2MBRelease())
 		m_flags &= ~slGUICommon::flag_clickedX2MB;
+
 }
 

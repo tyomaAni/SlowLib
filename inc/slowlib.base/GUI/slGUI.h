@@ -121,6 +121,8 @@ public:
 	virtual void Rebuild() final;
 	virtual void Update(slInputData*) final;
 	virtual void Draw(slGS* gs, float dt) final;
+
+	virtual void UpdateContentSize() final;
 };
 
 #endif

@@ -45,17 +45,17 @@ void slGUIElement::Rebuild()
 	slGUIElement* parent = dynamic_cast<slGUIElement*>(GetParent());
 	if (parent)
 	{
-		m_buildRect.x = parent->m_buildRect.x + m_position.x;
-		m_buildRect.y = parent->m_buildRect.y + m_position.y;
-		m_buildRect.z = m_buildRect.x + m_size.x;
-		m_buildRect.w = m_buildRect.y + m_size.y;		
+		m_baseRect.x = parent->m_baseRect.x + m_position.x;
+		m_baseRect.y = parent->m_baseRect.y + m_position.y;
+		m_baseRect.z = m_baseRect.x + m_size.x;
+		m_baseRect.w = m_baseRect.y + m_size.y;
 
-		if (m_buildRect.x > m_buildRect.z)
-			m_buildRect.x = m_buildRect.z;
-		if (m_buildRect.y > m_buildRect.w)
-			m_buildRect.y = m_buildRect.w;
+		if (m_baseRect.x > m_baseRect.z)
+			m_baseRect.x = m_baseRect.z;
+		if (m_baseRect.y > m_baseRect.w)
+			m_baseRect.y = m_baseRect.w;
 
-		slVec2f parentSize(parent->m_buildRect.z - parent->m_buildRect.x, parent->m_buildRect.w - parent->m_buildRect.y);
+		slVec2f parentSize(parent->m_baseRect.z - parent->m_baseRect.x, parent->m_baseRect.w - parent->m_baseRect.y);
 		if (parentSize.x && parentSize.y)
 		{
 			float parentRectSizeX_1 = 1.f / parentSize.x;
@@ -66,8 +66,8 @@ void slGUIElement::Rebuild()
 			parentCreationCenter.y = parent->m_buildRectOnCreation.y + ((parent->m_buildRectOnCreation.w - parent->m_buildRectOnCreation.y) * 0.5f);
 
 			slVec2f parentCurrentCenter;
-			parentCurrentCenter.x = parent->m_buildRect.x + ((parent->m_buildRect.z - parent->m_buildRect.x) * 0.5f);
-			parentCurrentCenter.y = parent->m_buildRect.y + ((parent->m_buildRect.w - parent->m_buildRect.y) * 0.5f);
+			parentCurrentCenter.x = parent->m_baseRect.x + ((parent->m_baseRect.z - parent->m_baseRect.x) * 0.5f);
+			parentCurrentCenter.y = parent->m_baseRect.y + ((parent->m_baseRect.w - parent->m_baseRect.y) * 0.5f);
 
 			float parentRectSizeDiff_X = parentCurrentCenter.x - parentCreationCenter.x;
 			float parentRectSizeDiff_Y = parentCurrentCenter.y - parentCreationCenter.y;
@@ -76,65 +76,65 @@ void slGUIElement::Rebuild()
 			switch (m_alignment)
 			{
 			case slGUIElement::Left:
-				m_buildRect.y += (int)parentRectSizeDiff_Y;
-				m_buildRect.w += (int)parentRectSizeDiff_Y;
+				m_baseRect.y += parentRectSizeDiff_Y;
+				m_baseRect.w += parentRectSizeDiff_Y;
 				break;
 			case slGUIElement::Top:
-				m_buildRect.x += (int)parentRectSizeDiff_X;
-				m_buildRect.z += (int)parentRectSizeDiff_X;
+				m_baseRect.x += parentRectSizeDiff_X;
+				m_baseRect.z += parentRectSizeDiff_X;
 				break;
 			case slGUIElement::Center:
-				m_buildRect.y += (int)parentRectSizeDiff_Y;
-				m_buildRect.w += (int)parentRectSizeDiff_Y;
-				m_buildRect.x += (int)parentRectSizeDiff_X;
-				m_buildRect.z += (int)parentRectSizeDiff_X;
+				m_baseRect.y += parentRectSizeDiff_Y;
+				m_baseRect.w += parentRectSizeDiff_Y;
+				m_baseRect.x += parentRectSizeDiff_X;
+				m_baseRect.z += parentRectSizeDiff_X;
 				break;
 			case slGUIElement::Right:
-				m_buildRect.y += (int)parentRectSizeDiff_Y;
-				m_buildRect.w += (int)parentRectSizeDiff_Y;
-				
-				m_buildRect.x = parent->m_buildRect.z -
+				m_baseRect.y += parentRectSizeDiff_Y;
+				m_baseRect.w += parentRectSizeDiff_Y;
+
+				m_baseRect.x = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.x) + parent->m_buildRectOnCreation.x;
 
-				m_buildRect.z = parent->m_buildRect.z -
+				m_baseRect.z = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.z) + parent->m_buildRectOnCreation.x;
 				break;
 			case slGUIElement::Bottom:
-				m_buildRect.x += (int)parentRectSizeDiff_X;
-				m_buildRect.z += (int)parentRectSizeDiff_X;
+				m_baseRect.x += parentRectSizeDiff_X;
+				m_baseRect.z += parentRectSizeDiff_X;
 
-				m_buildRect.y = parent->m_buildRect.w -
+				m_baseRect.y = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.y) + parent->m_buildRectOnCreation.y;
 
-				m_buildRect.w = parent->m_buildRect.w -
+				m_baseRect.w = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.w) + parent->m_buildRectOnCreation.y;
 				break;
 			case slGUIElement::LeftTop:
 				break;
 			case slGUIElement::RightTop:
-				m_buildRect.x = parent->m_buildRect.z -
+				m_baseRect.x = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.x) + parent->m_buildRectOnCreation.x;
 
-				m_buildRect.z = parent->m_buildRect.z -
+				m_baseRect.z = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.z) + parent->m_buildRectOnCreation.x;
 				break;
 			case slGUIElement::LeftBottom:
-				m_buildRect.y = parent->m_buildRect.w -
+				m_baseRect.y = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.y) + parent->m_buildRectOnCreation.y;
 
-				m_buildRect.w = parent->m_buildRect.w -
+				m_baseRect.w = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.w) + parent->m_buildRectOnCreation.y;
 				break;
 			case slGUIElement::RightBottom:
-				m_buildRect.x = parent->m_buildRect.z -
+				m_baseRect.x = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.x) + parent->m_buildRectOnCreation.x;
 
-				m_buildRect.z = parent->m_buildRect.z -
+				m_baseRect.z = parent->m_baseRect.z -
 					(parent->m_buildRectOnCreation.z - m_buildRectOnCreation.z) + parent->m_buildRectOnCreation.x;
-				m_buildRect.y = parent->m_buildRect.w -
+				m_baseRect.y = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.y) + parent->m_buildRectOnCreation.y;
 
-				m_buildRect.w = parent->m_buildRect.w -
+				m_baseRect.w = parent->m_baseRect.w -
 					(parent->m_buildRectOnCreation.w - m_buildRectOnCreation.w) + parent->m_buildRectOnCreation.y;
 				break;
 			default:
@@ -142,8 +142,34 @@ void slGUIElement::Rebuild()
 			}
 		}
 		// scrolling here somewhere
+	}
+
 		
-		// usuially m_clipRect is == m_buildRect;
+	// else
+	// only root element without parent
+	// rebuild root in slGUIWindow::Rebuild();
+
+}
+
+void slGUIElement::Update(slInputData* id)
+{
+	slGUICommon::Update(id);
+
+	// maybe here callback
+	// OnRects(); or OnRebuild();
+
+	m_buildRect = m_baseRect;
+	// usuially m_clipRect is == m_baseRect;
+	m_clipRect = m_buildRect;
+
+	slGUIElement* parent = dynamic_cast<slGUIElement*>(GetParent());
+	if (parent)
+	{
+		m_buildRect.x -= parent->m_scroll.x;
+		m_buildRect.y -= parent->m_scroll.y;
+		m_buildRect.z -= parent->m_scroll.x;
+		m_buildRect.w -= parent->m_scroll.y;
+		
 		m_clipRect = m_buildRect;
 
 		// but parent has own clip rect
@@ -155,19 +181,26 @@ void slGUIElement::Rebuild()
 			m_clipRect.z = parent->m_clipRect.z;
 		if (m_clipRect.w > parent->m_clipRect.w)
 			m_clipRect.w = parent->m_clipRect.w;
-
-		m_activeRect = m_clipRect;
-
-
-		// maybe here callback
-		// OnRects(); or OnRebuild();
 	}
-	// else
-	// only root element without parent
-	// rebuild root in slGUIWindow::Rebuild();
-}
+	m_activeRect = m_clipRect;
+	
+	if (IsCursorInRect())
+	{
+		if (id->mouseWheelDelta < 0.f)
+		{
+			m_scrollTarget.y += 10.f;
+			if (m_scrollTarget.y > m_scrollLimit.y)
+				m_scrollTarget.y = m_scrollLimit.y;
+		}
+		else if (id->mouseWheelDelta > 0.f)
+		{
+			m_scrollTarget.y -= 10.f;
 
-void slGUIElement::Update(slInputData* id)
-{
-	slGUICommon::Update(id);
+			if (m_scrollTarget.y < 0.f)
+				m_scrollTarget.y = 0.f;
+		}
+	}
+	m_scroll.y = slMath::lerp1(m_scroll.y, m_scrollTarget.y, 0.1f);
+	
+	Rebuild();
 }

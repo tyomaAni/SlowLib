@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEGUICMN_H__
 #define __SL_SLOWLIBBASEGUICMN_H__
 
-class slGUICommon
+class slGUICommon : public slUserData, public slHierarchy
 {
 public:
 	enum : uint32_t
@@ -57,6 +57,7 @@ protected:
 	slVec2f m_position;
 	slVec2f m_size;
 	slVec4f m_buildRectOnCreation;
+
 public:
 	slGUICommon(const slVec2f& position, const slVec2f& size);
 	virtual ~slGUICommon();
@@ -108,11 +109,6 @@ public:
 	}
 	virtual bool IsDrawBG() { return (m_flags & flag_drawBG); }
 	
-	// Size of element + all children. It like AABB. find maximum x and y.
-	// Size of window with all elements.
-	// Use it for scrolling
-	slVec2f m_contentSize;
-
 	uint32_t m_id = 0;
 
 	// calculate rects.
@@ -139,9 +135,21 @@ public:
 	virtual void OnReleaseX1MB();
 	virtual void OnReleaseX2MB();
 
+	slVec4f m_baseRect;
 	slVec4f m_buildRect;  // build element using this
 	slVec4f m_clipRect;   // clip using this
 	slVec4f m_activeRect; // mouse sensor area
+	//slVec4f m_buildRectFinal;
+
+	slVec2f m_scroll = 0.f;
+	slVec2f m_scrollTarget = 0.f; // for lerp
+	slVec2f m_scrollLimit = 0.f;
+	// Size of element + all children (not grandchildren). It like AABB. find maximum x and y.
+	// Size of window with all elements.
+	// Use it for scrolling
+	slVec2f m_contentSize;
+	virtual void UpdateContentSize();
+	virtual void UpdateScrollLimit();
 };
 
 #endif

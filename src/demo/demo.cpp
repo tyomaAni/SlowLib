@@ -328,7 +328,7 @@ int main(int argc, char * argv[])
 	app.m_GUIWindow = guiWindow;
 	guiWindow->SetDrawBG(true);
 	//auto btn = slFramework::SummonGUIButton(guiWindow);
-	auto btn = slCreate<MyButton>(guiWindow, slVec2f(), slVec2f(100.f, 100.f));
+	auto btn = slCreate<MyButton>(guiWindow, slVec2f(0.f, 400.f), slVec2f(100.f, 100.f));
 	btn->m_alignment = slGUIElement::Alignment::Right;
 	btn->SetText(U"Button");
 	

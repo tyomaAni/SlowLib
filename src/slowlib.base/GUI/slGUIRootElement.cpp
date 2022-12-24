@@ -38,6 +38,42 @@ void slGUIRootElement::Rebuild()
 {
 	slGUIElement::Rebuild();
 }
-void slGUIRootElement::Update(slInputData*){}
+void slGUIRootElement::Update(slInputData* i)
+{
+	slGUIElement::Update(i);
+}
 void slGUIRootElement::Draw(slGS* gs, float dt){}
 
+void slGUIRootElement::UpdateContentSize()
+{
+	slVec2f LB;
+
+	if (GetChildren()->m_head)
+	{
+		auto children = GetChildren();
+		if (children->m_head)
+		{
+			auto curr = children->m_head;
+			auto last = curr->m_left;
+			while (1)
+			{
+				slGUIElement* child = dynamic_cast<slGUIElement*>(curr->m_data);
+				
+				if (child->m_baseRect.z > LB.x) LB.x = child->m_baseRect.z;
+				if (child->m_baseRect.w > LB.y) LB.y = child->m_baseRect.w;
+
+				if (curr == last)
+					break;
+				curr = curr->m_right;
+			}
+		}
+	}
+
+	m_contentSize.x = LB.x - m_baseRect.x;
+	m_contentSize.y = LB.y - m_baseRect.y;
+
+	slGUICommon::UpdateScrollLimit();
+
+	//printf("SIZE: %f %f\n", m_contentSize.x, m_contentSize.y);
+	//printf("LIMIT: %f %f\n", m_scrollLimit.x, m_scrollLimit.y);
+}

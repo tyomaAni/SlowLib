@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class slHierarchy
 {
+protected:
 	slHierarchy* m_parent = 0;
 	slList<slHierarchy*> m_children;
 public:

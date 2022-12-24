@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __SL_SLOWLIBBASEGUIWND_H__
 
 
-class slGUIWindow : public slUserData, public slGUICommon
+class slGUIWindow : public slGUICommon
 {
 public:
 	enum

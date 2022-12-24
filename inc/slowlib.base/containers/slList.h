@@ -378,7 +378,7 @@ public:
 
 		slListNode<_type>* m_node;
 		slListNode<_type>* m_nodeEnd;
-		bool m_isEnd;
+		bool m_isEnd; // I DON"T KNOW HOW TO DO ALL THIS ITERATORS
 	public:
 		Iterator() :m_node(0), m_isEnd(true) {}
 		Iterator(slListNode<_type>* head) :m_node(head), m_isEnd(false)

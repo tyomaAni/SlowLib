@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/common/slHierarchy.h"
 #include "slowlib.base/GUI/slGUICommon.h"
 
-class slGUIElement : public slUserData, public slHierarchy, public slGUICommon
+class slGUIElement : public slGUICommon
 {
 protected:
 	slGUIWindow* m_window = 0;
@@ -48,9 +48,6 @@ public:
 	virtual void Rebuild() override;
 	// basic things for OnMouseEnter OnClickLMB and other
 	virtual void Update(slInputData*) override;
-
-	slVec2f m_scroll = 0.f;
-	slVec2f m_scrollLimit = 0.f;
 
 	enum Alignment
 	{
