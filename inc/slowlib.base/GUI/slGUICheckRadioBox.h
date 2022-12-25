@@ -25,70 +25,46 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
-#ifndef __SL_SLOWLIBBASEFWD_H__
-#define __SL_SLOWLIBBASEFWD_H__
+#ifndef __SL_SLOWLIBBASEGUICHRADBOX_H__
+#define __SL_SLOWLIBBASEGUICHRADBOX_H__
 
-struct slInputData;
-class slInput;
-class slString;
-class slStringA;
-class slStringW;
-class slWindow;
-class slCamera;
-class slRay;
-class slAabb;
-class slPolygonMesh;
-class slPolygon;
-class slPolyTriangle;
-class slMesh;
-class slWindowCallback;
-class slGS;
-class slPolyEdge;
-struct slMaterial;
-class slTexture;
-class slMeshLoaderCallback;
-class slMeshLoader;
-class slGPUMesh;
-class slImage;
-class slColor;
-class slImageLoader;
-struct slTextureInfo;
-struct slCompressionInfo;
-struct slArchiveZipFile;
-class slArchiveSystem;
-class slGUIFont;
-class slGUIDrawTextCallback;
-class slGUIElement;
-class slGUIWindow;
-struct slGUIStyle;
-enum class slGUIStyleTheme;
-struct slGUIState;
-class slGUIButton;
-enum class slGUIDefaultFont;
-class slGUICheckRadioBox;
+class slGUICheckRadioBoxTextDrawCallback : public slGUIDrawTextCallback
+{
+	friend class slGUICheckRadioBox;
+	slGUICheckRadioBox* m_button = 0;
+	slGUIFont* m_defaultFont = 0;
+	slGUIFont* m_icons = 0;
+	slGUIFont* m_currFont = 0;
+public:
+	slGUICheckRadioBoxTextDrawCallback();
+	virtual ~slGUICheckRadioBoxTextDrawCallback() {}
 
-template<typename T>
-class slVec2_t;
-template<typename T>
-class slVec3_t;
-template<typename T>
-class slVec4_t;
-template<typename T>
-class slMatrix4_t;
+	virtual slGUIFont* OnFont(uint32_t r, char32_t) override;
+	virtual slColor* OnColor(uint32_t r, char32_t) override;
+};
 
-using slVec2  = slVec2_t<real_t>;
-using slVec2f = slVec2_t<float>;
-using slVec3  = slVec3_t<real_t>;
-using slVec3f = slVec3_t<float>;
-using slVec4  = slVec4_t<real_t>;
-using slVec4f = slVec4_t<float>;
-using slMat4  = slMatrix4_t<real_t>;
+class slGUICheckRadioBox : public slGUIButton
+{
+	slGUICheckRadioBoxTextDrawCallback m_iconDrawCallback;
+public:
+	slGUICheckRadioBox(slGUIWindow*, const slVec2f& position, const slVec2f& size);
+	virtual ~slGUICheckRadioBox();
+	virtual void Rebuild() final;
+	//virtual void Update(slInputData*) final;
+	virtual void Draw(slGS* gs, float dt) final;	
+	float m_iconVerticalIndent = 0.f;
 
-template<typename _type>
-struct slListNode;
 
-template<typename _type>
-class slList;
+	virtual void OnClickLMB() override;
+	bool m_isChecked = false;
+
+	virtual void OnCheck();
+	virtual void OnUnCheck();
+
+	bool m_asRadioButton = false;
+	uint32_t m_radiouGroup = 0;
+};
 
 #endif

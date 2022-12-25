@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 slGUIFont* slGUIButtonTextDrawCallback::OnFont(uint32_t r, char32_t)
 {
-	return slFramework::GetDefaultFont(0);
+	return slFramework::GetDefaultFont(slGUIDefaultFont::Text);
 }
 
 slColor* slGUIButtonTextDrawCallback::OnColor(uint32_t r, char32_t)
@@ -74,38 +74,39 @@ void slGUIButton::Update(slInputData* id)
 void slGUIButton::Draw(slGS* gs, float dt)
 {
 	gs->SetScissorRect(m_clipRect, 0);
-	if (IsDrawBG())
+	if (IsEnabled())
 	{
-		if (IsEnabled())
+		if (IsClickedLMB())
 		{
-			if (IsClickedLMB())
-			{
+			if (IsDrawBG())
 				gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMousePressBGColor1, m_style->m_buttonMousePressBGColor2, 0, 0);
-				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_pressed;
+			m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_pressed;
+			gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
+		}
+		else
+		{
+			if (IsCursorInRect())
+			{
+				if (IsDrawBG())
+					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMouseHoverBGColor1, m_style->m_buttonMouseHoverBGColor2, 0, 0);
+				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_mouseAbove;
 				gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
 			}
 			else
 			{
-				if (IsCursorInRect())
-				{
-					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonMouseHoverBGColor1, m_style->m_buttonMouseHoverBGColor2, 0, 0);
-					m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_mouseAbove;
-					gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
-				}
-				else
-				{
+				if (IsDrawBG())
 					gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonBGColor1, m_style->m_buttonBGColor2, 0, 0);
-					m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_default;
-					gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
-				}
+				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_default;
+				gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
 			}
 		}
-		else
-		{
+	}
+	else
+	{
+		if (IsDrawBG())
 			gs->DrawGUIRectangle(m_buildRect, m_style->m_buttonDisabledBGColor1, m_style->m_buttonDisabledBGColor2, 0, 0);
-			m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_disabled;
-			gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
-		}
+		m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_disabled;
+		gs->DrawGUIText(m_text.c_str(), m_text.size(), m_textPosition, m_textDrawCallback);
 	}
 }
 

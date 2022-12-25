@@ -62,6 +62,7 @@ int main()
 	slFramework::Start(&fcb);
 	
 	to_h("../data/fonts/font.png", "../src/data/font.inl");
+	to_h("../data/fonts/defaultIcons.png", "../src/data/defaultIcons.inl");
 	
 	slFramework::Stop();
 

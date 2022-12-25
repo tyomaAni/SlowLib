@@ -165,7 +165,7 @@ public:
 	//static slGUIButton* SummonGUIButton(slGUIWindow*);
 
 	static void InitDefaultFonts(slGS*);
-	static slGUIFont* GetDefaultFont(uint32_t);
+	static slGUIFont* GetDefaultFont(const slGUIDefaultFont&);
 	static slGUIDrawTextCallback* GetDefaultDrawTextCallback();
 
 };

@@ -82,7 +82,7 @@ public:
 	slGUIState m_GUIState;
 	void UpdateGUI();
 
-	slGUIFont* m_GUIFontDefault = 0;
+	slArray<slGUIFont*> m_defaultFonts;
 	slArray<slTexture*> m_texturesForDestroy;
 	DefaultGUIDrawTextCallback m_defaultDrawTextCallback;
 	slColor m_colorWhite;

@@ -44,6 +44,12 @@ struct slGUIFontGlyph
 	uint32_t m_textureSlot = 0;
 };
 
+enum class slGUIDefaultFont
+{
+	Text,
+	Icons
+};
+
 class slGUIFont
 {
 	uint32_t m_textureNum = 0;

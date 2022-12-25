@@ -39,6 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static uint8_t g_defaultFontPNG[] = {
 	#include "../data/font.inl"
 };
+static uint8_t g_defaultIconsPNG[] = {
+	#include "../data/defaultIcons.inl"
+};
 
 #include <stdio.h>
 #include <time.h>
@@ -94,7 +97,11 @@ slFrameworkImpl* g_framework = 0;
 
 void slFrameworkImpl::OnDestroy()
 {
-	SLSAFE_DESTROY(m_GUIFontDefault);
+	for (size_t i = 0; i < m_defaultFonts.m_size; ++i)
+	{
+		SLSAFE_DESTROY(m_defaultFonts.m_data[i]);
+	}
+
 	for (size_t i = 0; i < m_texturesForDestroy.m_size; ++i)
 	{
 		SLSAFE_DESTROY(m_texturesForDestroy.m_data[i]);
@@ -190,6 +197,11 @@ void slFramework::Start(slFrameworkCallback* cb)
 	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor1 = 0x777777;
 	g_framework->m_GUIStyleThemeLight.m_buttonMousePressBGColor2 = 0x444444;
 	g_framework->m_GUIStyleThemeLight.m_buttonMousePressTextColor = 0xFF0000;
+	
+	g_framework->m_GUIStyleThemeLight.m_chkradioDisabledTextColor = 0xFF0000;
+	g_framework->m_GUIStyleThemeLight.m_chkradioMouseHoverTextColor = ColorYellow;
+	g_framework->m_GUIStyleThemeLight.m_chkradioMousePressTextColor = 0xFF55FF;
+	g_framework->m_GUIStyleThemeLight.m_chkradioTextColor = 0x0;
 
 	g_framework->m_GUIStyleThemeDark = g_framework->m_GUIStyleThemeLight;
 }
@@ -686,37 +698,57 @@ void slFramework::RebuildGUI()
 	}
 }
 
-slGUIFont* slFramework::GetDefaultFont(uint32_t i)
+slGUIFont* slFramework::GetDefaultFont(const slGUIDefaultFont& t)
 {
-	return g_framework->m_GUIFontDefault;
+	SL_ASSERT_ST(g_framework->m_defaultFonts.m_size);
+	
+	switch (t)
+	{
+	case slGUIDefaultFont::Icons:
+	case slGUIDefaultFont::Text:
+		return g_framework->m_defaultFonts.m_data[(uint32_t)t];
+	default:
+		slLog::PrintWarning("%s : not implemented\n", SL_FUNCTION);
+		break;
+	}
+	return g_framework->m_defaultFonts.m_data[0];
 }
 
 void slFramework::InitDefaultFonts(slGS* gs)
 {
-	if (!g_framework->m_GUIFontDefault)
-	{
-		slImage* img = 0;
+	static bool isInit = false;
 
-		for (uint32_t i = 0; i < slFramework::GetImageLoadersNum(); ++i)
-		{
-			auto il = slFramework::GetImageLoader(i);
-			for (uint32_t o = 0; o < il->GetSupportedFilesCount(); ++o)
+	if (!isInit)
+	{
+		auto getImage = [](uint8_t* buf, uint32_t sz)->slImage* {
+			for (uint32_t i = 0; i < slFramework::GetImageLoadersNum(); ++i)
 			{
-				auto str = il->GetSupportedFileExtension(o);
-				if (str == U"png")
+				auto il = slFramework::GetImageLoader(i);
+				for (uint32_t o = 0; o < il->GetSupportedFilesCount(); ++o)
 				{
-					img = il->Load("something/file.png", g_defaultFontPNG, 9065);
-					goto outFromLoops;
+					auto str = il->GetSupportedFileExtension(o);
+					if (str == U"png")
+					{
+						return il->Load("something/file.png", buf, sz);
+					}
 				}
 			}
-		}
-	outFromLoops:;
-		if (!img)
-			return;
+			return 0;
+		};
 
-		slTextureInfo ti;
-		slTexture* myFontTexture = gs->SummonTexture(img, ti);
-		SLSAFE_DESTROY(img);
+		auto getTexture = [gs](slImage* img)->slTexture* {
+			slTextureInfo ti;
+			slTexture* t = gs->SummonTexture(img, ti);
+			SLSAFE_DESTROY(img);
+			return t;
+		};
+
+		slImage* img = getImage(g_defaultFontPNG, 9065);
+
+		if (!img)
+			return;		
+
+		slTexture* myFontTexture = getTexture(img);
 
 		if (!myFontTexture)
 			return;
@@ -824,12 +856,40 @@ void slFramework::InitDefaultFonts(slGS* gs)
 		myFont->AddGlyph(U'$', slVec2f(233, 39), slPoint(8, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U' ', slVec2f(225, 39), slPoint(8, 15), 0, slPoint(256, 256));
 
-		g_framework->m_GUIFontDefault = myFont;
+		g_framework->m_defaultFonts.push_back(myFont);
+
+		img = getImage(g_defaultIconsPNG, 4825);
+		if (img)
+		{
+			myFontTexture = getTexture(img);
+			if (myFontTexture)
+			{
+				g_framework->m_texturesForDestroy.push_back(myFontTexture);
+
+				myFont = slFramework::SummonFont();
+				myFont->AddTexture(myFontTexture);
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::CheckboxUncheck, slVec2f(0, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::RadioUncheck, slVec2f(0, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::CheckboxCheck, slVec2f(28, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::RadioCheck, slVec2f(14, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::Minus, slVec2f(43, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::Plus, slVec2f(57, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::ArrowUp, slVec2f(71, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::ArrowDonw, slVec2f(85, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::ArrowRight, slVec2f(97, 0), slPoint(14, 14), 0, slPoint(512, 512));
+				myFont->AddGlyph((uint32_t)slGUIDefaultIconID::ArrowLeft, slVec2f(109, 0), slPoint(14, 14), 0, slPoint(512, 512));
+
+				g_framework->m_defaultFonts.push_back(myFont);
+			}
+		}
+
+		isInit = true;
 	}
 }
 
 slGUIFont* DefaultGUIDrawTextCallback::OnFont(uint32_t, char32_t i) {
-	return g_framework->m_GUIFontDefault;
+	SL_ASSERT_ST(g_framework->m_defaultFonts.m_size);
+	return g_framework->m_defaultFonts[0];
 }
 
 slColor* DefaultGUIDrawTextCallback::OnColor(uint32_t, char32_t i) {

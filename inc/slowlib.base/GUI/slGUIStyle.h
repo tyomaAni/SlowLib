@@ -40,6 +40,8 @@ enum class slGUIStyleTheme
 
 struct slGUIStyle
 {
+	slColor m_colorWhite = ColorWhite;
+
 	slColor m_windowActiveBGColor1;
 	slColor m_windowActiveBGColor2;
 	slColor m_windowActiveBorderColor;
@@ -61,6 +63,11 @@ struct slGUIStyle
 	slColor m_buttonMousePressBGColor1;
 	slColor m_buttonMousePressBGColor2;
 	slColor m_buttonMousePressTextColor;
+
+	slColor m_chkradioTextColor;
+	slColor m_chkradioDisabledTextColor;
+	slColor m_chkradioMouseHoverTextColor;
+	slColor m_chkradioMousePressTextColor;
 };
 
 #endif

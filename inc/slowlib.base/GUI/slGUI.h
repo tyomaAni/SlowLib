@@ -33,6 +33,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/GUI/slGUIStyle.h"
 #include "slowlib.base/GUI/slGUIFont.h"
 
+enum class slGUIDefaultIconID : uint32_t
+{
+	CheckboxUncheck = 1,
+	CheckboxCheck,
+	RadioUncheck,
+	RadioCheck,
+	Plus,
+	Minus,
+	ArrowUp,
+	ArrowDonw,
+	ArrowRight,
+	ArrowLeft,
+};
+
 class slGUIDrawTextCallback : public slUserData
 {
 public:
@@ -47,8 +61,10 @@ public:
 		Reason_pressed,
 		Reason_active,
 		Reason_disabled,
+		Reason_icon,
 		/*Reason_, // others
-		Reason_,*/
+		Reason_,
+		*/
 	};
 
 	uint32_t m_reason = Reason_default;
@@ -105,6 +121,7 @@ public:
 #include "slowlib.base/GUI/slGUIElement.h"
 #include "slowlib.base/GUI/slGUIWindow.h"
 #include "slowlib.base/GUI/slGUIButton.h"
+#include "slowlib.base/GUI/slGUICheckRadioBox.h"
 
 
 struct slGUIState

@@ -280,6 +280,28 @@ public:
 	}
 };
 
+class MyCheckbox: public slGUICheckRadioBox
+{
+public:
+	MyCheckbox(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
+		:
+		slGUICheckRadioBox(w, position, size)
+	{}
+	virtual ~MyCheckbox() {}
+};
+
+class MyRadio : public slGUICheckRadioBox
+{
+public:
+	MyRadio(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
+		:
+		slGUICheckRadioBox(w, position, size)
+	{
+		m_asRadioButton = true;
+	}
+	virtual ~MyRadio() {}
+};
+
 int main(int argc, char * argv[])
 {
 	FrameworkCallback frameworkCallback;
@@ -322,7 +344,7 @@ int main(int argc, char * argv[])
 	mm->SetPosition(globalPosition);
 
 	slFramework::InitDefaultFonts(app.m_gs);
-	slGUIFont* myFont = slFramework::GetDefaultFont(0);
+	slGUIFont* myFont = slFramework::GetDefaultFont(slGUIDefaultFont::Text);
 	
 	auto guiWindow = slFramework::SummonGUIWindow(slVec2f(100.f, 100.f), slVec2f(app.m_window->GetCurrentSize()->x - 500.f, app.m_window->GetCurrentSize()->y - 300.f));
 	app.m_GUIWindow = guiWindow;
@@ -331,7 +353,34 @@ int main(int argc, char * argv[])
 	auto btn = slCreate<MyButton>(guiWindow, slVec2f(0.f, 400.f), slVec2f(100.f, 100.f));
 	btn->m_alignment = slGUIElement::Alignment::Right;
 	btn->SetText(U"Button");
+
+	auto chck = slCreate<MyCheckbox>(guiWindow, slVec2f(110.f, 100.f), slVec2f(100.f, 20.f));
+	chck->m_alignment = slGUIElement::Alignment::Right;
+	chck->SetText(U"Checkbox");
 	
+	auto radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 120.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (1)");
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 140.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (1)");
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 160.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (1)");
+
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 180.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (2)");
+	radio->m_radiouGroup = 1;
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 200.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (2)");
+	radio->m_radiouGroup = 1;
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 220.f), slVec2f(100.f, 20.f));
+	radio->m_alignment = slGUIElement::Alignment::Right;
+	radio->SetText(U"Radio (2)");
+	radio->m_radiouGroup = 1;
+
 	slFramework::RebuildGUI();
 	
 	GUIDrawTextCallback textDrawCallback(myFont);
