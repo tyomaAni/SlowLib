@@ -86,6 +86,8 @@ public:
 	slArray<slTexture*> m_texturesForDestroy;
 	DefaultGUIDrawTextCallback m_defaultDrawTextCallback;
 	slColor m_colorWhite;
+
+	slGUITextEditor* m_activeTextEditor = 0;
 };
 
 #endif

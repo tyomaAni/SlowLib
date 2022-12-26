@@ -34,6 +34,7 @@ slGUIElement::slGUIElement(slGUIWindow* w, const slVec2f& position, const slVec2
 {
 	SL_ASSERT_ST(w);
 	m_window = w;
+	SetParent(w->GetRootElement());
 	SetStyle(slFramework::GetGUIStyle(slGUIStyleTheme::Light));
 }
 slGUIElement::~slGUIElement() {}

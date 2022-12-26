@@ -86,8 +86,8 @@ public:
 
 	int32_t m_characterSpacing = 1;
 	int32_t m_lineSpacing = 3;
-	int32_t m_spaceSize = 4;
-	int32_t m_tabSize = 16;
+	int32_t m_spaceSize = 1;
+	int32_t m_tabSize = 12;
 };
 
 

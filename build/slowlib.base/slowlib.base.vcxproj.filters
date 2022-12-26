@@ -135,5 +135,8 @@
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUICheckRadioBox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUITextEditor.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

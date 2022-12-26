@@ -67,6 +67,7 @@ struct slGUIState;
 class slGUIButton;
 enum class slGUIDefaultFont;
 class slGUICheckRadioBox;
+class slGUITextEditor;
 
 template<typename T>
 class slVec2_t;

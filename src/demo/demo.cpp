@@ -302,6 +302,17 @@ public:
 	virtual ~MyRadio() {}
 };
 
+class MyTextEdtor : public slGUITextEditor
+{
+public:
+	MyTextEdtor(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
+		:
+		slGUITextEditor(w, position, size)
+	{
+	}
+	virtual ~MyTextEdtor() {}
+};
+
 int main(int argc, char * argv[])
 {
 	FrameworkCallback frameworkCallback;
@@ -354,32 +365,53 @@ int main(int argc, char * argv[])
 	btn->m_alignment = slGUIElement::Alignment::Right;
 	btn->SetText(U"Button");
 
-	auto chck = slCreate<MyCheckbox>(guiWindow, slVec2f(110.f, 100.f), slVec2f(100.f, 20.f));
+	auto chck = slCreate<MyCheckbox>(guiWindow, slVec2f(210.f, 100.f), slVec2f(100.f, 20.f));
 	chck->m_alignment = slGUIElement::Alignment::Right;
 	chck->SetText(U"Checkbox");
 	
-	auto radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 120.f), slVec2f(100.f, 20.f));
+	auto radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 120.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (1)");
-	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 140.f), slVec2f(100.f, 20.f));
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 140.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (1)");
-	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 160.f), slVec2f(100.f, 20.f));
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 160.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (1)");
 
-	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 180.f), slVec2f(100.f, 20.f));
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 180.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (2)");
 	radio->m_radiouGroup = 1;
-	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 200.f), slVec2f(100.f, 20.f));
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 200.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (2)");
 	radio->m_radiouGroup = 1;
-	radio = slCreate<MyRadio>(guiWindow, slVec2f(110.f, 220.f), slVec2f(100.f, 20.f));
+	radio = slCreate<MyRadio>(guiWindow, slVec2f(210.f, 220.f), slVec2f(100.f, 20.f));
 	radio->m_alignment = slGUIElement::Alignment::Right;
 	radio->SetText(U"Radio (2)");
 	radio->m_radiouGroup = 1;
+
+	auto textEditor = slCreate<MyTextEdtor>(guiWindow, slVec2f(10.f, 10.f), slVec2f(200.f, 200.f));
+	textEditor->SetText(U"Text editor\nNEXT LIN\nE!! auto guiWind 300.f));\n\
+another line\r\n\
+just another line\r\n\
+more lines\r\n\
+more\r\n\
+\n\
+...\r\n\
+windowCallback.OnClose(app.m_window);r\n\
+GUIDrawTextCallback textDrawCallbackr\n\
+windowCallback.OnSize(app.m_window);r\n\
+windowCallback.OnClose(app.m_window);r\n\
+GUIDrawTextCallback textDrawCallbackr\n\
+windowCallback.OnSize(app.m_window);r\n\
+if (slInput::IsKeyHit(slInput::KEY_ESCAPE))r\n\
+windowCallback.OnClose(app.m_window);r\n\
+GUIDrawTextCallback textDrawCallbackr\n\
+windowCallback.OnSize(app.m_window);r\n\
+float* dt = slFramework::GetDeltaTime();while (g_isRun)r\n\
+");
 
 	slFramework::RebuildGUI();
 	

@@ -62,6 +62,7 @@ public:
 		Reason_active,
 		Reason_disabled,
 		Reason_icon,
+		Reason_selected,
 		/*Reason_, // others
 		Reason_,
 		*/
@@ -122,6 +123,7 @@ public:
 #include "slowlib.base/GUI/slGUIWindow.h"
 #include "slowlib.base/GUI/slGUIButton.h"
 #include "slowlib.base/GUI/slGUICheckRadioBox.h"
+#include "slowlib.base/GUI/slGUITextEditor.h"
 
 
 struct slGUIState

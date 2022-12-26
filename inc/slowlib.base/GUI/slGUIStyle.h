@@ -68,6 +68,12 @@ struct slGUIStyle
 	slColor m_chkradioDisabledTextColor;
 	slColor m_chkradioMouseHoverTextColor;
 	slColor m_chkradioMousePressTextColor;
+	
+	slColor m_textEditorBGColor;
+	slColor m_textEditorTextColor;
+	slColor m_textEditorSelectedTextColor;
+	slColor m_textEditorSelectedTextBGColor;
+	slColor m_textEditorCursorColor;
 };
 
 #endif

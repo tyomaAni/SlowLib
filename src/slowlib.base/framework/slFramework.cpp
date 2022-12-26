@@ -203,6 +203,12 @@ void slFramework::Start(slFrameworkCallback* cb)
 	g_framework->m_GUIStyleThemeLight.m_chkradioMousePressTextColor = 0xFF55FF;
 	g_framework->m_GUIStyleThemeLight.m_chkradioTextColor = 0x0;
 
+	g_framework->m_GUIStyleThemeLight.m_textEditorBGColor = 0xFFFFFF;
+	g_framework->m_GUIStyleThemeLight.m_textEditorSelectedTextBGColor = 0x333333;
+	g_framework->m_GUIStyleThemeLight.m_textEditorTextColor = 0x0;
+	g_framework->m_GUIStyleThemeLight.m_textEditorSelectedTextColor = 0x0;
+	g_framework->m_GUIStyleThemeLight.m_textEditorCursorColor = 0x0;
+
 	g_framework->m_GUIStyleThemeDark = g_framework->m_GUIStyleThemeLight;
 }
 
@@ -768,7 +774,7 @@ void slFramework::InitDefaultFonts(slGS* gs)
 		myFont->AddGlyph(U'I', slVec2f(72, 0), slPoint(4, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U'J', slVec2f(76, 0), slPoint(6, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U'K', slVec2f(82, 0), slPoint(8, 15), 0, slPoint(256, 256));
-		myFont->AddGlyph(U'L', slVec2f(90, 0), slPoint(8, 15), 0, slPoint(256, 256));
+		myFont->AddGlyph(U'L', slVec2f(90, 0), slPoint(7, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U'M', slVec2f(97, 0), slPoint(13, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U'N', slVec2f(110, 0), slPoint(10, 15), 0, slPoint(256, 256));
 		myFont->AddGlyph(U'O', slVec2f(120, 0), slPoint(11, 15), 0, slPoint(256, 256));

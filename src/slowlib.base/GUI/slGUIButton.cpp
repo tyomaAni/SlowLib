@@ -53,7 +53,6 @@ slGUIButton::slGUIButton(slGUIWindow* w, const slVec2f& position, const slVec2f&
 	: 
 	slGUIElement::slGUIElement(w, position, size) 
 {
-	SetParent(w->GetRootElement());
 	m_defaultTextDrawCallback.m_button = this;
 	m_textDrawCallback = dynamic_cast<slGUIDrawTextCallback*>(&m_defaultTextDrawCallback);
 }
