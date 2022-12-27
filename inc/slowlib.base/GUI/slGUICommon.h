@@ -142,6 +142,8 @@ public:
 	//slVec4f m_buildRectFinal;
 
 	slVec2f m_scroll = 0.f;
+	slVec2f m_scrollOld = 0.f;
+	slVec2f m_scrollDelta = 0.f;
 	slVec2f m_scrollTarget = 0.f; // for lerp
 	slVec2f m_scrollLimit = 0.f;
 	// Size of element + all children (not grandchildren). It like AABB. find maximum x and y.

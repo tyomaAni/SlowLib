@@ -102,34 +102,35 @@ void slGUICheckRadioBox::Draw(slGS* gs, float dt)
 	}
 
 	
-	m_textPosition.x = m_buildRect.x;
-	m_textPosition.y = m_buildRect.y + m_iconVerticalIndent;
+	slVec2f textPosition;
+	textPosition.x = m_buildRect.x;
+	textPosition.y = m_buildRect.y + m_iconVerticalIndent;
 
 	if (IsEnabled())
 	{
 		if (IsClickedLMB())
 		{
 			m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_pressed;
-			gs->DrawGUIText(text, 1, m_textPosition, m_textDrawCallback);
+			gs->DrawGUIText(text, 1, textPosition, m_textDrawCallback);
 		}
 		else
 		{
 			if (IsCursorInRect())
 			{
 				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_mouseAbove;
-				gs->DrawGUIText(text, 1, m_textPosition, m_textDrawCallback);
+				gs->DrawGUIText(text, 1, textPosition, m_textDrawCallback);
 			}
 			else
 			{
 				m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_icon;
-				gs->DrawGUIText(text, 1, m_textPosition, m_textDrawCallback);
+				gs->DrawGUIText(text, 1, textPosition, m_textDrawCallback);
 			}
 		}
 	}
 	else
 	{
 		m_textDrawCallback->m_reason = slGUIDrawTextCallback::Reason_disabled;
-		gs->DrawGUIText(text, 1, m_textPosition, m_textDrawCallback);
+		gs->DrawGUIText(text, 1, textPosition, m_textDrawCallback);
 	}
 
 	m_textDrawCallback = prevcb;

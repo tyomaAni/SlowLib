@@ -150,6 +150,30 @@ void slGUIElement::Rebuild()
 	// only root element without parent
 	// rebuild root in slGUIWindow::Rebuild();
 
+	m_buildRect = m_baseRect;
+	// usuially m_clipRect is == m_baseRect;
+	m_clipRect = m_buildRect;
+
+	if (parent)
+	{
+		m_buildRect.x -= parent->m_scroll.x;
+		m_buildRect.y -= parent->m_scroll.y;
+		m_buildRect.z -= parent->m_scroll.x;
+		m_buildRect.w -= parent->m_scroll.y;
+
+		m_clipRect = m_buildRect;
+
+		// but parent has own clip rect
+		if (m_clipRect.x < parent->m_clipRect.x)
+			m_clipRect.x = parent->m_clipRect.x;
+		if (m_clipRect.y < parent->m_clipRect.y)
+			m_clipRect.y = parent->m_clipRect.y;
+		if (m_clipRect.z > parent->m_clipRect.z)
+			m_clipRect.z = parent->m_clipRect.z;
+		if (m_clipRect.w > parent->m_clipRect.w)
+			m_clipRect.w = parent->m_clipRect.w;
+	}
+	m_activeRect = m_clipRect;
 }
 
 void slGUIElement::Update(slInputData* id)
@@ -201,7 +225,16 @@ void slGUIElement::Update(slInputData* id)
 				m_scrollTarget.y = 0.f;
 		}
 	}
+
+	m_scrollOld = m_scroll;
+
 	m_scroll.y = slMath::lerp1(m_scroll.y, m_scrollTarget.y, 0.1f);
+
+	m_scrollDelta = m_scroll - m_scrollOld;
+
+	//if(m_scrollDelta.y)
+	//	printf("SD %f\n", m_scrollDelta.y);
 	
-	Rebuild();
+	/*if(m_scroll.y != m_scrollTarget.y)
+		Rebuild();*/
 }

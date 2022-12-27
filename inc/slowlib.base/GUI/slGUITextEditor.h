@@ -62,8 +62,19 @@ class slGUITextEditor : public slGUIElement
 	size_t m_textCursor = 0;
 	float m_textCursorTimer = 0.f;
 	float m_textCursorTimerLimit = 0.5f;
-	slVec2f m_textCursorPosition; // save it in Draw
+	slVec4f m_textCursorRect; // save it in Draw
 	bool m_drawTextCursor = false;
+	void drawTextCursor() { m_drawTextCursor = true; m_textCursorTimer = 0.f; }
+
+	size_t m_numberOfLines = 0;
+	void findNumberOfLines();
+	size_t m_numberOfVisibleLines = 0;
+	slArray<size_t> m_lines;
+	float m_lineHeight = 0.f;
+
+	float m_h_scroll = 0.f;
+	float m_v_scroll = 0.f;
+	void updateScroll();
 
 	void GoLeft();
 	void GoRight();

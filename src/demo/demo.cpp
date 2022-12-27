@@ -84,7 +84,7 @@ public:
 			app->m_gs->UpdateMainRenderTarget(slVec3f(w->GetCurrentSize()->x * 0.25f, w->GetCurrentSize()->y * 0.25f, 0.f));
 			app->m_gs->SetViewport(0, 0, (uint32_t)w->GetCurrentSize()->x, (uint32_t)w->GetCurrentSize()->y);
 			app->m_gs->SetScissorRect(slVec4f(0.f, 0.f, w->GetCurrentSize()->x, w->GetCurrentSize()->y), 0);
-			app->m_GUIWindow->SetPositionAndSize(slVec2f(100.f), slVec2f(w->GetCurrentSize()->x - 500.f, w->GetCurrentSize()->y - 300.f));
+			app->m_GUIWindow->SetPositionAndSize(slVec2f(100.f), slVec2f(w->GetCurrentSize()->x - 400.f, w->GetCurrentSize()->y - 300.f));
 			app->m_GUIWindow->Rebuild();
 		}
 	}
@@ -357,7 +357,7 @@ int main(int argc, char * argv[])
 	slFramework::InitDefaultFonts(app.m_gs);
 	slGUIFont* myFont = slFramework::GetDefaultFont(slGUIDefaultFont::Text);
 	
-	auto guiWindow = slFramework::SummonGUIWindow(slVec2f(100.f, 100.f), slVec2f(app.m_window->GetCurrentSize()->x - 500.f, app.m_window->GetCurrentSize()->y - 300.f));
+	auto guiWindow = slFramework::SummonGUIWindow(slVec2f(100.f, 100.f), slVec2f(app.m_window->GetCurrentSize()->x - 400.f, app.m_window->GetCurrentSize()->y - 300.f));
 	app.m_GUIWindow = guiWindow;
 	guiWindow->SetDrawBG(true);
 	//auto btn = slFramework::SummonGUIButton(guiWindow);

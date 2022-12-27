@@ -38,9 +38,9 @@ void slGUIRootElement::Rebuild()
 {
 	slGUIElement::Rebuild();
 }
-void slGUIRootElement::Update(slInputData* i)
+void slGUIRootElement::Update(slInputData* id)
 {
-	slGUIElement::Update(i);
+	slGUIElement::Update(id);
 }
 void slGUIRootElement::Draw(slGS* gs, float dt){}
 

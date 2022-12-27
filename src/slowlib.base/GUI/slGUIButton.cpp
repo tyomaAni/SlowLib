@@ -68,6 +68,8 @@ void slGUIButton::Rebuild()
 void slGUIButton::Update(slInputData* id)
 {
 	slGUIElement::Update(id);
+	if (m_window->GetRootElement()->m_scrollDelta.y)
+		Rebuild();
 }
 
 void slGUIButton::Draw(slGS* gs, float dt)
@@ -111,6 +113,7 @@ void slGUIButton::Draw(slGS* gs, float dt)
 
 void slGUIButton::UpdateTextPosition()
 {
+
 	m_textPosition.x = m_buildRect.x;
 	m_textPosition.y = m_buildRect.y;
 	
