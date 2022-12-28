@@ -66,7 +66,7 @@ public:
 	slGUIElement* GetRootElement() { return m_rootElement; }
 
 	virtual void Rebuild() override;
-	virtual void Update(slInputData*) override;
+	virtual void Update() override;
 	virtual void Draw(slGS* gs, float dt) override;
 	
 	void SetTitle(const char32_t*);

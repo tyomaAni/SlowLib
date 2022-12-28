@@ -411,6 +411,7 @@ windowCallback.OnClose(app.m_window);r\n\
 GUIDrawTextCallback textDrawCallbackr\n\
 windowCallback.OnSize(app.m_window);r\n\
 float* dt = slFramework::GetDeltaTime();while (g_isRun)r\n\
+asd\n\
 ");
 
 	slFramework::RebuildGUI();

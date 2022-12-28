@@ -53,28 +53,31 @@ class slGUITextEditor : public slGUIElement
 	size_t m_textBufferAllocated = 0; //in char32_t
 	void reallocate(size_t newSize);
 
-	size_t m_textBeginDrawIndex = 0;
+	//size_t m_textBeginDrawIndex = 0;
 
 	// this points to place where to put new char.
 	// from 0 to m_textBufferLen
 	// 0 - put in front
 	// m_textBufferLen - push_back
-	size_t m_textCursor = 0;
+	//size_t m_textCursor = 0;
 	float m_textCursorTimer = 0.f;
 	float m_textCursorTimerLimit = 0.5f;
 	slVec4f m_textCursorRect; // save it in Draw
 	bool m_drawTextCursor = false;
 	void drawTextCursor() { m_drawTextCursor = true; m_textCursorTimer = 0.f; }
 
-	size_t m_numberOfLines = 0;
-	void findNumberOfLines();
-	size_t m_numberOfVisibleLines = 0;
-	slArray<size_t> m_lines;
-	float m_lineHeight = 0.f;
+	size_t m_line = 0;
+	size_t m_col = 0;
 
-	float m_h_scroll = 0.f;
+	size_t m_numberOfLines = 0;
+	size_t m_numberOfVisibleLines = 0;
+	float m_lineHeight = 0.f;
+	//slArray<size_t> m_lines;
+	void findNumberOfLines();
+
+	/*float m_h_scroll = 0.f;
 	float m_v_scroll = 0.f;
-	void updateScroll();
+	void updateScroll();*/
 
 	void GoLeft();
 	void GoRight();
@@ -97,8 +100,10 @@ public:
 	void Activate(bool);
 
 	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
+	virtual void Update() final;
 	virtual void Draw(slGS* gs, float dt) final;	
+
+	virtual void UpdateContentSize() final;
 
 	virtual void Clear(bool freeMemory);
 	virtual void SetText(const slString&);

@@ -75,7 +75,9 @@ void _slGUIWindow_RebuildElement(slGUIElement* e)
 			}
 		}
 	}
+
 	e->UpdateContentSize();
+	e->UpdateScroll();
 }
 
 void slGUIWindow::Rebuild()
@@ -105,34 +107,35 @@ void slGUIWindow::Rebuild()
 	_slGUIWindow_RebuildElement(m_rootElement);
 }
 
-void _slGUIWindow_UpdateElement(slInputData* in, slGUIElement* e)
+void _slGUIWindow_UpdateElement(slGUIElement* e)
 {
-	e->Update(in);
+	e->Update();
 
 	if (e->GetChildren()->m_head)
 	{
 		auto children = e->GetChildren();
 		if (children->m_head)
 		{
-			auto curr = children->m_head;
-			auto last = curr->m_left;
+			auto last = children->m_head;
+			auto curr = last->m_left;
 			while (1)
 			{
-				_slGUIWindow_UpdateElement(in, dynamic_cast<slGUIElement*>(curr->m_data));
+				_slGUIWindow_UpdateElement(dynamic_cast<slGUIElement*>(curr->m_data));
 				if (curr == last)
 					break;
-				curr = curr->m_right;
+				curr = curr->m_left;
 			}
 		}
 	}
+	e->UpdateScroll();
 }
 
-void slGUIWindow::Update(slInputData* input)
+void slGUIWindow::Update()
 {
-	if (slMath::pointInRect(input->mousePosition, m_activeRect))
+	if (slMath::pointInRect(g_framework->m_input.mousePosition, m_activeRect))
 		g_framework->m_GUIState.m_windowUnderCursor = this;
 
-	_slGUIWindow_UpdateElement(input, m_rootElement);
+	_slGUIWindow_UpdateElement(m_rootElement);
 }
 
 void _slGUIWindow_DrawElement(slGS* gs, slGUIElement* e, float dt)

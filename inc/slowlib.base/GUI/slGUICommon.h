@@ -40,6 +40,7 @@ public:
 		flag_drawBG = 0x4,
 
 		// for internal use, can read but not set
+		flag_wheelScroll = 0x2000000,
 		flag_clickedX2MB = 0x4000000,
 		flag_clickedX1MB = 0x8000000,
 		flag_clickedMMB = 0x10000000,
@@ -120,7 +121,7 @@ public:
 
 	// all mouse things, click things.
 	// basic things is correct for elements and for window so implement it
-	virtual void Update(slInputData*);
+	virtual void Update();
 
 	virtual void OnMouseEnter();
 	virtual void OnMouseLeave();
@@ -152,6 +153,7 @@ public:
 	slVec2f m_contentSize;
 	virtual void UpdateContentSize();
 	virtual void UpdateScrollLimit();
+	virtual void UpdateScroll(); // must be called from grandchildren to grandfather
 };
 
 #endif

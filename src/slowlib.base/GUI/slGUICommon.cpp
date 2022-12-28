@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/GUI/slGUI.h"
 
+#include "../framework/slFrameworkImpl.h"
+extern slFrameworkImpl* g_framework;
+
 slGUICommon::slGUICommon(const slVec2f& position, const slVec2f& size)
 {
 	m_position = position;
@@ -74,9 +77,41 @@ void slGUICommon::UpdateScrollLimit()
 		m_scrollLimit.y = m_contentSize.y - buildRectSize.y;
 }
 
-void slGUICommon::Update(slInputData* id)
+void slGUICommon::UpdateScroll()
 {
-	if (slMath::pointInRect(id->mousePosition, m_activeRect))
+	if (IsCursorInRect() 
+		&& !g_framework->m_GUIState.m_scrollBlock
+		&& (m_flags & slGUICommon::flag_wheelScroll))
+	{
+		g_framework->m_GUIState.m_scrollBlock = true;
+
+		if (g_framework->m_input.mouseWheelDelta < 0.f)
+		{
+			/*if (dynamic_cast<slGUITextEditor*>(this))
+				printf("!");*/
+			m_scrollTarget.y += 10.f;
+			if (m_scrollTarget.y > m_scrollLimit.y)
+				m_scrollTarget.y = m_scrollLimit.y;
+		}
+		else if (g_framework->m_input.mouseWheelDelta > 0.f)
+		{
+			m_scrollTarget.y -= 10.f;
+
+			if (m_scrollTarget.y < 0.f)
+				m_scrollTarget.y = 0.f;
+		}
+	}
+
+	m_scrollOld = m_scroll;
+
+	m_scroll.y = slMath::lerp1(m_scroll.y, m_scrollTarget.y, 0.1f);
+
+	m_scrollDelta = m_scroll - m_scrollOld;
+}
+
+void slGUICommon::Update()
+{
+	if (slMath::pointInRect(g_framework->m_input.mousePosition, m_activeRect))
 	{
 		if ((m_flags & slGUICommon::flag_cursorInRect) == 0)
 			OnMouseEnter();

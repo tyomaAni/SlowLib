@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/GUI/slGUI.h"
 
+#include "../framework/slFrameworkImpl.h"
+extern slFrameworkImpl* g_framework;
+
 slGUIElement::slGUIElement(slGUIWindow* w, const slVec2f& position, const slVec2f& size):
 	slGUICommon(position, size)
 {
@@ -176,9 +179,9 @@ void slGUIElement::Rebuild()
 	m_activeRect = m_clipRect;
 }
 
-void slGUIElement::Update(slInputData* id)
+void slGUIElement::Update()
 {
-	slGUICommon::Update(id);
+	slGUICommon::Update();
 
 	// maybe here callback
 	// OnRects(); or OnRebuild();
@@ -209,28 +212,8 @@ void slGUIElement::Update(slInputData* id)
 	}
 	m_activeRect = m_clipRect;
 	
-	if (IsCursorInRect())
-	{
-		if (id->mouseWheelDelta < 0.f)
-		{
-			m_scrollTarget.y += 10.f;
-			if (m_scrollTarget.y > m_scrollLimit.y)
-				m_scrollTarget.y = m_scrollLimit.y;
-		}
-		else if (id->mouseWheelDelta > 0.f)
-		{
-			m_scrollTarget.y -= 10.f;
-
-			if (m_scrollTarget.y < 0.f)
-				m_scrollTarget.y = 0.f;
-		}
-	}
-
-	m_scrollOld = m_scroll;
-
-	m_scroll.y = slMath::lerp1(m_scroll.y, m_scrollTarget.y, 0.1f);
-
-	m_scrollDelta = m_scroll - m_scrollOld;
+	
+	
 
 	//if(m_scrollDelta.y)
 	//	printf("SD %f\n", m_scrollDelta.y);

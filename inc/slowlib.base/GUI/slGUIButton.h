@@ -55,7 +55,7 @@ public:
 	slGUIButton(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIButton();
 	virtual void Rebuild() override;
-	virtual void Update(slInputData*) override;
+	virtual void Update() override;
 	virtual void Draw(slGS* gs, float dt) override;
 	
 	virtual void SetText(const slString&);

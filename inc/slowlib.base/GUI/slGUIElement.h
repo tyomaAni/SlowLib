@@ -47,7 +47,7 @@ public:
 	// basic rebuild, common for all elements
 	virtual void Rebuild() override;
 	// basic things for OnMouseEnter OnClickLMB and other
-	virtual void Update(slInputData*) override;
+	virtual void Update() override;
 
 	enum Alignment
 	{

@@ -268,6 +268,7 @@ bool slFramework::GetImageLoaderConvertToRGBA8()
 void slFramework::Update()
 {
 	SL_ASSERT_ST(g_framework);
+
 	slInputUpdatePre(&g_framework->m_input);
 
 #ifdef SL_PLATFORM_WINDOWS
@@ -643,6 +644,7 @@ void slFrameworkImpl::UpdateGUI()
 {
 	if (m_GUIWindows.m_head)
 	{
+		m_GUIState.m_scrollBlock = false;
 		// reset it here, it will set in Update if cursor in window rect
 		m_GUIState.m_windowUnderCursor = 0;
 
@@ -652,7 +654,7 @@ void slFrameworkImpl::UpdateGUI()
 		{
 			if(curr->m_data->IsVisible() && !m_GUIState.m_windowUnderCursor)
 			{
-				curr->m_data->Update(&m_input);
+				curr->m_data->Update();
 			}
 
 			if (curr == last)

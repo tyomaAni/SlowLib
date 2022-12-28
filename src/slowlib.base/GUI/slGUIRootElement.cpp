@@ -31,16 +31,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 slGUIRootElement::slGUIRootElement(slGUIWindow* w, const slVec2f& position, const slVec2f& size) :
 	slGUIElement::slGUIElement(w, position, size)
-{}
+{
+	m_flags |= slGUICommon::flag_wheelScroll;
+}
 
 slGUIRootElement::~slGUIRootElement(){}
 void slGUIRootElement::Rebuild()
 {
 	slGUIElement::Rebuild();
 }
-void slGUIRootElement::Update(slInputData* id)
+void slGUIRootElement::Update()
 {
-	slGUIElement::Update(id);
+	slGUIElement::Update();
 }
 void slGUIRootElement::Draw(slGS* gs, float dt){}
 

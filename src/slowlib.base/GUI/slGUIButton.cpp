@@ -65,9 +65,9 @@ void slGUIButton::Rebuild()
 	UpdateTextPosition();
 }
 
-void slGUIButton::Update(slInputData* id)
+void slGUIButton::Update()
 {
-	slGUIElement::Update(id);
+	slGUIElement::Update();
 	if (m_window->GetRootElement()->m_scrollDelta.y)
 		Rebuild();
 }

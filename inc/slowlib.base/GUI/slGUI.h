@@ -130,6 +130,8 @@ struct slGUIState
 {
 	slGUIWindow* m_windowUnderCursor = 0;
 	slGUIWindow* m_activeWindow = 0;
+	//slGUIElement* m_elementUnderCursor = 0;
+	bool m_scrollBlock = false;
 };
 
 class slGUIRootElement : public slGUIElement
@@ -138,7 +140,7 @@ public:
 	slGUIRootElement(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUIRootElement();
 	virtual void Rebuild() final;
-	virtual void Update(slInputData*) final;
+	virtual void Update() final;
 	virtual void Draw(slGS* gs, float dt) final;
 
 	virtual void UpdateContentSize() final;
