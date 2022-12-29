@@ -84,24 +84,18 @@ void slGUITextEditor::reallocate(size_t newSize)
 
 void slGUITextEditor::findNumberOfLines()
 {
-	m_numberOfLines = 0;
-//	m_lines.clear();
-	
-	if (m_textBufferLen)
-	{
-		++m_numberOfLines;
-	//	m_lines.push_back(0);
-	}
+	m_numberOfLines = 1; // minimum 1 line even if there is no text
+	m_lines.clear();
+	m_lines.push_back(0);
 
 	for (uint32_t i = 0; i < m_textBufferLen; ++i)
 	{
+
+		// if we have \n then next character is first in new line
 		if(	m_textBuffer[i] == U'\n')
 		{
 			++m_numberOfLines;
-			if (i + 1 < m_textBufferLen - 1)
-			{
-		//		m_lines.push_back(i + 1);
-			}
+			m_lines.push_back(i + 1);
 		}
 	}
 }
@@ -313,9 +307,12 @@ void slGUITextEditor::UpdateContentSize()
 	m_contentSize.x = m_baseRect.z - m_baseRect.x;
 	m_contentSize.y = 0.f;
 
-	if (m_numberOfLines + m_numberOfVisibleLines)
+	if (m_numberOfLines)
 	{
-		m_contentSize.y = (float)(m_numberOfLines + m_numberOfVisibleLines) * m_lineHeight;
+		m_contentSize.y = (float)(m_numberOfLines) * m_lineHeight;
+
+		// + when scroll to bottom there is must 1 line be visible
+		m_contentSize.y += (m_baseRect.w - m_baseRect.y) - m_lineHeight;
 	}
 
 	UpdateScrollLimit();
@@ -392,6 +389,25 @@ void slGUITextEditor::Update()
 				Activate(false);
 			}
 		}
+	}
+
+	slVec2f pos;
+	pos.x = m_buildRect.x;
+	pos.y = m_buildRect.y - m_scroll.y;
+	pos.y += (m_lineHeight * (float)m_firstItemIndexForDraw);
+	uint32_t itemsSize = m_numberOfLines + m_numberOfVisibleLines;
+
+	if (pos.y < (m_baseRect.y - m_lineHeight - m_lineHeight))
+	{
+		++m_firstItemIndexForDraw;
+		uint32_t lastIndex = itemsSize - m_numberOfLines;
+		if (m_numberOfVisibleLines > lastIndex)
+			m_numberOfVisibleLines = lastIndex;
+	}
+	else if (pos.y > (m_baseRect.y - m_lineHeight))
+	{
+		if (m_firstItemIndexForDraw)
+			--m_firstItemIndexForDraw;
 	}
 }
 
@@ -473,23 +489,24 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 	if (m_textBufferLen)
 	{
-		//slVec2f textPosition;
-		//textPosition.x = m_buildRect.x;// -m_h_scroll;
-		//textPosition.y = m_buildRect.y - 0;
+		
 
-		uint32_t index = 0;
+		uint32_t index = m_firstItemIndexForDraw;
 
 		slVec2f pos;
 		pos.x = m_buildRect.x;
 		pos.y = m_buildRect.y - m_scroll.y;
 		pos.y += (m_lineHeight * (float)index);
+		
+		uint32_t itemsSize = m_numberOfLines;
 
 		//printf("m_scroll.y: %f\n", m_scroll.y);
 
-		uint32_t itemsSize = m_numberOfLines + m_numberOfVisibleLines;
 
-		for (uint32_t i = 0; i < m_numberOfLines + 4; ++i)
+		for (uint32_t i = 0; i < m_numberOfVisibleLines + 4; ++i)
 		{
+			slVec2f textPosition = pos;
+
 			slVec4f r;
 			r.x = pos.x;
 			r.y = pos.y;
@@ -511,55 +528,65 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 				gs->DrawGUIRectangle( r, cc, cc, 0, 0);
 			}
-			/*if (mgPointInRect(&rClip, &ctx->input->mousePosition) && !impl->hoverItem && !g_skipFrame
-				&& !ctx->activePopup)
+			
+			for (size_t o = m_lines.m_data[index]; o < m_textBufferLen; ++o)
 			{
-				impl->hoverItem = itemCurr;
-				impl->hoverItemClipRect = rClip;
-				impl->hoverItemBuildRect = r;
+				if (o + 1 == m_textBufferLen)
+					break;
 
-				e->window->context->gpu->drawRectangle(mgDrawRectangleReason_listHoverItemBG,
-					impl,
-					&r,
-					&style->listItemHoverBG,
-					&style->listItemHoverBG, 0, 0);
-			}*/
+				slGUIFont* font = m_textDrawCallback->OnFont(0, m_textBuffer[o]);
+				slGUIFontGlyph* g = font->GetGlyphMap()[m_textBuffer[o]];
 
-			//mgUnicodeChar* str = 0;
-			//uint32_t strLen = 0;
-			//if (impl->onDrawItem(e, itemCurr, index, &str, &strLen))
-			//{
-			//	if (impl->hoverItem == itemCurr)
-			//		impl->hoverItemText = str;
+				{
+					slVec4f rct;
+					rct.x = textPosition.x;
+					rct.y = textPosition.y;
+					rct.z = rct.x + g->m_width;
+					rct.w = rct.y + g->m_height;
 
-			//	int isItemSelected = 0;
-			//	if (impl->onIsItemSelected)
-			//		isItemSelected = impl->onIsItemSelected(e, itemCurr);
+				}
+			
+				gs->DrawGUICharacter(
+					m_textBuffer[o],
+					font,
+					textPosition,
+					*m_textDrawCallback->OnColor(0, m_textBuffer[o]));
 
-			//	if (isItemSelected)
-			//	{
-			//		e->window->context->gpu->drawRectangle(mgDrawRectangleReason_listHoverItemBG,
-			//			impl,
-			//			&r,
-			//			&style->listItemSelectedBG,
-			//			&style->listItemSelectedBG, 0, 0);
-			//	}
 
-			//	/*e->window->context->gpu->drawText(mgDrawTextReason_listbox, impl,
-			//		&pos,
-			//		str,
-			//		(int)wcslen(str),
-			//		&style->listItemText,
-			//		impl->font);*/
-			//	impl->textProcessor->onDrawText(
-			//		mgDrawTextReason_listbox,
-			//		e,
-			//		impl->textProcessor,
-			//		&pos,
-			//		str,
-			//		(size_t)strLen,
-			//		&style->listItemText);
-			//}
+				//if (i == m_textCursor)
+				//{
+				//	slVec4f rct;
+				//	rct.x = textPosition.x;
+				//	rct.y = textPosition.y;
+				//	rct.z = rct.x + 2.f;
+				//	rct.w = rct.y + font->GetMaxSize().y;
+				//	m_textCursorRect = rct;
+				//	//m_textCursorRect.x += m_h_scroll;
+				//	//m_textCursorRect.z += m_h_scroll;
+				//	m_textCursorRect.y += 0;
+				//	m_textCursorRect.w += 0;
+				//	if(m_drawTextCursor)
+				//		gs->DrawGUIRectangle(rct, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
+				//}
+
+				textPosition.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
+
+				switch (m_textBuffer[o])
+				{
+				case U' ':
+					textPosition.x += font->m_spaceSize;
+					break;
+				case U'\t':
+					textPosition.x += font->m_tabSize;
+					break;
+				case U'\n':
+				//	textPosition.y += font->m_lineSpacing + font->GetMaxSize().y;
+				//	textPosition.x = m_buildRect.x;// -m_h_scroll;
+					o = m_textBufferLen;
+					break;
+				}
+
+			}
 
 			pos.y = pos.y + m_lineHeight;
 
@@ -570,60 +597,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 	//	printf("[%u]\n", (uint32_t)m_textBuffer[m_textCursor]);
 	//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
-		//for (size_t i = m_lines.m_data[m_textBeginDrawIndex]; i < m_textBufferLen; ++i)
-		//{
-		//	slGUIFont* font = m_textDrawCallback->OnFont(0, m_textBuffer[i]);
-		//	slGUIFontGlyph* g = font->GetGlyphMap()[m_textBuffer[i]];
-
-		//	{
-		//		slVec4f rct;
-		//		rct.x = textPosition.x;
-		//		rct.y = textPosition.y;
-		//		rct.z = rct.x + g->m_width;
-		//		rct.w = rct.y + g->m_height;
-
-		//	}
-		//	
-		//	gs->DrawGUICharacter(
-		//		m_textBuffer[i],
-		//		font,
-		//		textPosition,
-		//		*m_textDrawCallback->OnColor(0, m_textBuffer[i]));
-
-
-		//	if (i == m_textCursor)
-		//	{
-		//		slVec4f rct;
-		//		rct.x = textPosition.x;
-		//		rct.y = textPosition.y;
-		//		rct.z = rct.x + 2.f;
-		//		rct.w = rct.y + font->GetMaxSize().y;
-		//		m_textCursorRect = rct;
-		//		//m_textCursorRect.x += m_h_scroll;
-		//		//m_textCursorRect.z += m_h_scroll;
-		//		m_textCursorRect.y += 0;
-		//		m_textCursorRect.w += 0;
-		//		if(m_drawTextCursor)
-		//			gs->DrawGUIRectangle(rct, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
-		//	}
-
-		//	textPosition.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
-
-		//	switch (m_textBuffer[i])
-		//	{
-		//	case U' ':
-		//		textPosition.x += font->m_spaceSize;
-		//		break;
-		//	case U'\t':
-		//		textPosition.x += font->m_tabSize;
-		//		break;
-		//	case U'\n':
-		//		textPosition.y += font->m_lineSpacing + font->GetMaxSize().y;
-		//		textPosition.x = m_buildRect.x;// -m_h_scroll;
-		//		break;
-		//	}
-
-		//}
+		
 	}
 }
 
