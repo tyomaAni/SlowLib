@@ -204,6 +204,8 @@ void slFramework::Start(slFrameworkCallback* cb)
 	g_framework->m_GUIStyleThemeLight.m_chkradioTextColor = 0x0;
 
 	g_framework->m_GUIStyleThemeLight.m_textEditorBGColor = 0xFFFFFF;
+	g_framework->m_GUIStyleThemeLight.m_textEditorLine1BGColor = 0xFAFAFA;
+	g_framework->m_GUIStyleThemeLight.m_textEditorLine2BGColor = 0xF1F1F1;
 	g_framework->m_GUIStyleThemeLight.m_textEditorSelectedTextBGColor = 0x333333;
 	g_framework->m_GUIStyleThemeLight.m_textEditorTextColor = 0x0;
 	g_framework->m_GUIStyleThemeLight.m_textEditorSelectedTextColor = 0x0;

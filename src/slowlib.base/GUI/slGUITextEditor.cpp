@@ -33,12 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../framework/slFrameworkImpl.h"
 extern slFrameworkImpl* g_framework;
 
-slGUITextEditorTextDrawCallback::slGUITextEditorTextDrawCallback() 
+slGUITextEditorTextDrawCallback::slGUITextEditorTextDrawCallback()
 {
 	m_defaultFont = slFramework::GetDefaultFont(slGUIDefaultFont::Text);
 	m_currFont = m_defaultFont;
 }
-slGUIFont* slGUITextEditorTextDrawCallback::OnFont(uint32_t r, char32_t c) 
+slGUIFont* slGUITextEditorTextDrawCallback::OnFont(uint32_t r, char32_t c)
 {
 	return m_currFont;
 }
@@ -65,7 +65,7 @@ slGUITextEditor::slGUITextEditor(slGUIWindow* w, const slVec2f& position, const 
 
 slGUITextEditor::~slGUITextEditor()
 {
-	if(m_textBuffer)
+	if (m_textBuffer)
 		slMemory::free(m_textBuffer);
 }
 
@@ -86,16 +86,17 @@ void slGUITextEditor::findNumberOfLines()
 {
 	m_numberOfLines = 1; // minimum 1 line even if there is no text
 	m_lines.clear();
-	m_lines.push_back(0);
+	m_lines.push_back(LineInfo(0, 1));
 
+	size_t ln = 1;
 	for (uint32_t i = 0; i < m_textBufferLen; ++i)
 	{
 
 		// if we have \n then next character is first in new line
-		if(	m_textBuffer[i] == U'\n')
+		if (m_textBuffer[i] == U'\n')
 		{
 			++m_numberOfLines;
-			m_lines.push_back(i + 1);
+			m_lines.push_back(LineInfo(i + 1, ++ln));
 		}
 	}
 }
@@ -139,21 +140,79 @@ void slGUITextEditor::SetText(const slString& text)
 	findNumberOfLines();
 }
 
+//void slGUITextEditor::findTextCursor()
+//{
+//	m_col = 1;
+//	m_line = 1;
+//	for (uint32_t i = 0; i < m_textBufferLen; ++i)
+//	{
+//		if (i == m_textCursor)
+//			return;
+//
+//		++m_col;
+//		if (m_textBuffer[i] == U'\n')
+//		{
+//			m_col = 1;
+//			++m_line;
+//		}
+//	}
+//}
+
 void slGUITextEditor::GoLeft()
 {
 	drawTextCursor();
-//	if(m_textCursor)
-//		--m_textCursor;
-	//updateScroll();
+	if (m_textCursor)
+	{
+		--m_textCursor;
+		if (m_col > 1)
+			--m_col;
+		else
+		{
+			if (m_line > 1)
+			{
+				--m_line;
+				//find m_col
+				auto ind = m_lines[m_line - 1].m_index;
+				m_col = 1;
+				for (uint32_t i = ind; i < m_textBufferLen; ++i)
+				{
+					if (m_textBuffer[i] == U'\n')
+						return;
+					++m_col;
+				}
+			}
+		}
+	}
+
+	/*
+		--m_textCursor;*/
+		//updateScroll();
+		//findLineAndCol();
 }
 
 void slGUITextEditor::GoRight()
 {
 	drawTextCursor();
-//	++m_textCursor;
-//	if (m_textCursor > m_textBufferLen - 1) // -1 because 0 in the end of text buffer
-//		m_textCursor = m_textBufferLen - 1;
+
+	auto prev = m_textCursor;
+
+	++m_textCursor;
+	if (m_textCursor > m_textBufferLen)
+	{
+		m_textCursor = m_textBufferLen;
+	}
+	else
+	{
+		++m_col;
+		if (m_textBuffer[prev] == U'\n')
+		{
+			m_col = 1;
+			++m_line;
+		}
+	}
+
 	//updateScroll();
+	//findLineAndCol();
 }
 
 void slGUITextEditor::GoHome()
@@ -309,7 +368,7 @@ void slGUITextEditor::UpdateContentSize()
 
 	if (m_numberOfLines)
 	{
-		m_contentSize.y = (float)(m_numberOfLines) * m_lineHeight;
+		m_contentSize.y = (float)(m_numberOfLines)*m_lineHeight;
 
 		// + when scroll to bottom there is must 1 line be visible
 		m_contentSize.y += (m_baseRect.w - m_baseRect.y) - m_lineHeight;
@@ -364,16 +423,14 @@ void slGUITextEditor::Update()
 
 	if (IsCursorInRect())
 	{
-
-
 		if (!IsActivated())
 		{
-			if(IsClickedLMB()
+			if (IsClickedLMB()
 				|| IsClickedRMB()
 				|| IsClickedMMB()
 				|| IsClickedX1MB()
 				|| IsClickedX2MB())
-			Activate(true);
+				Activate(true);
 		}
 	}
 	else
@@ -397,14 +454,14 @@ void slGUITextEditor::Update()
 	pos.y += (m_lineHeight * (float)m_firstItemIndexForDraw);
 	uint32_t itemsSize = m_numberOfLines + m_numberOfVisibleLines;
 
-	if (pos.y < (m_baseRect.y - m_lineHeight - m_lineHeight))
+	if (pos.y < (m_buildRect.y - m_lineHeight - m_lineHeight))
 	{
 		++m_firstItemIndexForDraw;
 		uint32_t lastIndex = itemsSize - m_numberOfLines;
 		if (m_numberOfVisibleLines > lastIndex)
 			m_numberOfVisibleLines = lastIndex;
 	}
-	else if (pos.y > (m_baseRect.y - m_lineHeight))
+	else if (pos.y > (m_buildRect.y - m_lineHeight - m_lineHeight))
 	{
 		if (m_firstItemIndexForDraw)
 			--m_firstItemIndexForDraw;
@@ -469,6 +526,8 @@ void slGUITextEditor::Activate(bool v)
 
 void slGUITextEditor::Draw(slGS* gs, float dt)
 {
+	printf("%i %i\n", m_line, m_col);
+
 	if (IsActivated())
 	{
 		m_textCursorTimer += dt;
@@ -489,7 +548,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 	if (m_textBufferLen)
 	{
-		
+
 
 		uint32_t index = m_firstItemIndexForDraw;
 
@@ -497,7 +556,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 		pos.x = m_buildRect.x;
 		pos.y = m_buildRect.y - m_scroll.y;
 		pos.y += (m_lineHeight * (float)index);
-		
+
 		uint32_t itemsSize = m_numberOfLines;
 
 		//printf("m_scroll.y: %f\n", m_scroll.y);
@@ -513,61 +572,71 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			r.z = m_buildRect.z;
 			r.w = r.y + m_lineHeight;
 
-			slVec4f rClip = r;
-			if (rClip.y < m_clipRect.y)
-				rClip.y = m_clipRect.y;
-			//if (drawItemBG)
+
+			if (IsDrawBG())
 			{
 				slColor cc;
-				cc = ColorRebeccaPurple;
+				cc = GetStyle()->m_textEditorLine1BGColor;
 				if (index)
 				{
 					if ((index % 2) != 0)
-						cc = ColorGainsboro;
+						cc = GetStyle()->m_textEditorLine2BGColor;
 				}
 
-				gs->DrawGUIRectangle( r, cc, cc, 0, 0);
+				gs->DrawGUIRectangle(r, cc, cc, 0, 0);
 			}
-			
-			for (size_t o = m_lines.m_data[index]; o < m_textBufferLen; ++o)
+
+			float fontMaxSizeY = 0.f;
+
+			size_t last = m_textBufferLen + 1;
+			for (size_t o = m_lines.m_data[index].m_index; o < last; ++o)
 			{
-				if (o + 1 == m_textBufferLen)
-					break;
+				char32_t ch = m_textBuffer[o];
+				slGUIFont* font = m_textDrawCallback->OnFont(0, ch);
+				slGUIFontGlyph* g = font->GetGlyphMap()[ch];
 
-				slGUIFont* font = m_textDrawCallback->OnFont(0, m_textBuffer[o]);
-				slGUIFontGlyph* g = font->GetGlyphMap()[m_textBuffer[o]];
+				if (font->GetMaxSize().y > fontMaxSizeY)
+					fontMaxSizeY = (float)font->GetMaxSize().y;
 
+				if (ch)
+					gs->DrawGUICharacter(
+						m_textBuffer[o],
+						font,
+						textPosition,
+						*m_textDrawCallback->OnColor(0, m_textBuffer[o]));
+
+				//	printf("%i : %i %i\n", m_textCursor, o, m_textBufferLen);
+					//if (o == m_textCursor)
+					//{
+					//	slVec4f rct;
+					//	rct.x = textPosition.x;
+					//	rct.y = textPosition.y;
+					//	rct.z = rct.x + 2.f;
+					//	rct.w = rct.y + font->GetMaxSize().y;
+					//	m_textCursorRect = rct;
+					//	//m_textCursorRect.x += m_h_scroll;
+					//	//m_textCursorRect.z += m_h_scroll;
+					//	m_textCursorRect.y += 0;
+					//	m_textCursorRect.w += 0;
+					//	if(m_drawTextCursor)
+					//		gs->DrawGUIRectangle(rct, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
+					//}
+				if (m_drawTextCursor)
 				{
-					slVec4f rct;
-					rct.x = textPosition.x;
-					rct.y = textPosition.y;
-					rct.z = rct.x + g->m_width;
-					rct.w = rct.y + g->m_height;
+					if (o == m_textCursor)
+					{
+						m_textCursorRect.x = textPosition.x;
+						m_textCursorRect.y = textPosition.y;
+						m_textCursorRect.z = m_textCursorRect.x + 2.f;
+						m_textCursorRect.w = m_textCursorRect.y + fontMaxSizeY;
 
+						//m_textCursorRect.x += m_h_scroll;
+						//m_textCursorRect.z += m_h_scroll;
+						m_textCursorRect.y += 0;
+						m_textCursorRect.w += 0;
+						gs->DrawGUIRectangle(m_textCursorRect, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
+					}
 				}
-			
-				gs->DrawGUICharacter(
-					m_textBuffer[o],
-					font,
-					textPosition,
-					*m_textDrawCallback->OnColor(0, m_textBuffer[o]));
-
-
-				//if (i == m_textCursor)
-				//{
-				//	slVec4f rct;
-				//	rct.x = textPosition.x;
-				//	rct.y = textPosition.y;
-				//	rct.z = rct.x + 2.f;
-				//	rct.w = rct.y + font->GetMaxSize().y;
-				//	m_textCursorRect = rct;
-				//	//m_textCursorRect.x += m_h_scroll;
-				//	//m_textCursorRect.z += m_h_scroll;
-				//	m_textCursorRect.y += 0;
-				//	m_textCursorRect.w += 0;
-				//	if(m_drawTextCursor)
-				//		gs->DrawGUIRectangle(rct, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
-				//}
 
 				textPosition.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
 
@@ -580,8 +649,9 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 					textPosition.x += font->m_tabSize;
 					break;
 				case U'\n':
-				//	textPosition.y += font->m_lineSpacing + font->GetMaxSize().y;
-				//	textPosition.x = m_buildRect.x;// -m_h_scroll;
+					textPosition.y += font->m_lineSpacing + font->GetMaxSize().y;
+					textPosition.x = pos.x;// -m_h_scroll;
+
 					o = m_textBufferLen;
 					break;
 				}
@@ -595,9 +665,9 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				break;
 		}
 
-	//	printf("[%u]\n", (uint32_t)m_textBuffer[m_textCursor]);
-	//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
-		
+		//	printf("[%u]\n", (uint32_t)m_textCursor);
+		//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
+
 	}
 }
 

@@ -59,22 +59,29 @@ class slGUITextEditor : public slGUIElement
 	// from 0 to m_textBufferLen
 	// 0 - put in front
 	// m_textBufferLen - push_back
-	//size_t m_textCursor = 0;
+	size_t m_textCursor = 0;
 	float m_textCursorTimer = 0.f;
 	float m_textCursorTimerLimit = 0.5f;
 	slVec4f m_textCursorRect; // save it in Draw
 	bool m_drawTextCursor = false;
 	void drawTextCursor() { m_drawTextCursor = true; m_textCursorTimer = 0.f; }
 
-	//size_t m_line = 0;
-	//size_t m_col = 0;
+	size_t m_line = 1;
+	size_t m_col = 1;
+	//void findTextCursor();
 
 	size_t m_firstItemIndexForDraw = 0;
 
 	size_t m_numberOfLines = 0;
 	size_t m_numberOfVisibleLines = 0;
 	float m_lineHeight = 0.f;
-	slArray<size_t> m_lines;
+	struct LineInfo
+	{
+		LineInfo(size_t ind,size_t line):m_index(ind), m_line(line) {}
+		size_t m_index = 0;
+		size_t m_line = 1;
+	};
+	slArray<LineInfo> m_lines;
 	void findNumberOfLines();
 
 	/*float m_h_scroll = 0.f;
