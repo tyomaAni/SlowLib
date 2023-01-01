@@ -68,6 +68,21 @@ class slGUITextEditor : public slGUIElement
 
 	size_t m_line = 1;
 	size_t m_col = 1;
+	
+	// it will use when press up or down.
+	// I need to set m_col in position that was before
+	/*
+	* Like this. cursor in 3rd line, between 2 and 3
+	* I want press up up and cursor will in line 1 and between 2 and 3
+	* 
+	* 012[c]3456
+	* 0
+	* 012[c]3
+	*/
+	size_t m_colFix = 1;
+
+	bool m_skipDraw = false;
+
 	//void findTextCursor();
 
 	size_t m_firstItemIndexForDraw = 0;
@@ -77,16 +92,20 @@ class slGUITextEditor : public slGUIElement
 	float m_lineHeight = 0.f;
 	struct LineInfo
 	{
-		LineInfo(size_t ind,size_t line):m_index(ind), m_line(line) {}
+		LineInfo(size_t ind,size_t line, size_t sz):m_index(ind), m_line(line), m_size(sz) {}
 		size_t m_index = 0;
 		size_t m_line = 1;
+		size_t m_size = 0;
 	};
 	slArray<LineInfo> m_lines;
 	void findNumberOfLines();
+	
+	void findTextCursorRect();
+	void findVScroll();
+	void findHScroll();
 
-	/*float m_h_scroll = 0.f;
+	float m_h_scroll = 0.f;
 	float m_v_scroll = 0.f;
-	void updateScroll();*/
 
 	void GoLeft();
 	void GoRight();

@@ -87,8 +87,6 @@ void slGUICommon::UpdateScroll()
 
 		if (g_framework->m_input.mouseWheelDelta < 0.f)
 		{
-			/*if (dynamic_cast<slGUITextEditor*>(this))
-				printf("!");*/
 			m_scrollTarget.y += 10.f;
 			if (m_scrollTarget.y > m_scrollLimit.y)
 				m_scrollTarget.y = m_scrollLimit.y;
