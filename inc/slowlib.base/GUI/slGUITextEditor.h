@@ -83,7 +83,9 @@ class slGUITextEditor : public slGUIElement
 
 	bool m_skipDraw = false;
 
-	//void findTextCursor();
+	bool m_isLMBHit = false;
+
+	void findColAndLineByTextCursor();
 
 	size_t m_firstItemIndexForDraw = 0;
 

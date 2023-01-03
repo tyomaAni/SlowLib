@@ -308,7 +308,8 @@ void slGUITextEditor::Rebuild()
 void slGUITextEditor::Update()
 {
 	slGUIElement::Update();
-	
+	m_isLMBHit = false;
+
 	if (!m_lineHeight)
 		return;
 
@@ -330,6 +331,13 @@ void slGUITextEditor::Update()
 
 	if (IsCursorInRect())
 	{
+		if (slInput::IsLMBHit())
+		{
+			m_isLMBHit = true;
+			m_skipDraw = true;
+			Draw(0, 0.f);
+		}
+
 		if (!IsActivated())
 		{
 			if (IsClickedLMB()
@@ -351,6 +359,7 @@ void slGUITextEditor::Update()
 			if (m_v_scroll < 0.f)
 				m_v_scroll = 0.f;
 		}
+		
 	}
 	else
 	{
@@ -552,6 +561,12 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 		pos.y += (m_lineHeight * (float)index);
 
 		uint32_t itemsSize = m_numberOfLines;
+		
+		// when click LMB. get m_textCursor index.
+		size_t clickChar = 0;
+		// when click in row but not in char (cursorPosition.x > last char rect)
+		size_t clickCharNotInRect = 0;
+		bool probablyClickWasBelowText = false;
 
 		for (uint32_t i = 0; i < m_numberOfVisibleLines + 4; ++i)
 		{
@@ -579,6 +594,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 			float fontMaxSizeY = 0.f;
 
+
 			size_t last = m_textBufferLen + 1;
 			for (size_t o = m_lines.m_data[index].m_index; o < last; ++o)
 			{
@@ -588,6 +604,59 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 				if (font->GetMaxSize().y > fontMaxSizeY)
 					fontMaxSizeY = (float)font->GetMaxSize().y;
+
+				slVec4f chrct;
+				chrct.x = textPosition.x;
+				chrct.y = textPosition.y;
+				chrct.z = chrct.x + g->m_width;
+				chrct.w = chrct.y + g->m_height;
+				
+				if (!g->m_width)
+					chrct.z += font->GetMaxSize().x;
+				if (!g->m_height)
+					chrct.w += font->GetMaxSize().y;
+
+				slVec2f chrctCenter;
+				chrctCenter.x = chrct.x + ((float)g->m_width * 0.5f);   // I need only x
+				//chrctCenter.y = chrct.y + ((float)g->m_height * 0.5f);
+				if (m_isLMBHit)
+				{
+					if (slMath::pointInRect(slInput::GetData()->mousePosition, chrct))
+					{
+						clickCharNotInRect = 0;
+
+						if (slInput::GetData()->mousePosition.x > chrctCenter.x)
+						{
+							if (ch != U'\n')
+							{
+								//m_textCursor = o + 1;
+								clickChar = o + 1;
+							}
+							else
+							{
+								clickChar = o;
+							}
+						}
+						else
+						{
+							clickChar = o;
+						}
+					}
+					else
+					{
+						if ((slInput::GetData()->mousePosition.y >= chrct.y)
+							&& (slInput::GetData()->mousePosition.y <= chrct.w))
+						{
+							clickCharNotInRect = m_lines.m_data[index].m_index 
+								+ m_lines.m_data[index].m_size - 1;
+						}
+						else
+						{
+							probablyClickWasBelowText = true;
+						}
+					}
+				}
+				
 
 				if (ch && !m_skipDraw)
 					gs->DrawGUICharacter(
@@ -624,7 +693,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 					textPosition.x += font->m_tabSize;
 					break;
 				case U'\n':
-					//textPosition.y += font->m_lineSpacing + font->GetMaxSize().y;
 					textPosition.x = pos.x;
 
 					o = m_textBufferLen;
@@ -640,6 +708,26 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				break;
 		}
 
+		if (m_isLMBHit)
+		{
+			if (clickChar || clickCharNotInRect)
+			{
+				m_textCursor = clickChar ? clickChar : clickCharNotInRect;
+
+				findTextCursorRect();
+				findColAndLineByTextCursor();
+				drawTextCursor();
+			}
+			else if(probablyClickWasBelowText)
+			{ 
+				m_textCursor = m_textBufferLen;
+				
+				findTextCursorRect();
+				findColAndLineByTextCursor();
+				drawTextCursor();
+			}
+		}
+
 		//	printf("[%u]\n", (uint32_t)m_textCursor);
 		//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
 	}
@@ -647,3 +735,25 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 	m_skipDraw = false;
 }
 
+void slGUITextEditor::findColAndLineByTextCursor()
+{
+	m_line = 1;
+	m_col = 1;
+
+	for (uint32_t i = 0; i < m_textBufferLen; ++i)
+	{
+		if (i == m_textCursor)
+			break;
+
+		++m_col;
+
+		if (m_textBuffer[i] == U'\n')
+		{
+			m_col = 1;
+			++m_line;
+		}
+		
+	}
+
+	m_colFix = m_col;
+}
