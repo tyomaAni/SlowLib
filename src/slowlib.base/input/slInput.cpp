@@ -173,16 +173,7 @@ enum {
 	KEYFL_RELEASE = 0x4,
 };
 
-enum {
-	KBMOD_clear = 0x0,
-	KBMOD_CTRL = 0x1,
-	KBMOD_SHIFT = 0x2,
-	KBMOD_ALT = 0x4,
-	KBMOD_CTRLSHIFT = 0x8,
-	KBMOD_CTRLALT = 0x10,
-	KBMOD_SHIFTALT = 0x20,
-	KBMOD_CTRLSHIFTALT = 0x40
-};
+
 
 static const uint64_t g_keyToBin[] =
 {
@@ -350,14 +341,14 @@ void slInputUpdatePost(slInputData* id)
 	switch (ctrl_shift_alt)
 	{
 	default:
-	case 0:  id->keyboardModifier = KBMOD_clear;         break;
-	case 1:  id->keyboardModifier = KBMOD_ALT;           break;
-	case 2:  id->keyboardModifier = KBMOD_SHIFT;         break;
-	case 3:  id->keyboardModifier = KBMOD_SHIFTALT;      break;
-	case 4:  id->keyboardModifier = KBMOD_CTRL;          break;
-	case 5:  id->keyboardModifier = KBMOD_CTRLALT;       break;
-	case 6:  id->keyboardModifier = KBMOD_CTRLSHIFT;     break;
-	case 7:  id->keyboardModifier = KBMOD_CTRLSHIFTALT;  break;
+	case 0:  id->keyboardModifier = id->KBMOD_clear;         break;
+	case 1:  id->keyboardModifier = id->KBMOD_ALT;           break;
+	case 2:  id->keyboardModifier = id->KBMOD_SHIFT;         break;
+	case 3:  id->keyboardModifier = id->KBMOD_SHIFTALT;      break;
+	case 4:  id->keyboardModifier = id->KBMOD_CTRL;          break;
+	case 5:  id->keyboardModifier = id->KBMOD_CTRLALT;       break;
+	case 6:  id->keyboardModifier = id->KBMOD_CTRLSHIFT;     break;
+	case 7:  id->keyboardModifier = id->KBMOD_CTRLSHIFTALT;  break;
 	}
 
 	id->mouseMoveDelta.x = id->mousePosition.x - id->mousePositionOld.x;

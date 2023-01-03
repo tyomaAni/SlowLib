@@ -54,6 +54,17 @@ struct slInputData
 	uint64_t keyFlagsRelease[2] = { 0,0 };
 
 	/*keyboardModifier == KBMOD_SHIFT*/
+	enum {
+		KBMOD_clear = 0x0,
+		KBMOD_CTRL = 0x1,
+		KBMOD_SHIFT = 0x2,
+		KBMOD_ALT = 0x4,
+		KBMOD_CTRLSHIFT = 0x8,
+		KBMOD_CTRLALT = 0x10,
+		KBMOD_SHIFTALT = 0x20,
+		KBMOD_CTRLSHIFTALT = 0x40
+	};
+
 	uint8_t keyboardModifier = 0; /*KBMOD...*/
 };
 

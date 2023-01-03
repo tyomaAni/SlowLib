@@ -98,6 +98,10 @@ class slGUITextEditor : public slGUIElement
 		size_t m_index = 0;
 		size_t m_line = 1;
 		size_t m_size = 0;
+
+		// use it in Draw.
+		slVec4f m_selectionRect;
+		bool m_isSelected = false;
 	};
 	slArray<LineInfo> m_lines;
 	void findNumberOfLines();
@@ -112,21 +116,30 @@ class slGUITextEditor : public slGUIElement
 	void GoLeft();
 	void GoRight();
 	void GoUp();
+	void _GoUp();
 	void GoDown();
+	void _GoDown();
 	void GoHome();
 	void GoEnd();
+	void GoPageUp();
+	void GoPageDown();
 
 	enum
 	{
-		textEditorFlag_isActivated = 0x1
+		textEditorFlag_isActivated = 0x1,
+		textEditorFlag_isSelected = 0x2
 	};
 	uint32_t m_textEditorFlags = 0;
+
+	size_t m_selectionStart = 0;
+	size_t m_selectionEnd = 0;
 
 public:
 	slGUITextEditor(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUITextEditor();
 
 	bool IsActivated() { return (m_textEditorFlags & textEditorFlag_isActivated); }
+	bool IsTextSelected() { return (m_textEditorFlags & textEditorFlag_isSelected); }
 	void Activate(bool);
 
 	virtual void Rebuild() final;
@@ -137,6 +150,7 @@ public:
 
 	virtual void Clear(bool freeMemory);
 	virtual void SetText(const slString&);
+	virtual void Deselect();
 };
 
 #endif

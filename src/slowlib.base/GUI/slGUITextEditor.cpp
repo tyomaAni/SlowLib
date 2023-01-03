@@ -154,8 +154,33 @@ void slGUITextEditor::SetText(const slString& text)
 void slGUITextEditor::GoLeft()
 {
 	drawTextCursor();
+	auto input = slInput::GetData();
 	if (m_textCursor)
 	{
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		{
+			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+			{
+				m_textEditorFlags |= textEditorFlag_isSelected;
+				m_selectionStart = m_textCursor;
+			}
+			m_selectionEnd = m_textCursor - 1;
+		}
+		else
+		{
+			if (IsTextSelected())
+			{
+				if (m_selectionStart < m_selectionEnd)
+				{
+					m_textCursor = m_selectionStart + 1;
+					findColAndLineByTextCursor();
+				}
+				else
+					++m_textCursor;
+				Deselect();
+			}
+		}
+
 		--m_textCursor;
 		if (m_col > 1)
 			--m_col;
@@ -167,6 +192,17 @@ void slGUITextEditor::GoLeft()
 				m_col = m_lines[m_line - 1].m_size;
 			}
 		}
+	}
+	else
+	{
+		if (IsTextSelected() && (input->keyboardModifier != input->KBMOD_SHIFT))
+			Deselect();
+	}
+
+	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	{
+		if (IsTextSelected() && (m_selectionStart == m_selectionEnd))
+			Deselect();
 	}
 
 	m_colFix = m_col;
@@ -180,11 +216,38 @@ void slGUITextEditor::GoRight()
 	drawTextCursor();
 
 	auto prev = m_textCursor;
+	auto input = slInput::GetData();
+
+	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	{
+		if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+		{
+			m_textEditorFlags |= textEditorFlag_isSelected;
+			m_selectionStart = m_textCursor;
+		}
+		m_selectionEnd = m_textCursor + 1;
+	}
+	else
+	{
+		if (IsTextSelected())
+		{
+			if (m_selectionStart > m_selectionEnd)
+			{
+				m_textCursor = m_selectionStart - 1;
+				findColAndLineByTextCursor();
+			}
+			else
+				--m_textCursor;
+			Deselect();
+		}
+	}
 
 	++m_textCursor;
 	if (m_textCursor > m_textBufferLen)
 	{
 		m_textCursor = m_textBufferLen;
+		/*if (IsTextSelected() && (input->keyboardModifier != input->KBMOD_SHIFT))
+			Deselect();*/
 	}
 	else
 	{
@@ -196,6 +259,12 @@ void slGUITextEditor::GoRight()
 		}
 	}
 
+	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	{
+		if (IsTextSelected() && (m_selectionStart == m_selectionEnd))
+			Deselect();
+	}
+
 	m_colFix = m_col;
 	findTextCursorRect();
 	findVScroll();
@@ -205,9 +274,26 @@ void slGUITextEditor::GoRight()
 void slGUITextEditor::GoHome()
 {
 	drawTextCursor();
+	auto input = slInput::GetData();
+
 	if (m_col > 1)
 	{
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		{
+			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+			{
+				m_textEditorFlags |= textEditorFlag_isSelected;
+				m_selectionStart = m_textCursor;
+			}
+		}
+
 		m_textCursor = m_lines[m_line - 1].m_index;
+
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		{
+			m_selectionEnd = m_textCursor;
+		}
+
 		m_col = 1;
 	}
 	m_colFix = m_col;
@@ -218,48 +304,213 @@ void slGUITextEditor::GoHome()
 void slGUITextEditor::GoEnd()
 {
 	drawTextCursor();
+	auto input = slInput::GetData();
+
+	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	{
+		if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+		{
+			m_textEditorFlags |= textEditorFlag_isSelected;
+			m_selectionStart = m_textCursor;
+		}
+	}
+
 	m_col = m_lines[m_line - 1].m_size;
 	m_textCursor = m_lines[m_line - 1].m_index + (m_col-1);
+
+	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	{
+		m_selectionEnd = m_textCursor;
+	}
+
 	m_colFix = m_col;
+
 	findTextCursorRect();
 	findHScroll();
 }
 
-void slGUITextEditor::GoUp()
+void slGUITextEditor::GoPageUp()
 {
 	drawTextCursor();
+
+	if (m_textBufferLen && m_numberOfVisibleLines && m_lineHeight != 0.f)
+	{
+		for (size_t i = 0; i < m_numberOfVisibleLines; ++i)
+		{
+			m_v_scroll -= m_lineHeight;
+		}
+
+		if (m_v_scroll < 0.f)
+			m_v_scroll = 0.f;
+
+		uint32_t index = m_firstItemIndexForDraw;
+
+		if (index >= m_numberOfVisibleLines)
+			m_firstItemIndexForDraw -= m_numberOfVisibleLines;
+		else
+			m_firstItemIndexForDraw = 0;
+
+		for (size_t i = 0; i < m_numberOfVisibleLines; ++i)
+		{
+			_GoUp();
+		}
+	}
+
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
+}
+
+void slGUITextEditor::GoPageDown()
+{
+	drawTextCursor();
+
+	if (m_textBufferLen && m_numberOfVisibleLines && m_lineHeight != 0.f)
+	{
+		auto novl = m_numberOfVisibleLines;
+		bool scroll = true;
+		if (m_numberOfLines > m_numberOfVisibleLines)
+		{
+			if (m_firstItemIndexForDraw > (m_numberOfLines - m_numberOfVisibleLines - 4))
+			{
+				novl = m_numberOfLines - m_firstItemIndexForDraw;
+				scroll = false;
+			}
+		}
+
+		if (scroll)
+		{
+			for (size_t i = 0; i < novl; ++i)
+			{
+				m_v_scroll += m_lineHeight;
+			}
+		}
+
+		/*if (m_v_scroll < 0.f)
+			m_v_scroll = 0.f;*/
+
+		uint32_t index = m_firstItemIndexForDraw;
+
+		if (index >= novl)
+			m_firstItemIndexForDraw += novl;
+		//else
+		//	m_firstItemIndexForDraw = 0;
+		if (m_firstItemIndexForDraw >= m_lines.m_size)
+			m_firstItemIndexForDraw = m_lines.m_size - 1;
+
+		for (size_t i = 0; i < novl; ++i)
+		{
+			_GoDown();
+		}
+	}
+
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
+}
+
+void slGUITextEditor::_GoUp()
+{
+	auto input = slInput::GetData();
 
 	if (m_line > 1)
 	{
 		--m_line;
 		printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
 
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		{
+			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+			{
+				m_textEditorFlags |= textEditorFlag_isSelected;
+				m_selectionStart = m_textCursor;
+			}
+		}
+		else
+		{
+			if (IsTextSelected())
+			{
+				auto s1 = m_selectionStart;
+				auto s2 = m_selectionEnd;
+				if (s1 > s2)
+				{
+					s1 = s2;
+					s2 = m_selectionStart;
+				}
+				m_textCursor = s1;
+				findColAndLineByTextCursor();
+				Deselect();
+			}
+		}
+
 		if (m_lines[m_line - 1].m_size < m_colFix)
 			m_col = m_lines[m_line - 1].m_size;
 		else
 			m_col = m_colFix;
-		m_textCursor = m_lines[m_line - 1].m_index + (m_col -1);
+		m_textCursor = m_lines[m_line - 1].m_index + (m_col - 1);
+
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+			m_selectionEnd = m_textCursor;
 	}
+}
+
+void slGUITextEditor::GoUp()
+{
+	drawTextCursor();
+	_GoUp();
 	findTextCursorRect();
 	findVScroll();
 	findHScroll();
 }
 
-void slGUITextEditor::GoDown()
+void slGUITextEditor::_GoDown()
 {
-	drawTextCursor();
-	if (m_line - 1 < m_lines.m_size-1)
+	auto input = slInput::GetData();
+
+	if (m_line - 1 < m_lines.m_size - 1)
 	{
 		++m_line;
-		
 		printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		{
+			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
+			{
+				m_textEditorFlags |= textEditorFlag_isSelected;
+				m_selectionStart = m_textCursor;
+			}
+		}
+		else
+		{
+			if (IsTextSelected())
+			{
+				auto s1 = m_selectionStart;
+				auto s2 = m_selectionEnd;
+				if (s1 > s2)
+				{
+					s1 = s2;
+					s2 = m_selectionStart;
+				}
+				m_textCursor = s2;
+				findColAndLineByTextCursor();
+				Deselect();
+			}
+		}
 
 		if (m_lines[m_line - 1].m_size < m_colFix)
 			m_col = m_lines[m_line - 1].m_size;
-		else 
+		else
 			m_col = m_colFix;
 		m_textCursor = m_lines[m_line - 1].m_index + (m_col - 1);
+
+		if (input->keyboardModifier == input->KBMOD_SHIFT)
+			m_selectionEnd = m_textCursor;
 	}
+}
+
+void slGUITextEditor::GoDown()
+{
+	drawTextCursor();
+	_GoDown();
 	findTextCursorRect();
 	findVScroll();
 	findHScroll();
@@ -327,6 +578,10 @@ void slGUITextEditor::Update()
 			GoHome();
 		if (slInput::IsKeyHit(slInput::KEY_END))
 			GoEnd();
+		if (slInput::IsKeyHit(slInput::KEY_PGUP))
+			GoPageUp();
+		if (slInput::IsKeyHit(slInput::KEY_PGDOWN))
+			GoPageDown();
 	}
 
 	if (IsCursorInRect())
@@ -551,6 +806,11 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			gs->DrawGUIRectangle(m_buildRect, m_style->m_textEditorBGColor, m_style->m_textEditorBGColor, 0, 0);
 	}
 
+	/*if (IsTextSelected())
+	{
+		printf("[%u][%u]\n", m_selectionStart, m_selectionEnd);
+	}*/
+
 	if (m_textBufferLen)
 	{
 		uint32_t index = m_firstItemIndexForDraw;
@@ -562,18 +822,19 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 		uint32_t itemsSize = m_numberOfLines;
 		
-		// when click LMB. get m_textCursor index.
-		//size_t clickChar = 0;
-		// when click in row but not in char (cursorPosition.x > last char rect)
-		//size_t clickCharNotInRect = 0;
-		//bool probablyClickWasBelowText = false;
-		//bool cursorInLine = false;
-		
 		// or not under. if cursor is out of last char in the line (cursor.x > charRect.z)
 		//   then index must be last char in this line
 		// if cursor is not in the line (below text), then index is m_textBufferLen
 		size_t charIndexUnderCursor = 0;
 		bool probablyClickWasBelowText = true;
+
+		auto s1 = m_selectionStart;
+		auto s2 = m_selectionEnd;
+		if (s1 > s2)
+		{
+			s1 = s2;
+			s2 = m_selectionStart;
+		}
 
 		for (uint32_t i = 0; i < m_numberOfVisibleLines + 4; ++i)
 		{
@@ -601,6 +862,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 			float fontMaxSizeY = 0.f;
 
+			m_lines.m_data[index].m_isSelected = false;
 
 			size_t last = m_textBufferLen + 1;
 			for (size_t o = m_lines.m_data[index].m_index; o < last; ++o)
@@ -620,6 +882,8 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				if (!g->m_height)
 					chrct.w += font->GetMaxSize().y;
 
+				
+
 				auto& mp = slInput::GetData()->mousePosition;
 				if ((mp.y >= chrct.y) && (mp.y <= chrct.w))
 				{
@@ -632,11 +896,24 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 
 				if (ch && !m_skipDraw)
+				{
+					if (IsTextSelected())
+					{
+						if (o >= s1 && o < s2)
+						{
+							slColor cc = GetStyle()->m_textEditorSelectedTextBGColor;
+							auto slrcht = chrct;
+							slrcht.x -= 1.f;
+							slrcht.z += 1.f;
+							gs->DrawGUIRectangle(slrcht, cc, cc, 0, 0);
+						}
+					}
 					gs->DrawGUICharacter(
 						m_textBuffer[o],
 						font,
 						textPosition,
 						*m_textDrawCallback->OnColor(0, m_textBuffer[o]));
+				}
 
 				if (m_drawTextCursor)
 				{
@@ -727,4 +1004,11 @@ void slGUITextEditor::findColAndLineByTextCursor()
 	}
 
 	m_colFix = m_col;
+}
+
+void slGUITextEditor::Deselect()
+{
+	m_textEditorFlags &= ~textEditorFlag_isSelected;
+	m_selectionStart = 0;
+	m_selectionEnd = 0;
 }

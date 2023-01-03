@@ -393,25 +393,71 @@ int main(int argc, char * argv[])
 	radio->m_radiouGroup = 1;
 
 	auto textEditor = slCreate<MyTextEdtor>(guiWindow, slVec2f(10.f, 10.f), slVec2f(200.f, 200.f));
-	textEditor->SetText(U"Text editor\nNEXT LIN\nE!! auto guiWind 300.f));\n\
-another line\r\n\
-just another line\r\n\
-more lines\r\n\
-more\r\n\
-\n\
-...\r\n\
-windowCallback.OnClose(app.m_window);r\n\
-GUIDrawTextCallback textDrawCallbackr\n\
-windowCallback.OnSize(app.m_window);r\n\
-windowCallback.OnClose(app.m_window);r\n\
-GUIDrawTextCallback textDrawCallbackr\n\
-windowCallback.OnSize(app.m_window);r\n\
-if (slInput::IsKeyHit(slInput::KEY_ESCAPE))r\n\
-windowCallback.OnClose(app.m_window);r\n\
-GUIDrawTextCallback textDrawCallbackr\n\
-windowCallback.OnSize(app.m_window);r\n\
-float* dt = slFramework::GetDeltaTime();while (g_isRun)r\n\
-asd\n\
+	textEditor->SetText(U"asd\n\
+class miGUITextInputImpl : public miGUITextInput\n\
+	{\n\
+	protected:\n\
+		miString m_text;\n\
+		miGUIFont* m_font = nullptr;\n\
+		f32 m_line_height = 0.f;\n\
+		v2f m_position;\n\
+		v2f m_size;\n\
+		bool m_isActive = false;\n\
+		bool m_isActiveOld = false;\n\
+		u32 m_textBeginDrawIndex = 0;\n\
+		u32 m_maxDrawLines = 1;\n\
+		v4f m_textCursorRectangle;\n\
+		// recalculate when use arrows keys or select text\n\
+		void _recalculateRects();\n\
+		f32 _getTextWidth(size_t char_index, f32* height);\n\
+		u32 m_textCursorPosition = 0;\n\
+		bool m_drawTextCursor = false;\n\
+		float m_textCursorTimer = 0.f;\n\
+		float m_textCursorTimerLimit = 0.5f;\n\
+		f32 m_h_scroll = 0.f;\n\
+		f32 m_h_scrollCurr = 0.f;\n\
+		f32 m_v_scroll = 0.f;\n\
+		f32 m_v_scrollCurr = 0.f;\n\
+		bool m_isSelected = false;\n\
+		u32 m_selectionStart = 0;\n\
+		u32 m_selectionEnd = 0;\n\
+		void _goLeft();\n\
+		void _goRight();\n\
+		void _delete();\n\
+		void _backspace();\n\
+		void _goHome();\n\
+		void _goEnd();\n\
+		void _goEndOfText(); // ctrl + end\n\
+		void _goHomeOfText(); // ctrl + home\n\
+		u32 m_numLinesForDraw = 0; // for multiline\n\
+		u8 m_clickCount = 0;\n\
+		f32 m_clickTimer = 0.f;\n\
+		u32 m_textCursorPositionWhenClick = 0;\n\
+		void _showTextCursor();\n\
+	public:\n\
+		miGUITextInputImpl();\n\
+		virtual ~miGUITextInputImpl();\n\
+		virtual void Draw(f32 dt) override;\n\
+		virtual void Rebuild() override;\n\
+		virtual void Update() override;\n\
+		virtual void SetText(const wchar_t* format, ...) override;\n\
+		virtual void SetFont(miGUIFont*) override;\n\
+		virtual void Clear() override;\n\
+		virtual void Activate() override;\n\
+		virtual void Deactivate(bool isEnter) override;\n\
+		virtual miString* GetText() override;\n\
+		virtual void DeleteSelected() override\;\n\
+		virtual void DeleteAll() override;\n\
+		virtual void DeselectAll() override;\n\
+		virtual void SelectAll() override;\n\
+		virtual void CutToClipboard() override;\n\
+		virtual void CopyToClipboard() override;\n\
+		virtual void PasteFromClipboard() override;\n\
+		miString m_textDefault;\n\
+		miColor m_colorDefaultText;\n\
+		virtual void UseDefaultText(const wchar_t* text, const miColor&) override;\n\
+		friend class miGUIContextImpl;\n\
+	};\n\
 ");
 
 	slFramework::RebuildGUI();
