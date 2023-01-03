@@ -103,7 +103,7 @@ public:
 						position.x += font->m_tabSize;
 						break;
 					case U'\n':
-						position.y += font->m_lineSpacing + font->GetMaxSize().y;
+						position.y += font->GetMaxSize().y;
 						position.x = 0.f;
 						break;
 					}

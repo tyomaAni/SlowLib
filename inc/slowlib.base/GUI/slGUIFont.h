@@ -85,7 +85,6 @@ public:
 	slTexture* GetTexture(uint32_t i) { return m_textures.m_data[i]; }
 
 	int32_t m_characterSpacing = 1;
-	int32_t m_lineSpacing = 3;
 	int32_t m_spaceSize = 1;
 	int32_t m_tabSize = 12;
 };

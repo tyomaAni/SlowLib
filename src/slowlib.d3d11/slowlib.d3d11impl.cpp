@@ -1435,7 +1435,7 @@ void slGSD3D11::DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f
 			position.x += font->m_tabSize;
 			break;
 		case U'\n':
-			position.y += font->m_lineSpacing + font->GetMaxSize().y;
+			position.y +=  font->GetMaxSize().y;
 			position.x = _position.x;
 			break;
 		}
