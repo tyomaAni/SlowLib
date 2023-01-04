@@ -701,7 +701,6 @@ void slGUITextEditor::Update()
 		float d = (m_buildRect.y - m_lineHeight - m_lineHeight) - pos.y;
 		int dd = (int)ceilf(d / m_lineHeight);
 
-		//++m_firstItemIndexForDraw;
 		m_firstItemIndexForDraw += dd;
 
 		uint32_t lastIndex = itemsSize - m_numberOfLines;
@@ -715,7 +714,6 @@ void slGUITextEditor::Update()
 			float d = pos.y - (m_buildRect.y - m_lineHeight - m_lineHeight);
 			int dd = (int)ceilf(d / m_lineHeight);
 
-			//--m_firstItemIndexForDraw;
 			if ((size_t)dd < m_firstItemIndexForDraw)
 				m_firstItemIndexForDraw -= dd;
 			else
@@ -887,10 +885,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 		size_t nearestChar = 0;
 		bool isCharIndexUnderCursor = false;
 		
-		size_t charIndexFromFirstVisibleLine = 0;
-		size_t charIndexFromLastVisibleLine = 0;
-		//bool probablyClickWasBelowText = true;
-
 		auto s1 = m_selectionStart;
 		auto s2 = m_selectionEnd;
 		if (s1 > s2)
@@ -898,10 +892,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			s1 = s2;
 			s2 = m_selectionStart;
 		}
-
-		bool firstVisibleChar = false;
-		bool isLastIndexFound = false;
-		bool cursorNotInLine = true;
 
 		float distance = 99999.f;
 
@@ -955,7 +945,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 					nearestChar = o;
 				}
 
-				//charIndexFromFirstVisibleLine
 				if ((mp.y >= chrct.y) && (mp.y <= chrct.w))
 				{
 					if (mp.x >= chrct.x)
@@ -1031,7 +1020,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 					o = m_textBufferLen;
 					break;
 				}
-
 			}
 
 			pos.y = pos.y + m_lineHeight;
@@ -1039,7 +1027,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			++index;
 			if (index >= itemsSize)
 				break;
-		}		
+		}
 
 		if (!isCharIndexUnderCursor)
 		{
@@ -1111,9 +1099,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				findHScroll();
 			}
 		}
-
-		//	printf("[%u]\n", (uint32_t)m_textCursor);
-		//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
 	}
 	else
 	{
