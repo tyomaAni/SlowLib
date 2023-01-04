@@ -98,10 +98,6 @@ class slGUITextEditor : public slGUIElement
 		size_t m_index = 0;
 		size_t m_line = 1;
 		size_t m_size = 0;
-
-		// use it in Draw.
-		slVec4f m_selectionRect;
-		bool m_isSelected = false;
 	};
 	slArray<LineInfo> m_lines;
 	void findNumberOfLines();

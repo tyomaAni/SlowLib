@@ -863,11 +863,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			gs->DrawGUIRectangle(m_buildRect, m_style->m_textEditorBGColor, m_style->m_textEditorBGColor, 0, 0);
 	}
 
-	/*if (IsTextSelected())
-	{
-		printf("[%u][%u]\n", m_selectionStart, m_selectionEnd);
-	}*/
-
 	if (m_textBufferLen)
 	{
 		uint32_t index = m_firstItemIndexForDraw;
@@ -936,8 +931,6 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 			float fontMaxSizeY = 0.f;
 
-			m_lines.m_data[index].m_isSelected = false;
-
 			size_t last = m_textBufferLen + 1;
 			for (size_t o = m_lines.m_data[index].m_index; o < last; ++o)
 			{
@@ -969,7 +962,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 					{
 						if (mp.x > chrct.x + ((float)g->m_width * 0.5f))
 						{
-							if(ch == U'\n')
+							if (ch == U'\n')
 								charIndexUnderCursor = o;
 							else
 								charIndexUnderCursor = o + 1;
@@ -1046,7 +1039,7 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			++index;
 			if (index >= itemsSize)
 				break;
-		}
+		}		
 
 		if (!isCharIndexUnderCursor)
 		{
@@ -1121,6 +1114,40 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 		//	printf("[%u]\n", (uint32_t)m_textCursor);
 		//	printf("m_textBeginDrawIndex: %u\n", m_textBeginDrawIndex);
+	}
+	else
+	{
+		// draw empty line
+		slVec2f pos;
+		pos.x = m_buildRect.x - m_h_scroll;
+		pos.y = m_buildRect.y - m_v_scroll;
+
+		slVec4f r;
+		r.x = pos.x;
+		r.y = pos.y;
+		r.z = m_buildRect.z;
+		r.w = r.y + m_lineHeight;
+
+		if (IsDrawBG() && !m_skipDraw)
+		{
+			slColor cc;
+			cc = GetStyle()->m_textEditorLine1BGColor;
+
+			gs->DrawGUIRectangle(r, cc, cc, 0, 0);
+		}
+
+		if (m_drawTextCursor&& !m_skipDraw)
+		{
+			auto fnl = r;
+			fnl.z = fnl.x + 2.f;
+			fnl.w = fnl.y + m_lineHeight;
+			fnl.y -= m_v_scroll;
+			fnl.w -= m_v_scroll;
+			fnl.x -= m_h_scroll;
+			fnl.z -= m_h_scroll;
+
+			gs->DrawGUIRectangle(fnl, GetStyle()->m_textEditorCursorColor, GetStyle()->m_textEditorCursorColor, 0, 0);
+		}
 	}
 
 	m_skipDraw = false;
