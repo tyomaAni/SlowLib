@@ -30,12 +30,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __SL_SLOWLIBBASEINPUT_H__
 #define __SL_SLOWLIBBASEINPUT_H__
 
+#include "slowlib.base/math/slVector.h"
+
 struct slInputData
 {
-	slPoint mousePosition;
-	slPoint mousePositionOld; // for mouseMoveDelta
+	slVec2f mousePosition;
+	slVec2f mousePositionOld; // for mouseMoveDelta
 
-	slPoint mouseMoveDelta;
+	slVec2f mouseMoveDelta;
 	//slPoint mouseMoveDeltaOld;
 
 	float   mouseWheelDelta = 0.f;

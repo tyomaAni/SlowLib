@@ -458,7 +458,7 @@ class miGUITextInputImpl : public miGUITextInput\n\
 		virtual void UseDefaultText(const wchar_t* text, const miColor&) override;\n\
 		friend class miGUIContextImpl;\n\
 	};\n\
-");
+1234567890");
 
 	slFramework::RebuildGUI();
 	

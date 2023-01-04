@@ -416,7 +416,7 @@ void slGUITextEditor::_GoUp()
 	if (m_line > 1)
 	{
 		--m_line;
-		printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
+		//printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
 
 		if (input->keyboardModifier == input->KBMOD_SHIFT)
 		{
@@ -470,7 +470,7 @@ void slGUITextEditor::_GoDown()
 	if (m_line - 1 < m_lines.m_size - 1)
 	{
 		++m_line;
-		printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
+		//printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
 		if (input->keyboardModifier == input->KBMOD_SHIFT)
 		{
 			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
@@ -559,7 +559,9 @@ void slGUITextEditor::Rebuild()
 void slGUITextEditor::Update()
 {
 	slGUIElement::Update();
-	m_isLMBHit = false;
+	
+	if (slInput::IsLMBRelease())
+		m_isLMBHit = false;
 
 	if (!m_lineHeight)
 		return;
@@ -588,6 +590,7 @@ void slGUITextEditor::Update()
 	{
 		if (slInput::IsLMBHit())
 		{
+			Deselect();
 			m_isLMBHit = true;
 			m_skipDraw = true;
 			Draw(0, 0.f);
@@ -814,6 +817,12 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 	if (m_textBufferLen)
 	{
 		uint32_t index = m_firstItemIndexForDraw;
+		auto input = slInput::GetData();
+		auto& mp = input->mousePosition;
+
+		bool mouseMove = false;
+		if (input->mouseMoveDelta.x != 0.f || input->mouseMoveDelta.y != 0.f)
+			mouseMove = true;
 
 		slVec2f pos;
 		pos.x = m_buildRect.x - m_h_scroll;
@@ -826,7 +835,12 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 		//   then index must be last char in this line
 		// if cursor is not in the line (below text), then index is m_textBufferLen
 		size_t charIndexUnderCursor = 0;
-		bool probablyClickWasBelowText = true;
+		size_t nearestChar = 0;
+		bool isCharIndexUnderCursor = false;
+		
+		size_t charIndexFromFirstVisibleLine = 0;
+		size_t charIndexFromLastVisibleLine = 0;
+		//bool probablyClickWasBelowText = true;
 
 		auto s1 = m_selectionStart;
 		auto s2 = m_selectionEnd;
@@ -835,6 +849,12 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 			s1 = s2;
 			s2 = m_selectionStart;
 		}
+
+		bool firstVisibleChar = false;
+		bool isLastIndexFound = false;
+		bool cursorNotInLine = true;
+
+		float distance = 99999.f;
 
 		for (uint32_t i = 0; i < m_numberOfVisibleLines + 4; ++i)
 		{
@@ -879,21 +899,37 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				chrct.y = textPosition.y;
 				chrct.z = chrct.x + g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
 				chrct.w = chrct.y + m_lineHeight;
-				if (!g->m_height)
-					chrct.w += font->GetMaxSize().y;
 
-				
-
-				auto& mp = slInput::GetData()->mousePosition;
-				if ((mp.y >= chrct.y) && (mp.y <= chrct.w))
+				auto d = slMath::distance(slVec4f(chrct.x, chrct.y, 0.f, 0.f),
+					slVec4f(mp.x, mp.y, 0.f, 0.f));
+				if (d < distance)
 				{
-					probablyClickWasBelowText = false;
-					if (mp.x >= chrct.x)
-					{
-						charIndexUnderCursor = o;
-					}
+					distance = d;
+					nearestChar = o;
 				}
 
+				//charIndexFromFirstVisibleLine
+				if ((mp.y >= chrct.y) && (mp.y <= chrct.w))
+				{
+					if (mp.x >= chrct.x)
+					{
+						if (mp.x > chrct.x + ((float)g->m_width * 0.5f))
+						{
+							if(ch == U'\n')
+								charIndexUnderCursor = o;
+							else
+								charIndexUnderCursor = o + 1;
+						}
+						else
+							charIndexUnderCursor = o;
+						isCharIndexUnderCursor = true;
+					}
+					else if (mp.x < m_buildRect.x)
+					{
+						charIndexUnderCursor = m_lines.m_data[index].m_index;
+						isCharIndexUnderCursor = true;
+					}
+				}
 
 				if (ch && !m_skipDraw)
 				{
@@ -958,22 +994,72 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 				break;
 		}
 
-		if (m_isLMBHit)
+		if (!isCharIndexUnderCursor)
 		{
-			if (probablyClickWasBelowText)
+			if (mouseMove && m_isLMBHit && slInput::IsLMBHold())
 			{
-				m_textCursor = m_textBufferLen;
+				isCharIndexUnderCursor = true;
+				charIndexUnderCursor = nearestChar;
 			}
-			else
+		}
+
+		if (isCharIndexUnderCursor)
+		{
+			bool needupdate = false;
+			if (IsCursorInRect())
 			{
-				m_textCursor = charIndexUnderCursor;
+				if (slInput::IsLMBHit())
+				{
+					m_textCursor = charIndexUnderCursor;
+					needupdate = true;
+				}
 			}
 
-			findTextCursorRect();
-			findColAndLineByTextCursor();
-			drawTextCursor();
-			findHScroll();
-			findVScroll();
+			if (mouseMove && m_isLMBHit && slInput::IsLMBHold())
+			{
+				m_textCursor = charIndexUnderCursor;
+				if (!IsTextSelected())
+				{
+					m_textEditorFlags |= textEditorFlag_isSelected;
+					m_selectionStart = m_textCursor;
+					m_selectionEnd = m_textCursor;
+				}
+				else
+				{
+					m_selectionEnd = m_textCursor;
+				}
+
+				if (mp.y < m_buildRect.y)
+				{
+					if (mouseMove)
+					{
+						m_v_scroll -= m_lineHeight;
+						if (m_v_scroll < 0.f)
+							m_v_scroll = 0.f;
+					}
+				}
+				else if(mp.y > m_buildRect.w)
+				{
+					if (mouseMove)
+					{
+						m_v_scroll += m_lineHeight;
+
+						float contentSize_y = (float)(m_numberOfLines) * m_lineHeight;
+						contentSize_y -= (m_baseRect.w - m_baseRect.y);
+
+						if (m_v_scroll > contentSize_y)
+							m_v_scroll = contentSize_y;
+					}
+				}
+				needupdate = true;
+			}
+			if (needupdate)
+			{
+				findTextCursorRect();
+				findColAndLineByTextCursor();
+				drawTextCursor();
+				findHScroll();
+			}
 		}
 
 		//	printf("[%u]\n", (uint32_t)m_textCursor);
@@ -1008,7 +1094,10 @@ void slGUITextEditor::findColAndLineByTextCursor()
 
 void slGUITextEditor::Deselect()
 {
-	m_textEditorFlags &= ~textEditorFlag_isSelected;
-	m_selectionStart = 0;
-	m_selectionEnd = 0;
+	if (IsTextSelected())
+	{
+		m_textEditorFlags &= ~textEditorFlag_isSelected;
+		m_selectionStart = 0;
+		m_selectionEnd = 0;
+	}
 }

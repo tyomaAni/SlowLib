@@ -553,8 +553,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 POINT cursorPoint;
                 GetCursorPos(&cursorPoint);
                 //ScreenToClient(hWnd, &cursorPoint);
-                id->mousePosition.x = cursorPoint.x - rct.left - pW->GetBorderSize()->x;
-                id->mousePosition.y = cursorPoint.y - rct.top - pW->GetBorderSize()->y;
+                id->mousePosition.x = (float)(cursorPoint.x - rct.left - pW->GetBorderSize()->x);
+                id->mousePosition.y = (float)(cursorPoint.y - rct.top - pW->GetBorderSize()->y);
 
                 // printf("%i %i\n", cursorPoint.x, cursorPoint.y);
 
