@@ -632,6 +632,8 @@ void slGUITextEditor::Update()
 					Paste();
 				else if (slInput::IsKeyHit(slInput::KEY_DELETE))
 					Cut();
+				else if (slInput::GetData()->character)
+					Type(slInput::GetData()->character);
 			}
 		}
 		else if (slInput::GetData()->character)
