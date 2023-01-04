@@ -33,6 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../framework/slFrameworkImpl.h"
 extern slFrameworkImpl* g_framework;
 
+#ifdef SL_PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
+
+#include "../string/slStringInternal.h"
+
 slGUITextEditorTextDrawCallback::slGUITextEditorTextDrawCallback()
 {
 	m_defaultFont = slFramework::GetDefaultFont(slGUIDefaultFont::Text);
@@ -278,18 +285,21 @@ void slGUITextEditor::GoHome()
 
 	if (m_col > 1)
 	{
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 		{
 			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
 			{
-				m_textEditorFlags |= textEditorFlag_isSelected;
-				m_selectionStart = m_textCursor;
+				if (!IsTextSelected())
+				{
+					m_textEditorFlags |= textEditorFlag_isSelected;
+					m_selectionStart = m_textCursor;
+				}
 			}
 		}
 
 		m_textCursor = m_lines[m_line - 1].m_index;
 
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 		{
 			m_selectionEnd = m_textCursor;
 		}
@@ -306,19 +316,22 @@ void slGUITextEditor::GoEnd()
 	drawTextCursor();
 	auto input = slInput::GetData();
 
-	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 	{
 		if ((m_selectionStart == 0) && (m_selectionEnd == 0))
 		{
-			m_textEditorFlags |= textEditorFlag_isSelected;
-			m_selectionStart = m_textCursor;
+			if (!IsTextSelected())
+			{
+				m_textEditorFlags |= textEditorFlag_isSelected;
+				m_selectionStart = m_textCursor;
+			}
 		}
 	}
 
 	m_col = m_lines[m_line - 1].m_size;
 	m_textCursor = m_lines[m_line - 1].m_index + (m_col-1);
 
-	if (input->keyboardModifier == input->KBMOD_SHIFT)
+	if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 	{
 		m_selectionEnd = m_textCursor;
 	}
@@ -418,12 +431,15 @@ void slGUITextEditor::_GoUp()
 		--m_line;
 		//printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
 
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 		{
 			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
 			{
-				m_textEditorFlags |= textEditorFlag_isSelected;
-				m_selectionStart = m_textCursor;
+				if (!IsTextSelected())
+				{
+					m_textEditorFlags |= textEditorFlag_isSelected;
+					m_selectionStart = m_textCursor;
+				}
 			}
 		}
 		else
@@ -449,7 +465,7 @@ void slGUITextEditor::_GoUp()
 			m_col = m_colFix;
 		m_textCursor = m_lines[m_line - 1].m_index + (m_col - 1);
 
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 			m_selectionEnd = m_textCursor;
 	}
 }
@@ -471,12 +487,15 @@ void slGUITextEditor::_GoDown()
 	{
 		++m_line;
 		//printf("sz %i col %i colFix %i\n", m_lines[m_line - 1].m_size, m_col, m_colFix);
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 		{
 			if ((m_selectionStart == 0) && (m_selectionEnd == 0))
 			{
-				m_textEditorFlags |= textEditorFlag_isSelected;
-				m_selectionStart = m_textCursor;
+				if (!IsTextSelected())
+				{
+					m_textEditorFlags |= textEditorFlag_isSelected;
+					m_selectionStart = m_textCursor;
+				}
 			}
 		}
 		else
@@ -502,7 +521,7 @@ void slGUITextEditor::_GoDown()
 			m_col = m_colFix;
 		m_textCursor = m_lines[m_line - 1].m_index + (m_col - 1);
 
-		if (input->keyboardModifier == input->KBMOD_SHIFT)
+		if (input->keyboardModifier == input->KBMOD_SHIFT || m_isLMBHit)
 			m_selectionEnd = m_textCursor;
 	}
 }
@@ -568,6 +587,8 @@ void slGUITextEditor::Update()
 
 	if (IsActivated())
 	{
+		
+
 		if (slInput::IsKeyHit(slInput::KEY_LEFT))
 			GoLeft();
 		if (slInput::IsKeyHit(slInput::KEY_RIGHT))
@@ -584,6 +605,37 @@ void slGUITextEditor::Update()
 			GoPageUp();
 		if (slInput::IsKeyHit(slInput::KEY_PGDOWN))
 			GoPageDown();
+		if (slInput::IsKeyHit(slInput::KEY_DELETE))
+			Delete();
+
+		if (slInput::IsKeyHit(slInput::KEY_BACKSPACE))
+			Backspace();
+		else if ((slInput::GetData()->keyboardModifier & slInputData::KBMOD_CTRL)
+			|| (slInput::GetData()->keyboardModifier & slInputData::KBMOD_SHIFT))
+		{
+			if (slInput::GetData()->keyboardModifier & slInputData::KBMOD_CTRL)
+			{
+				if (slInput::IsKeyHit(slInput::KEY_A))
+					SelectAll(); 
+				else if (slInput::IsKeyHit(slInput::KEY_C))
+					Copy();
+				else if (slInput::IsKeyHit(slInput::KEY_INSERT))
+					Copy();
+				else if (slInput::IsKeyHit(slInput::KEY_V))
+					Paste();
+				else if (slInput::IsKeyHit(slInput::KEY_X))
+					Cut();
+			}
+			else if (slInput::GetData()->keyboardModifier & slInputData::KBMOD_SHIFT)
+			{
+				if (slInput::IsKeyHit(slInput::KEY_INSERT))
+					Paste();
+				else if (slInput::IsKeyHit(slInput::KEY_DELETE))
+					Cut();
+			}
+		}
+		else if (slInput::GetData()->character)
+			Type(slInput::GetData()->character);
 	}
 
 	if (IsCursorInRect())
@@ -1005,6 +1057,9 @@ void slGUITextEditor::Draw(slGS* gs, float dt)
 
 		if (isCharIndexUnderCursor)
 		{
+			if (charIndexUnderCursor > m_textBufferLen)
+				charIndexUnderCursor = m_textBufferLen;
+
 			bool needupdate = false;
 			if (IsCursorInRect())
 			{
@@ -1100,4 +1155,343 @@ void slGUITextEditor::Deselect()
 		m_selectionStart = 0;
 		m_selectionEnd = 0;
 	}
+}
+
+void slGUITextEditor::DeleteSelected()
+{
+	auto s1 = m_selectionStart;
+	auto s2 = m_selectionEnd;
+	if (s1 > s2)
+	{
+		s1 = s2;
+		s2 = m_selectionStart;
+	}
+
+	auto num_to_delete = s2 - s1;
+	auto str_len = m_textBufferLen;
+	auto buf = m_textBuffer;
+	for (size_t i = s2, i2 = s1; i < str_len; ++i, ++i2)
+	{
+		buf[i2] = buf[i];
+	}
+	buf[str_len - num_to_delete] = 0;
+
+	Deselect();
+	m_textCursor = s1;
+	m_textBufferLen -= num_to_delete;
+
+	findNumberOfLines();
+	findColAndLineByTextCursor();
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
+}
+
+void slGUITextEditor::Delete() 
+{
+	this->drawTextCursor();
+	if (IsTextSelected())
+	{
+		DeleteSelected();
+		return;
+	}
+
+	if (m_textCursor < m_textBufferLen)
+	{
+		bool ok = false;
+		auto buf = m_textBuffer;
+		auto str_len = m_textBufferLen;
+
+		for (size_t i = m_textCursor; i < str_len; ++i)
+		{
+			ok = true;
+			if (i + 1 == str_len)
+				break;
+			buf[i] = buf[i + 1];
+		}
+		if (ok)
+		{
+			buf[str_len - 1] = 0;
+			m_textBufferLen -= 1;
+			findNumberOfLines();
+			findColAndLineByTextCursor();
+			findHScroll();
+			findVScroll();
+		}
+	}
+
+}
+
+void slGUITextEditor::Backspace()
+{
+	this->drawTextCursor();
+	if (IsTextSelected())
+	{
+		DeleteSelected();
+		return;
+	}
+
+	bool ok = false;
+	auto buf = m_textBuffer;
+	auto str_len = m_textBufferLen;
+	for (size_t i = m_textCursor; i < str_len; ++i)
+	{
+		if (i == 0)
+			break;
+		ok = true;
+		buf[i - 1] = buf[i];
+	}
+	if (m_textCursor == str_len && !ok)
+		ok = true;
+	if (ok)
+	{
+		if (str_len - 1 >= 0)
+		{
+			if (m_textCursor)
+			{
+				--m_textCursor;
+				buf[str_len - 1] = 0;
+				m_textBufferLen -= 1;
+			}
+		}
+		findNumberOfLines();
+		findColAndLineByTextCursor();
+		findTextCursorRect();
+		findHScroll();
+		findVScroll();
+	}
+}
+
+void slGUITextEditor::Type(char32_t c)
+{
+	if (IsTextSelected())
+		DeleteSelected();
+	
+	char32_t b[2] = { c, 0 };
+	
+	if (c == U'\r')
+	{
+		if (m_useRN)
+			_PutText(b, 1);
+
+		b[0] = U'\n';
+		_PutText(b, 1);
+	}
+	else
+	{
+		_PutText(b, 1);
+	}
+
+	findNumberOfLines();
+	findColAndLineByTextCursor();
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
+}
+
+void slGUITextEditor::_PutText(const char32_t* text, size_t len)
+{
+	size_t newLen = m_textBufferLen + len;
+
+	if (newLen > m_textBufferAllocated)
+		reallocate(newLen);
+
+	size_t i = m_textBufferLen;
+	while (i >= m_textCursor)
+	{
+		size_t next = i + len;
+		if (next < m_textBufferAllocated)
+			m_textBuffer[next] = m_textBuffer[i];
+
+		if (i == 0)
+			break;
+		--i;
+	}
+	for (size_t i2 = 0; i2 < len; ++i2)
+	{
+		m_textBuffer[m_textCursor] = text[i2];
+		++m_textCursor;
+	}
+
+	m_textBufferLen = newLen;
+	m_textBuffer[newLen] = 0;
+}
+
+void slGUITextEditor::PutText(const char32_t* text, size_t len)
+{
+	if (IsTextSelected())
+		DeleteSelected();
+
+	_PutText(text, len);
+
+	findNumberOfLines();
+	findColAndLineByTextCursor();
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
+}
+
+void slGUITextEditor::Select(size_t s1, size_t s2)
+{
+	if (m_textBufferLen)
+	{
+		Deselect();
+
+		auto _s1 = s1;
+		auto _s2 = s2;
+		if (_s2 < _s1)
+		{
+			_s1 = s2;
+			_s2 = s1;
+		}
+
+		if (_s1 <= m_textBufferLen)
+		{
+			m_textEditorFlags |= this->textEditorFlag_isSelected;
+			m_selectionStart = _s1;
+			if(_s2 <= m_textBufferLen)
+				m_selectionEnd = _s2;
+			else
+				m_selectionEnd = m_textBufferLen;
+		}
+
+		findTextCursorRect();
+		findHScroll();
+		findVScroll();
+	}
+}
+
+void slGUITextEditor::SelectAll()
+{
+	if (m_textBufferLen)
+	{
+		m_textEditorFlags |= this->textEditorFlag_isSelected;
+		m_selectionStart = 0;
+		m_selectionEnd = m_textBufferLen;
+
+		findTextCursorRect();
+		findHScroll();
+		findVScroll();
+	}
+}
+
+void slGUITextEditor::Copy()
+{
+	if (IsTextSelected())
+	{
+		uint32_t s1 = m_selectionStart;
+		uint32_t s2 = m_selectionEnd;
+		if (s1 > s2)
+		{
+			s1 = s2;
+			s2 = m_selectionStart;
+		}
+		uint32_t num_to_select = s2 - s1;
+
+#ifdef SL_PLATFORM_WINDOWS
+		if (!OpenClipboard(0))
+			return;
+
+		uint32_t len = num_to_select;
+		EmptyClipboard();
+		HGLOBAL clipbuffer;
+
+		clipbuffer = GlobalAlloc(GMEM_DDESHARE, ((len + len) + 1) * sizeof(WCHAR));
+
+		wchar_t* buffer;
+		buffer = (wchar_t*)GlobalLock(clipbuffer);
+
+		memset(buffer, 0, (len + len + 1) * sizeof(wchar_t));
+		wchar_t* wchar_ptr = buffer;
+		//memcpy(buffer, &impl->text[s1], len * sizeof(wchar_t));
+		
+		UC uc;
+		for (size_t i = 0; i < len; ++i)
+		{
+			char32_t c = m_textBuffer[s1 + i];
+
+			if (c >= 0x32000)
+				c = '?';
+
+			uc.integer = g_UnicodeChars[c].m_utf16;
+
+			if (uc.shorts[1])
+			{
+				*wchar_ptr = uc.shorts[1];
+				++wchar_ptr;
+			}
+			if (uc.shorts[0])
+			{
+				*wchar_ptr = uc.shorts[0];
+				++wchar_ptr;
+			}
+		}
+		*wchar_ptr = 0;
+		++wchar_ptr;
+
+		buffer[len] = 0;
+
+		GlobalUnlock(clipbuffer);
+		SetClipboardData(CF_UNICODETEXT, clipbuffer);
+		CloseClipboard();
+#else
+#error Need implementation....
+#endif
+	}
+}
+
+void slGUITextEditor::Cut()
+{
+	Copy();
+	DeleteSelected();
+}
+
+void slGUITextEditor::Paste()
+{
+	if (IsTextSelected())
+		DeleteSelected();
+
+#ifdef SL_PLATFORM_WINDOWS
+	if (!OpenClipboard(0))
+		return;
+
+	char32_t b[2] = { U'?', 0};
+
+	HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+	if (hData)
+	{
+		wchar_t* buffer = (wchar_t*)GlobalLock(hData);
+		if (buffer)
+		{
+			uint32_t len = (uint32_t)wcslen(buffer);
+			if (len)
+			{
+				char32_t* utf32 = (char32_t*)malloc(len * sizeof(char32_t));
+				size_t utf32sz = 0;
+
+				slString str;
+				str.assign(buffer);
+
+				for (size_t i = 0; i < str.size(); ++i)
+				{
+					if (OnChar(str[i]))
+					{
+						b[0] = str[i];
+						_PutText(b, 1);
+					}
+				}
+				free(utf32);
+			}
+		}
+		GlobalUnlock(hData);
+	}
+	CloseClipboard();
+#else
+#error Need implementation....
+#endif
+
+	findNumberOfLines();
+	findTextCursorRect();
+	findHScroll();
+	findVScroll();
 }

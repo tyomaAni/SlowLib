@@ -478,11 +478,6 @@ class miGUITextInputImpl : public miGUITextInput\n\
 		if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
 			windowCallback.OnClose(app.m_window);
 
-		if (slInput::IsKeyRelease(slInput::KEY_HOME))
-			app.m_window->SetBorderless(true);
-		if (slInput::IsKeyRelease(slInput::KEY_END))
-			app.m_window->SetBorderless(false);
-		
 		if (slInput::IsKeyRelease(slInput::KEY_INSERT))
 			app.m_window->SetNoResize(true);
 		if (slInput::IsKeyRelease(slInput::KEY_DELETE))
@@ -525,17 +520,6 @@ class miGUITextInputImpl : public miGUITextInput\n\
 		{
 			app.m_camera->m_position.y -= 10.0 * (double)(*dt);
 		}
-		if (slInput::IsKeyHit(slInput::KEY_END))
-		{
-			printf("try to load\n");
-			MeshLoaderCallback mlcb;
-			/*slString path = slFramework::GetAppPath() + "4_objs.obj";
-			slStringA stra;
-			path.to_utf8(stra);
-			slFramework::SummonMesh(stra.data(), &mlcb);*/
-			slFramework::SummonMesh(slFramework::GetPathA("..\\data\\4_objs.obj").c_str(), &mlcb);
-		}
-
 
 		if (app.m_gs)
 		{

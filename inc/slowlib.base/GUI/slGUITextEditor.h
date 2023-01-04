@@ -123,6 +123,11 @@ class slGUITextEditor : public slGUIElement
 	void GoEnd();
 	void GoPageUp();
 	void GoPageDown();
+	void Delete();
+	void Backspace();
+	void Type(char32_t);
+	void _PutText(const char32_t*, size_t);
+	void PutText(const char32_t*, size_t);
 
 	enum
 	{
@@ -138,6 +143,8 @@ public:
 	slGUITextEditor(slGUIWindow*, const slVec2f& position, const slVec2f& size);
 	virtual ~slGUITextEditor();
 
+	bool m_useRN = false; // \r\n on Enter
+
 	bool IsActivated() { return (m_textEditorFlags & textEditorFlag_isActivated); }
 	bool IsTextSelected() { return (m_textEditorFlags & textEditorFlag_isSelected); }
 	void Activate(bool);
@@ -151,6 +158,15 @@ public:
 	virtual void Clear(bool freeMemory);
 	virtual void SetText(const slString&);
 	virtual void Deselect();
+
+	virtual void Select(size_t s1, size_t s2);
+	virtual void SelectAll();
+	virtual void DeleteSelected();
+	virtual void Copy();
+	virtual void Paste();
+	virtual void Cut();
+
+	virtual bool OnChar(char32_t) { return true; }
 };
 
 #endif

@@ -29,48 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include <string>
 
-struct slUnicodeCharNode
-{
-	uint32_t m_utf8;
-	uint32_t m_utf16;
-};
-static slUnicodeCharNode g_UnicodeChars[0x32000] =
-{
-#include "UnicodeChars.inl"
-};
-
-
-union UC
-{
-	uint8_t bytes[4];
-	uint16_t shorts[2];
-	uint32_t integer;
-};
-
-static uint8_t g_stringWordSize = 16;
-namespace _internal
-{
-	const double string_to_float_table[17] =
-	{
-		0.f,
-		0.1,
-		0.01,
-		0.001,
-		0.0001,
-		0.00001,
-		0.000001,
-		0.0000001,
-		0.00000001,
-		0.000000001,
-		0.0000000001,
-		0.00000000001,
-		0.000000000001,
-		0.0000000000001,
-		0.00000000000001,
-		0.000000000000001,
-		0.0000000000000001,
-	};
-}
+#include "slStringInternal.h"
 
 template<typename other_type>
 size_t sl_string_getlen(const other_type* str)
