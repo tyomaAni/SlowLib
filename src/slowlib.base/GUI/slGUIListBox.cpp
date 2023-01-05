@@ -247,73 +247,6 @@ void slGUIListBox::Draw(slGS* gs, float dt)
 				break;
 		}
 	}
-	/*auto sz = m_text.size();
-	if (sz)
-	{
-		slVec2f pos;
-		pos.x = m_buildRect.x;
-		pos.y = m_buildRect.y;
-
-		slVec2f textPosition = pos;
-
-		slVec4f r;
-		r.x = pos.x;
-		r.y = pos.y;
-		r.z = m_buildRect.z;
-		r.w = r.y;
-
-		bool draw = true;
-		for (size_t i = 0; i < sz; ++i)
-		{
-			if (m_useDrawLimit)
-			{
-				if (i >= m_drawLimit)
-					draw = false;
-			}
-
-			char32_t ch = m_text[i];
-			slGUIFont* font = m_textDrawCallback->OnFont(0, ch);
-			slGUIFontGlyph* g = font->GetGlyphMap()[ch];
-
-			slVec4f chrct;
-			chrct.x = textPosition.x;
-			chrct.y = textPosition.y;
-			chrct.z = chrct.x + g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
-			chrct.w = chrct.y + m_lineHeight;
-
-			if (chrct.z > m_buildRect.z)
-			{
-				textPosition.y += m_lineHeight;
-				textPosition.x = pos.x;
-			}
-
-			
-			if (draw)
-			{
-				gs->DrawGUICharacter(
-					ch,
-					font,
-					textPosition,
-					*m_textDrawCallback->OnColor(0, ch));
-			}
-
-			textPosition.x += g->m_width + g->m_overhang + g->m_underhang + font->m_characterSpacing;
-
-			switch (ch)
-			{
-			case U' ':
-				textPosition.x += font->m_spaceSize;
-				break;
-			case U'\t':
-				textPosition.x += font->m_tabSize;
-				break;
-			case U'\n':
-				textPosition.x = pos.x;
-				textPosition.y += m_lineHeight;
-				break;
-			}
-		}
-	}*/
 }
 
 slGUIListBoxItem* slGUIListBox::AddItem(const char32_t* t, uint32_t id, void* data)
@@ -325,10 +258,12 @@ slGUIListBoxItem* slGUIListBox::AddItem(const char32_t* t, uint32_t id, void* da
 	newItem->m_id = id;
 
 	m_items.push_back(newItem);
-
 	return newItem;
 }
 
 void slGUIListBox::RemoveItem(slGUIListBoxItem* it)
 {
+	SL_ASSERT_ST(it);
+	m_items.erase_first(it);
+	slDestroy(it);
 }

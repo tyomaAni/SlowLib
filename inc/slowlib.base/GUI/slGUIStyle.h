@@ -78,11 +78,17 @@ struct slGUIStyle
 	slColor m_textEditorCursorColor;
 	
 	slColor m_staticTextBGColor;
+	slColor m_staticTextTextColor;
 	
 	slColor m_listboxBGColor;
 	slColor m_listboxLine1BGColor;
 	slColor m_listboxLine2BGColor;
 	slColor m_listboxSelectedLineBGColor;
+	
+	slColor m_sliderTextColor;
+	slColor m_sliderAxisEmtpyColor;
+	slColor m_sliderAxisFillColor;
+	slColor m_sliderControlColor;
 
 };
 

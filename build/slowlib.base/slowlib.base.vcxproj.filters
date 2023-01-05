@@ -144,5 +144,8 @@
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIListBox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUISlider.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -44,13 +44,7 @@ slGUIFont* slGUIStaticTextDrawCallback::OnFont(uint32_t r, char32_t c)
 }
 slColor* slGUIStaticTextDrawCallback::OnColor(uint32_t r, char32_t c)
 {
-	switch (r)
-	{
-	case slGUIDrawTextCallback::Reason_selected:
-		return &m_staticText->GetStyle()->m_textEditorSelectedTextColor;
-		break;
-	}
-	return &m_staticText->GetStyle()->m_textEditorTextColor;
+	return &m_staticText->GetStyle()->m_staticTextTextColor;
 }
 
 slGUIStaticText::slGUIStaticText(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
@@ -90,12 +84,9 @@ void slGUIStaticText::Update()
 
 void slGUIStaticText::Draw(slGS* gs, float dt)
 {
-	if (IsEnabled())
-	{
-		gs->SetScissorRect(m_clipRect, 0);
-		if (IsDrawBG())
-			gs->DrawGUIRectangle(m_buildRect, m_style->m_staticTextBGColor, m_style->m_staticTextBGColor, 0, 0);
-	}
+	gs->SetScissorRect(m_clipRect, 0);
+	if (IsDrawBG())
+		gs->DrawGUIRectangle(m_buildRect, m_style->m_staticTextBGColor, m_style->m_staticTextBGColor, 0, 0);
 
 	auto sz = m_text.size();
 	if (sz)

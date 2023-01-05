@@ -212,11 +212,18 @@ void slFramework::Start(slFrameworkCallback* cb)
 	g_framework->m_GUIStyleThemeLight.m_textEditorCursorColor = 0x0;
 	
 	g_framework->m_GUIStyleThemeLight.m_staticTextBGColor = 0xFAFAFA;
+	g_framework->m_GUIStyleThemeLight.m_staticTextTextColor = 0;
 	
 	g_framework->m_GUIStyleThemeLight.m_listboxBGColor = 0xFAFAFA;
 	g_framework->m_GUIStyleThemeLight.m_listboxLine1BGColor = 0xFAFAFA;
 	g_framework->m_GUIStyleThemeLight.m_listboxLine2BGColor = 0xF1F1F1;
 	g_framework->m_GUIStyleThemeLight.m_listboxSelectedLineBGColor = 0x999999;
+
+	g_framework->m_GUIStyleThemeLight.m_sliderTextColor = 0;
+	g_framework->m_GUIStyleThemeLight.m_sliderAxisEmtpyColor = 0xD1D1D1;
+	g_framework->m_GUIStyleThemeLight.m_sliderAxisFillColor = ColorBlue;
+	g_framework->m_GUIStyleThemeLight.m_sliderControlColor = 0xD1D1D1;
+	
 
 	g_framework->m_GUIStyleThemeDark = g_framework->m_GUIStyleThemeLight;
 }

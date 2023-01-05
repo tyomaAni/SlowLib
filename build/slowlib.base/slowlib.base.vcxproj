@@ -194,6 +194,7 @@
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIFont.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIListBox.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIRootElement.cpp" />
+    <ClCompile Include="..\..\src\slowlib.base\GUI\slGUISlider.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIStaticText.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUITextEditor.cpp" />
     <ClCompile Include="..\..\src\slowlib.base\GUI\slGUIWindow.cpp" />
