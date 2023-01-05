@@ -145,6 +145,9 @@ public:
 	bool IsTextSelected() { return (m_textEditorFlags & textEditorFlag_isSelected); }
 	void Activate(bool);
 
+	size_t GetTextLen() { return m_textBufferLen; }
+	const char32_t* GetText() { return m_textBuffer; }
+
 	virtual void Rebuild() final;
 	virtual void Update() final;
 	virtual void Draw(slGS* gs, float dt) final;	

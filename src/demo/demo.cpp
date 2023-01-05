@@ -305,12 +305,31 @@ public:
 class MyTextEdtor : public slGUITextEditor
 {
 public:
-	MyTextEdtor(slGUIWindow* w, const slVec2f& position, const slVec2f& size)
-		:
+	MyTextEdtor(slGUIWindow* w, const slVec2f& position, const slVec2f& size):
 		slGUITextEditor(w, position, size)
 	{
 	}
 	virtual ~MyTextEdtor() {}
+};
+
+class MyStaticText : public slGUIStaticText
+{
+public:
+	MyStaticText(slGUIWindow* w, const slVec2f& position, const slVec2f& size) :
+		slGUIStaticText(w, position, size)
+	{
+	}
+	virtual ~MyStaticText() {}
+};
+
+class MyListBox : public slGUIListBox
+{
+public:
+	MyListBox(slGUIWindow* w, const slVec2f& position, const slVec2f& size) :
+		slGUIListBox(w, position, size)
+	{
+	}
+	virtual ~MyListBox() {}
 };
 
 int main(int argc, char * argv[])
@@ -392,6 +411,11 @@ int main(int argc, char * argv[])
 	radio->SetText(U"Radio (2)");
 	radio->m_radiouGroup = 1;
 
+	auto staticText = slCreate<MyStaticText>(guiWindow, slVec2f(210.f, 10.f), slVec2f(100.f, 60.f));
+	staticText->SetText(U"Static text with auto-new line");
+	staticText->UseDrawLimit(true, 0);
+
+
 	auto textEditor = slCreate<MyTextEdtor>(guiWindow, slVec2f(10.f, 10.f), slVec2f(200.f, 200.f));
 	textEditor->SetText(U"asd\n\
 class miGUITextInputImpl : public miGUITextInput\n\
@@ -460,6 +484,22 @@ class miGUITextInputImpl : public miGUITextInput\n\
 	};\n\
 1234567890");
 
+	MyListBox * myListBox = slCreate<MyListBox>(guiWindow, slVec2f(0.f, 220.f), slVec2f(100.f, 160.f));
+	myListBox->AddItem(U"Item1", 0, 0);
+	myListBox->AddItem(U"Item2", 0, 0);
+	myListBox->AddItem(U"Item3", 0, 0);
+	myListBox->AddItem(U"Item4", 0, 0);
+	myListBox->AddItem(U"Item5", 0, 0);
+	myListBox->AddItem(U"Item6", 0, 0);
+	myListBox->AddItem(U"Item7", 0, 0);
+	myListBox->AddItem(U"Item8", 0, 0);
+	myListBox->AddItem(U"Item9", 0, 0);
+	myListBox->AddItem(U"Item10", 0, 0);
+	myListBox->AddItem(U"Item11", 0, 0);
+	myListBox->AddItem(U"Item12", 0, 0);
+	myListBox->AddItem(U"Item13", 0, 0);
+	myListBox->AddItem(U"Item14", 0, 0);
+
 	slFramework::RebuildGUI();
 	
 	GUIDrawTextCallback textDrawCallback(myFont);
@@ -520,6 +560,13 @@ class miGUITextInputImpl : public miGUITextInput\n\
 		{
 			app.m_camera->m_position.y -= 10.0 * (double)(*dt);
 		}
+
+		static size_t drawLimit = 0;
+		staticText->UseDrawLimit(true, drawLimit);
+		++drawLimit;
+		if (drawLimit > 32)
+			drawLimit = 0;
+
 
 		if (app.m_gs)
 		{

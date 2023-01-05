@@ -559,7 +559,7 @@ void slGUITextEditor::Rebuild()
 	const char32_t b[] = { U"X#$@WHM_" };
 	for (int i = 0; i < 9; ++i)
 	{
-		slGUIFont* font = m_textDrawCallback->OnFont(0, m_textBuffer[i]);
+		slGUIFont* font = m_textDrawCallback->OnFont(0, b[i]);
 		if (font->GetMaxSize().y > m_lineHeight)
 			m_lineHeight = (float)font->GetMaxSize().y;
 	}

@@ -124,6 +124,8 @@ public:
 #include "slowlib.base/GUI/slGUIButton.h"
 #include "slowlib.base/GUI/slGUICheckRadioBox.h"
 #include "slowlib.base/GUI/slGUITextEditor.h"
+#include "slowlib.base/GUI/slGUIStaticText.h"
+#include "slowlib.base/GUI/slGUIListBox.h"
 
 
 struct slGUIState

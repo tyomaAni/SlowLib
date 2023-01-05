@@ -76,6 +76,14 @@ struct slGUIStyle
 	slColor m_textEditorSelectedTextColor;
 	slColor m_textEditorSelectedTextBGColor;
 	slColor m_textEditorCursorColor;
+	
+	slColor m_staticTextBGColor;
+	
+	slColor m_listboxBGColor;
+	slColor m_listboxLine1BGColor;
+	slColor m_listboxLine2BGColor;
+	slColor m_listboxSelectedLineBGColor;
+
 };
 
 #endif
