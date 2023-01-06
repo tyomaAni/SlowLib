@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/common/slUserData.h"
 #include "slowlib.base/common/slColor.h"
 #include "slowlib.base/gs/slGPUMesh.h"
+#include "slowlib.base/gs/slMaterial.h"
 
 // Graphics System
 class slGS : public slUserData
@@ -88,6 +89,7 @@ public:
 
 	virtual slGPUMesh* SummonMesh(slMesh*) = 0;
 
+	virtual void SetShader(slShaderType, uint32_t userIndex) = 0;
 	virtual void SetMesh(slGPUMesh*) = 0;
 	virtual void SetMaterial(slMaterial*) = 0;
 	virtual void Draw() = 0;
@@ -108,6 +110,8 @@ public:
 	virtual void DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f& position,
 		slGUIDrawTextCallback*) = 0;
 	virtual void EndGUI() = 0;
+
+	virtual void DrawSprite(slSprite*) = 0;
 };
 
 #endif

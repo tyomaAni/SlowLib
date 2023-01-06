@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/system/slWindowWin32.h"
 #include "slowlib.base/gs/slMaterial.h"
 #include "slowlib.base/GUI/slGUI.h"
+#include "slowlib.base/scene/slSprite.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -77,6 +78,10 @@ bool slGSD3D11::CreateShaders()
 
 	m_shaderGUIRectangle = slCreate<slD3D11ShaderGUIRectangle>(this);
 	if (!m_shaderGUIRectangle->init())
+		return false;
+
+	m_shaderSprite = slCreate<slD3D11ShaderSprite>(this);
+	if (!m_shaderSprite->init())
 		return false;
 
 	return true;
@@ -319,6 +324,7 @@ void slGSD3D11::Shutdown()
 	SLSAFE_DESTROY(m_mainTargetRTT);
 	SLSAFE_DESTROY(m_GUIRTT);
 
+	SLSAFE_DESTROY(m_shaderSprite);
 	SLSAFE_DESTROY(m_shaderSolid);
 	SLSAFE_DESTROY(m_shaderLine3D);
 	SLSAFE_DESTROY(m_shaderMainTarget);
@@ -839,7 +845,6 @@ void slGSD3D11::DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c)
 	m_d3d11DevCon->IASetInputLayout(NULL);
 	m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 
-	SetActiveShader(m_shaderLine3D);
 	m_shaderLine3D->SetData(p1, p2, c, *slFramework::GetMatrix(slMatrixType::ViewProjection));
 	m_shaderLine3D->SetConstants(0);
 
@@ -935,6 +940,31 @@ slGPUMesh* slGSD3D11::SummonMesh(slMesh* m)
 	return newMesh;
 }
 
+void slGSD3D11::SetShader(slShaderType st, uint32_t userIndex)
+{
+	switch (st)
+	{
+	case slShaderType::Solid:
+		SetActiveShader(m_shaderSolid);
+		break;
+	case slShaderType::BumpMap:
+		break;
+	case slShaderType::SphereMap:
+		break;
+	case slShaderType::Line3D:
+		SetActiveShader(m_shaderLine3D);
+		break;
+	case slShaderType::Sprite:
+		SetActiveShader(m_shaderSprite);
+		break;
+	case slShaderType::User:
+		break;
+	default:
+		slLog::PrintWarning("Uknown shader\n");
+		break;
+	}
+}
+
 void slGSD3D11::SetMesh(slGPUMesh* m)
 {
 	m_currMesh = (slGSD3D11Mesh*)m;
@@ -972,7 +1002,6 @@ void slGSD3D11::Draw()
 		switch (m_currMaterial->m_shader)
 		{
 		case slShaderType::Solid:
-			SetActiveShader(m_shaderSolid);
 			m_shaderSolid->SetData(*slFramework::GetMatrix(slMatrixType::WorldViewProjection),
 				*slFramework::GetMatrix(slMatrixType::World));
 			m_shaderSolid->SetConstants(m_currMaterial);
@@ -1448,3 +1477,28 @@ void slGSD3D11::EndGUI()
 	UseDepth(true);
 }
 
+void slGSD3D11::DrawSprite(slSprite* s)
+{
+	SL_ASSERT_ST(s);
+	SL_ASSERT_ST(s->GetTexture());
+
+	m_shaderSprite->m_cbDataElement.Color1 = ColorWhite;
+	m_shaderSprite->m_cbDataElement.Color2 = ColorWhite;
+
+	m_shaderSprite->m_cbDataElement.Corners = s->GetRect();
+
+	m_shaderSprite->m_cbDataElement.UVs.x = 0.f;
+	m_shaderSprite->m_cbDataElement.UVs.y = 0.f;
+	m_shaderSprite->m_cbDataElement.UVs.z = 1.f;
+	m_shaderSprite->m_cbDataElement.UVs.w = 1.f;
+
+	m_shaderSprite->m_cbDataElement.WVP = *slFramework::GetMatrix(slMatrixType::Projection)
+		* (*slFramework::GetMatrix(slMatrixType::View))
+		* s->GetMatrixWorld();
+	m_shaderSprite->m_cbDataElement.WorldMtx = s->GetMatrixWorld();
+
+	m_shaderSprite->SetOnElement(dynamic_cast<slGSD3D11Texture*>(s->GetTexture()));
+
+
+	m_d3d11DevCon->Draw(1, 0);
+}

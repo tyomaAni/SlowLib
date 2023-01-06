@@ -26,44 +26,37 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEMATERIAL_H__
-#define __SL_SLOWLIBBASEMATERIAL_H__
 
-#include "slowlib.base/common/slColor.h"
+#ifndef SL_D3D11_SHADER_SPRT_H__
+#define SL_D3D11_SHADER_SPRT_H__
 
-enum class slShaderType
+class slGSD3D11;
+class slD3D11ShaderSprite : public slGSD3D11ShaderBase
 {
-	// For slGS::Draw
-	Solid,
-	BumpMap,
-	SphereMap,
+public:
+	slD3D11ShaderSprite(slGSD3D11* gs);
+	virtual ~slD3D11ShaderSprite();
 
-	Line3D, // For slGS::DrawLine3D
+	slGSD3D11* m_gs = 0;
 
-	Sprite, // For slGS::DrawSprite
+	ID3D11Buffer* m_cbElement = 0;
 
-	User
-};
+	struct cbElement
+	{
+		slMatrix4_t<float> WVP;
+		slMatrix4_t<float> WorldMtx;
+		slVec4f Corners;
+		slColor Color1;
+		slColor Color2;
+		slVec4f UVs;
+	}m_cbDataElement;
 
-// Graphics System
-struct slMaterial
-{
-	slShaderType m_shader = slShaderType::Solid;
-	float m_opacity = 1.f;
-	float m_alphaDiscard = 0.5f;
-	slColor m_colorDiffuse = ColorWhite;
-	slColor m_colorAmbient = ColorGray;
-	slColor m_colorSpecular = ColorWhite;
-	slVec3 m_sunPosition;
-	bool m_wireframe = false;
-	bool m_cullBackFace = false;
+	virtual void SetConstants(slMaterial* material);
 
-	struct map{
-		slTexture* m_texture = 0;
-	}m_maps[16];
+	void SetData();
+	bool init();
 
-	slString m_name;
+	void SetOnElement(slGSD3D11Texture*);
 };
 
 #endif

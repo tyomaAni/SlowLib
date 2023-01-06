@@ -167,6 +167,8 @@ public:
 	static void InitDefaultFonts(slGS*);
 	static slGUIFont* GetDefaultFont(const slGUIDefaultFont&);
 	static slGUIDrawTextCallback* GetDefaultDrawTextCallback();
+	
+	static slSprite* SummonSprite(slTexture*);
 
 };
 

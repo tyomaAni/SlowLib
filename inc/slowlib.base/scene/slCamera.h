@@ -140,11 +140,11 @@ struct slCameraFrustum
 };
 
 
-class slCamera
+class slCamera : public slUserData
 {
 public:
 	slCamera();
-	~slCamera();
+	virtual ~slCamera();
 
 	/*enum class Direction : uint32_t
 	{

@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEMATERIAL_H__
-#define __SL_SLOWLIBBASEMATERIAL_H__
+#ifndef __SL_SLOWLIBBASESCSPRT_H__
+#define __SL_SLOWLIBBASESCSPRT_H__
 
-#include "slowlib.base/common/slColor.h"
+#include "slowlib.base/scene/slSceneObject.h"
 
-enum class slShaderType
+// just rectangle with texture
+// it can rotate using matrix
+// this is not GUI element
+class slSprite : public slSceneObject
 {
-	// For slGS::Draw
-	Solid,
-	BumpMap,
-	SphereMap,
+	slTexture* m_texture = 0;
+	slVec4f m_rect;
+public:
+	slSprite();
+	virtual ~slSprite();
 
-	Line3D, // For slGS::DrawLine3D
+	slTexture* GetTexture() { return m_texture; }
+	void SetTexture(slTexture* t) { m_texture = t; }
 
-	Sprite, // For slGS::DrawSprite
+	void SetSize(float x, float y);
 
-	User
-};
+	enum class TransparentType
+	{
+		Discard,
+		Blending
+	}
+	m_transparentType = TransparentType::Discard;
 
-// Graphics System
-struct slMaterial
-{
-	slShaderType m_shader = slShaderType::Solid;
-	float m_opacity = 1.f;
-	float m_alphaDiscard = 0.5f;
-	slColor m_colorDiffuse = ColorWhite;
-	slColor m_colorAmbient = ColorGray;
-	slColor m_colorSpecular = ColorWhite;
-	slVec3 m_sunPosition;
-	bool m_wireframe = false;
-	bool m_cullBackFace = false;
-
-	struct map{
-		slTexture* m_texture = 0;
-	}m_maps[16];
-
-	slString m_name;
+	slVec4f& GetRect() { return m_rect; }
 };
 
 #endif

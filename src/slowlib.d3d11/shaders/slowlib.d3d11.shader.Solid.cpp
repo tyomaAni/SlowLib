@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/gs/slMaterial.h"
 
-#include "slowlib.d3d11impl.h"
+#include "../slowlib.d3d11impl.h"
 
 
 slD3D11ShaderSolid::slD3D11ShaderSolid(slGSD3D11* gs)

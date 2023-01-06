@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -38,11 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.d3d11.mesh.h"
 #include "slowlib.d3d11.texture.h"
-#include "slowlib.d3d11.shader.h"
-#include "slowlib.d3d11.shader.Line3D.h"
-#include "slowlib.d3d11.shader.Solid.h"
-#include "slowlib.d3d11.shader.MainTarget.h"
-#include "slowlib.d3d11.shader.GUIRectangle.h"
+#include "shaders/slowlib.d3d11.shader.h"
+#include "shaders/slowlib.d3d11.shader.Line3D.h"
+#include "shaders/slowlib.d3d11.shader.Solid.h"
+#include "shaders/slowlib.d3d11.shader.MainTarget.h"
+#include "shaders/slowlib.d3d11.shader.GUIRectangle.h"
+#include "shaders/slowlib.d3d11.shader.Sprite.h"
 
 #define SLD3DSAFE_RELEASE(x) if(x){x->Release();x=0;}
 
@@ -52,6 +53,7 @@ class slGSD3D11 : public slGS
 	friend class slD3D11ShaderSolid;
 	friend class slD3D11ShaderMainTarget;
 	friend class slD3D11ShaderGUIRectangle;
+	friend class slD3D11ShaderSprite;
 
 	slWindow* m_activeWindow = 0;
 	slVec2f* m_activeWindowSize = 0;
@@ -81,6 +83,7 @@ class slGSD3D11 : public slGS
 
 	bool m_vsync = false;
 
+	slD3D11ShaderSprite* m_shaderSprite = 0;
 	slD3D11ShaderLine3D* m_shaderLine3D = 0;
 	slD3D11ShaderSolid* m_shaderSolid = 0;
 	slD3D11ShaderMainTarget* m_shaderMainTarget = 0;
@@ -130,6 +133,7 @@ public:
 	virtual void SetScissorRect(const slVec4f& rect, slVec4f* old) final;
 	virtual void DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c) final;
 	virtual slGPUMesh* SummonMesh(slMesh*) final;
+	virtual void SetShader(slShaderType, uint32_t userIndex) final;
 	virtual void SetMesh(slGPUMesh*) final;
 	virtual void SetMaterial(slMaterial*) final;
 	virtual void Draw() final;
@@ -145,6 +149,7 @@ public:
 	virtual void DrawGUICharacter(char32_t, slGUIFont*, const slVec2f& position, const slColor&) final;
 	virtual void DrawGUIText(const char32_t* text, uint32_t textSz, const slVec2f& position,
 		slGUIDrawTextCallback*) final;
+	virtual void DrawSprite(slSprite*) final;
 
 	bool createShaders(
 		const char* vertexTarget,

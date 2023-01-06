@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #pragma once
-#ifndef __SL_SLOWLIBBASEMATERIAL_H__
-#define __SL_SLOWLIBBASEMATERIAL_H__
+#ifndef __SL_SLOWLIBBASESCOBJ_H__
+#define __SL_SLOWLIBBASESCOBJ_H__
 
-#include "slowlib.base/common/slColor.h"
+#include "slowlib.base/math/slMatrix.h"
+#include "slowlib.base/common/slHierarchy.h"
+#include "slowlib.base/geometry/slAabb.h"
 
-enum class slShaderType
+class slSceneObject : public slUserData, public slHierarchy
 {
-	// For slGS::Draw
-	Solid,
-	BumpMap,
-	SphereMap,
+	enum
+	{
+		sceneObjectFlag_visible = 0x1
+	};
+	uint32_t m_flags = 0;
 
-	Line3D, // For slGS::DrawLine3D
+	slAabb m_aabb;
+	uint32_t m_id = 0;
+	slMat4 m_matrixWorld;
+public:
+	slSceneObject() {}
+	virtual ~slSceneObject() {}
 
-	Sprite, // For slGS::DrawSprite
+	slAabb& GetAabb() { return m_aabb; }
+	slMat4& GetMatrixWorld() { return m_matrixWorld; }
 
-	User
-};
+	virtual void SetVisible(bool v) { v ? m_flags |= sceneObjectFlag_visible : m_flags &= ~sceneObjectFlag_visible; }
+	bool IsIvisible() { return m_flags & sceneObjectFlag_visible; }
 
-// Graphics System
-struct slMaterial
-{
-	slShaderType m_shader = slShaderType::Solid;
-	float m_opacity = 1.f;
-	float m_alphaDiscard = 0.5f;
-	slColor m_colorDiffuse = ColorWhite;
-	slColor m_colorAmbient = ColorGray;
-	slColor m_colorSpecular = ColorWhite;
-	slVec3 m_sunPosition;
-	bool m_wireframe = false;
-	bool m_cullBackFace = false;
-
-	struct map{
-		slTexture* m_texture = 0;
-	}m_maps[16];
-
-	slString m_name;
+	uint32_t GetID() { return m_id; }
+	void SetID(uint32_t id) { m_id = id; }
 };
 
 #endif

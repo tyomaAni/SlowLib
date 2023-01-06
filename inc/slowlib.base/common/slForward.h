@@ -68,6 +68,8 @@ class slGUIButton;
 enum class slGUIDefaultFont;
 class slGUICheckRadioBox;
 class slGUITextEditor;
+class slSprite;
+class slSceneObject;
 
 template<typename T>
 class slVec2_t;

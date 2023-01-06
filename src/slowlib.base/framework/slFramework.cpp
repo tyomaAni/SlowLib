@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/scene/slCamera.h"
 #include "slowlib.base/archive/slArchive.h"
 #include "slowlib.base/GUI/slGUI.h"
+#include "slowlib.base/scene/slSprite.h"
 
 static uint8_t g_defaultFontPNG[] = {
 	#include "../data/font.inl"
@@ -995,3 +996,10 @@ slGUIDrawTextCallback* slFramework::GetDefaultDrawTextCallback()
 	return &g_framework->m_defaultDrawTextCallback;
 }
 
+slSprite* slFramework::SummonSprite(slTexture* texture)
+{
+	SL_ASSERT_ST(texture);
+	slSprite* newSprite = slCreate<slSprite>();
+	newSprite->SetTexture(texture);
+	return newSprite;
+}

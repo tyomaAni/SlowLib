@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.h"
 #include "slowlib.base/gs/slMaterial.h"
 
-#include "slowlib.d3d11impl.h"
+#include "../slowlib.d3d11impl.h"
 
 
 slD3D11ShaderGUIRectangle::slD3D11ShaderGUIRectangle(slGSD3D11* gs)

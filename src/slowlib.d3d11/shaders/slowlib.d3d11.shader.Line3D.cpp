@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "slowlib.h"
 
-#include "slowlib.d3d11impl.h"
+#include "../slowlib.d3d11impl.h"
 
 
 slD3D11ShaderLine3D::slD3D11ShaderLine3D(slGSD3D11* gs)

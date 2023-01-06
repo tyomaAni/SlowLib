@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEMATERIAL_H__
-#define __SL_SLOWLIBBASEMATERIAL_H__
+#include "slowlib.h"
+#include "slowlib.base/scene/slSprite.h"
 
-#include "slowlib.base/common/slColor.h"
-
-enum class slShaderType
+slSprite::slSprite()
 {
-	// For slGS::Draw
-	Solid,
-	BumpMap,
-	SphereMap,
+}
 
-	Line3D, // For slGS::DrawLine3D
-
-	Sprite, // For slGS::DrawSprite
-
-	User
-};
-
-// Graphics System
-struct slMaterial
+slSprite::~slSprite()
 {
-	slShaderType m_shader = slShaderType::Solid;
-	float m_opacity = 1.f;
-	float m_alphaDiscard = 0.5f;
-	slColor m_colorDiffuse = ColorWhite;
-	slColor m_colorAmbient = ColorGray;
-	slColor m_colorSpecular = ColorWhite;
-	slVec3 m_sunPosition;
-	bool m_wireframe = false;
-	bool m_cullBackFace = false;
+}
 
-	struct map{
-		slTexture* m_texture = 0;
-	}m_maps[16];
+void slSprite::SetSize(float x, float y)
+{
+	float hx = x * 0.5f;
+	float hy = y * 0.5f;
 
-	slString m_name;
-};
-
-#endif
+	m_rect.set(-hx, -hy, hx, hy);
+}
