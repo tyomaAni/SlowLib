@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -26,15 +26,24 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "DemoApp.h"
+#include "../DemoApp.h"
+#include "ExampleSprite.h"
 
-int main()
+ExampleSprite::ExampleSprite()
 {
-	DemoApp app;
-	if (app.Init())
-	{
-		app.Run();
-	}
-
-	return EXIT_SUCCESS;
 }
+
+ExampleSprite::~ExampleSprite()
+{
+}
+
+
+bool ExampleSprite::Init()
+{
+	return true;
+}
+
+void ExampleSprite::Shutdown()
+{
+}
+

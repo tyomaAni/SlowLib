@@ -768,7 +768,7 @@ void slFramework::InitDefaultFonts(slGS* gs)
 			return t;
 		};
 
-		slImage* img = getImage(g_defaultFontPNG, 15673);
+		slImage* img = getImage(g_defaultFontPNG, sizeof(g_defaultFontPNG));
 
 		if (!img)
 			return;		

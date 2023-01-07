@@ -158,6 +158,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\demo\demo.cpp" />
+    <ClCompile Include="..\..\src\demo\DemoApp.cpp" />
+    <ClCompile Include="..\..\src\demo\examples\ExampleSprite.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
