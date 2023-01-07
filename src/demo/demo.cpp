@@ -185,6 +185,8 @@ public:
 	{
 		m_WVP = camera->m_projectionMatrix * camera->m_viewMatrix * m_W;
 		m_material.m_sunPosition.set(0.f, 1.f, 0.f);
+		
+		m_gs->SetShader(slShaderType::Solid, 0);
 
 		slFramework::SetMatrix(slMatrixType::World, &m_W);
 		slFramework::SetMatrix(slMatrixType::WorldViewProjection, &m_WVP);
@@ -390,6 +392,9 @@ int main(int argc, char * argv[])
 	auto guiWindow = slFramework::SummonGUIWindow(slVec2f(100.f, 100.f), slVec2f(app.m_window->GetCurrentSize()->x - 400.f, app.m_window->GetCurrentSize()->y - 300.f));
 	app.m_GUIWindow = guiWindow;
 	guiWindow->SetDrawBG(true);
+	guiWindow->GetStyle()->m_windowActiveBGColor1.setAlpha(0.85f);
+	guiWindow->GetStyle()->m_windowActiveBGColor2.setAlpha(0.85f);
+
 	//auto btn = slFramework::SummonGUIButton(guiWindow);
 	auto btn = slCreate<MyButton>(guiWindow, slVec2f(0.f, 400.f), slVec2f(100.f, 100.f));
 	btn->m_alignment = slGUIElement::Alignment::Right;
@@ -548,6 +553,7 @@ class miGUITextInputImpl : public miGUITextInput\n\
 			app.m_gs->BeginDraw();
 			app.m_gs->ClearAll();
 
+			app.m_gs->SetShader(slShaderType::Line3D, 0);
 			app.m_gs->DrawLine3D(slVec3(globalPosition.x + 1.f, globalPosition.y, globalPosition.z), slVec3(globalPosition.x -1.f, globalPosition.y, globalPosition.z), ColorRed);
 			app.m_gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y + 1.f, globalPosition.z), slVec3(globalPosition.x, globalPosition .y -1.f, globalPosition.z), ColorYellow);
 			app.m_gs->DrawLine3D(slVec3(globalPosition.x, globalPosition.y, globalPosition.z + 1.f), slVec3(globalPosition.x, globalPosition.y, globalPosition.z -1.f), ColorLime);

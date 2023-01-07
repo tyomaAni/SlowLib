@@ -73,9 +73,9 @@ bool slD3D11ShaderMainTarget::init(){
 		"   PSOut output;\n"
 		
 		"   float4 GUIColor = tex2d_2.Sample(tex2D_sampler_2, input.uv);\n"
-		"   if(GUIColor.w){output.color = GUIColor;}else\n"
+		//"   if(GUIColor.w >= 1.f){output.color = GUIColor;}else\n"
 		
-		"   output.color = tex2d_1.Sample(tex2D_sampler_1, input.uv);\n"
+		"   output.color = lerp(tex2d_1.Sample(tex2D_sampler_1, input.uv),GUIColor,GUIColor.w);\n"
 		"   return output;\n"
 		"}\n"
 		"[maxvertexcount(4)]\n"
