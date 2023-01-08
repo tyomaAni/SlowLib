@@ -159,7 +159,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\demo\demo.cpp" />
     <ClCompile Include="..\..\src\demo\DemoApp.cpp" />
-    <ClCompile Include="..\..\src\demo\examples\ExampleSprite.cpp" />
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasics3DLineAndCamera.cpp" />
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsScreenResolution.cpp" />
+    <ClCompile Include="..\..\src\demo\examples\scene\ExampleSceneSprite.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

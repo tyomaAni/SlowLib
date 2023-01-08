@@ -842,9 +842,6 @@ void slGSD3D11::UpdateMainRenderTarget(const slVec3f& v)
 
 void slGSD3D11::DrawLine3D(const slVec3& p1, const slVec3& p2, const slColor& c)
 {
-	m_d3d11DevCon->IASetInputLayout(NULL);
-	m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-
 	m_shaderLine3D->SetData(p1, p2, c, *slFramework::GetMatrix(slMatrixType::ViewProjection));
 	m_shaderLine3D->SetConstants(0);
 
@@ -953,6 +950,8 @@ void slGSD3D11::SetShader(slShaderType st, uint32_t userIndex)
 		break;
 	case slShaderType::Line3D:
 		SetActiveShader(m_shaderLine3D);
+		m_d3d11DevCon->IASetInputLayout(NULL);
+		m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 		break;
 	case slShaderType::Sprite:
 		SetActiveShader(m_shaderSprite);

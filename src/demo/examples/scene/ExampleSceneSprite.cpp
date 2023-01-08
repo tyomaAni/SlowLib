@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -26,51 +26,38 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-#ifndef __SL_SLOWLIBBASEGUIWND_H__
-#define __SL_SLOWLIBBASEGUIWND_H__
+#include "../../DemoApp.h"
+#include "ExampleSceneSprite.h"
 
-
-class slGUIWindow : public slGUICommon
+ExampleSceneSprite::ExampleSceneSprite(DemoApp*app):DemoExample(app)
 {
-public:
-	enum
-	{
-		windowFlag_withCloseButton = 0x1,
-		windowFlag_withCollapseButton = 0x2,
-		windowFlag_withTitleBar = 0x4,
-		windowFlag_canMove = 0x8,
-		windowFlag_canResize = 0x10,
-		windowFlag_canDock = 0x20,
-		windowFlag_canToTop = 0x40,
-	};
+}
 
-private:
-	slGUIElement* m_rootElement = 0;
+ExampleSceneSprite::~ExampleSceneSprite()
+{
+}
 
-	//slVec2f m_position;
-	//slVec2f m_size;
-	slVec2f m_sizeMinimum = slVec2f(100.f, 30.f);
 
-	slString m_title;
-	uint32_t m_windowFlags = 0;
-public:
-	slGUIWindow(const slVec2f& position, const slVec2f& size);
-	virtual ~slGUIWindow();
+bool ExampleSceneSprite::Init()
+{
+	return true;
+}
 
-	// need Rebuild
-	void SetPositionAndSize(const slVec2f& p, const slVec2f& sz);
+void ExampleSceneSprite::Shutdown()
+{
+}
+
+void ExampleSceneSprite::OnDraw()
+{
+	if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
+		m_app->StopExample();
 	
-	void SetSizeMinimum(const slVec2f& sz) { m_sizeMinimum = sz; }
+	m_gs->BeginGUI();
+	m_gs->EndGUI();
 
-	slGUIElement* GetRootElement() { return m_rootElement; }
+	m_gs->BeginDraw();
+	m_gs->ClearAll();
 
-	virtual void Rebuild() override;
-	virtual void Update() override;
-	virtual void Draw(slGS* gs, float dt) override;
-	
-	void SetTitle(const char32_t*);
-};
-
-
-#endif
+	m_gs->EndDraw();
+	m_gs->SwapBuffers();
+}

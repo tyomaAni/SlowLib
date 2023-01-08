@@ -39,24 +39,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "slowlib.base/GUI/slGUI.h"
 
 #include <stdio.h>
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
 class FrameworkCallback;
 class WindowCallback; 
 class GUIDrawTextCallback;
-
+class DemoApp;
 
 
 class DemoExample
 {
 	friend class DemoApp;
+protected:
 	slString m_name;
+	slString m_description;
+	DemoApp* m_app = 0;
+	slGS* m_gs = 0;
 public:
-	DemoExample() {}
+	DemoExample(DemoApp* app);
 	virtual ~DemoExample() {}
 
 	virtual bool Init() = 0;
 	virtual void Shutdown() = 0;
+	virtual void OnDraw() = 0;
 };
 
 class DemoCategory
@@ -135,12 +141,15 @@ class DemoApp
 	slGUIWindow* m_GUIWindow = 0;
 	slInputData* m_inputData = 0;
 	slGUIFont* m_fontDefault = 0;
-	float* m_dt = 0;
 
 	DemoCategory m_rootCategory;
 	DemoCategory* m_currentCategory = 0;
 
 	slArray<DemoExample*> m_allExamples;
+	DemoExample* m_activeExample = 0;
+
+	slGUIStaticText* m_staticTextDescription = 0;
+	void findDescription();
 
 public:
 	DemoApp();
@@ -149,10 +158,20 @@ public:
 	void Run();
 	void Quit() { m_isRun = false; }
 
-	void AddExample(DemoExample*, const char32_t* name, const char* category);
+	slGS* GetGS() { return m_gs; }
+	slWindow* GetWindow() { return m_window; }
+	GUIDrawTextCallback* GetTextDrawCallback() { return m_textDrawCallback; }
+
+	void AddExample(DemoExample*, const char32_t* name, const char* category,
+		const char32_t* description);
 	void OnDraw();
 	DemoCategory* GetCategory(const char* category);
 	DemoCategory* FindCategory(DemoCategory*, const char* name);
+
+	void StartExample(DemoExample*);
+	void StopExample();
+	
+	float* m_dt = 0;
 };
 
 class FrameworkCallback : public slFrameworkCallback
@@ -181,13 +200,14 @@ public:
 		DemoApp* app = (DemoApp*)w->GetUserData();
 		if (app)
 		{
-			if (w->GetCurrentSize()->x && w->GetCurrentSize()->y)
+			//if (w->GetCurrentSize()->x && w->GetCurrentSize()->y)
 				//app->m_camera->m_aspect = w->GetCurrentSize()->x / w->GetCurrentSize()->y;
-			app->m_gs->UpdateMainRenderTarget(slVec3f(w->GetCurrentSize()->x * 0.25f, w->GetCurrentSize()->y * 0.25f, 0.f));
+			app->m_gs->UpdateMainRenderTarget(slVec3f(w->GetCurrentSize()->x, w->GetCurrentSize()->y, 0.f));
+			//app->m_gs->UpdateMainRenderTarget(slVec3f(w->GetCurrentSize()->x * 0.25f, w->GetCurrentSize()->y * 0.25f, 0.f));
 			app->m_gs->SetViewport(0, 0, (uint32_t)w->GetCurrentSize()->x, (uint32_t)w->GetCurrentSize()->y);
 			app->m_gs->SetScissorRect(slVec4f(0.f, 0.f, w->GetCurrentSize()->x, w->GetCurrentSize()->y), 0);
 		//	app->m_GUIWindow->SetPositionAndSize(slVec2f(100.f), slVec2f(w->GetCurrentSize()->x - 400.f, w->GetCurrentSize()->y - 300.f));
-		//	app->m_GUIWindow->Rebuild();
+			app->m_GUIWindow->Rebuild();
 		}
 	}
 

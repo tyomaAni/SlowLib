@@ -75,15 +75,48 @@ void slGUISlider::Update()
 	}
 	else
 	{
+		auto id = slInput::GetData();
+
 		if (slInput::IsKeyHit(slInput::KEY_ESCAPE))
 			m_isClicked = false;
 		else if (slInput::IsLMBRelease())
 			m_isClicked = false;
-		else
+		else if(id->mouseMoveDelta.x != 0.f)
 		{
-			m_valueFloat += (double)slInput::GetData()->mouseMoveDelta.x;
-			m_valueInt += (int32_t)slInput::GetData()->mouseMoveDelta.x;
-			m_valueUint += (uint32_t)slInput::GetData()->mouseMoveDelta.x;
+			float value = 0.f;
+			if (id->mousePosition.x <= m_axisRect.x)
+				value = 0.f;
+			else if (id->mousePosition.x >= m_axisRect.z)
+				value = 1.f;
+			else
+			{
+				float mouseWidth = id->mousePosition.x - m_axisRect.x;
+				if (m_axisWidth != 0.f)
+				{
+					float M = 1.f / m_axisWidth;
+					value = mouseWidth * M;
+				}
+			}
+
+			//printf("%f\n", value);
+			if (m_morePrecise)
+			{
+				auto V = (double)slInput::GetData()->mouseMoveDelta.x * m_multiplerNormal;
+				
+				if (id->keyboardModifier == id->KBMOD_ALT)
+					V *= m_multiplerSlow;
+				if (id->keyboardModifier == id->KBMOD_SHIFT)
+					V *= m_multiplerFast;
+
+				m_valueFloat += V;
+				m_valueInt += (int32_t)slInput::GetData()->mouseMoveDelta.x;
+				m_valueUint += (uint32_t)slInput::GetData()->mouseMoveDelta.x;
+			}
+			else
+				m_valueFloat = slMath::lerp1(m_valueMinFloat, m_valueMaxFloat, (double)value);
+			
+			this->OnChangeValue();
+
 
 			if (m_valueFloat < m_valueMinFloat) m_valueFloat = m_valueMinFloat;
 			if (m_valueFloat > m_valueMaxFloat) m_valueFloat = m_valueMaxFloat;
@@ -112,6 +145,8 @@ void slGUISlider::Rebuild()
 	m_axisRect.y = m_buildRect.y + (H * 0.5f);
 	m_axisRect.y -= m_axisHeight * 0.5f;
 	m_axisRect.w = m_axisRect.y + m_axisHeight;
+
+	m_axisWidth = m_axisRect.z - m_axisRect.x;
 
 	findAxisRectFill();
 }
@@ -148,7 +183,7 @@ void slGUISlider::findAxisRectFill()
 {
 	m_axisRectFill = m_axisRect;
 
-	auto axisWidth = m_axisRect.z - m_axisRect.x;
+	m_axisWidth = m_axisRect.z - m_axisRect.x;
 
 	float D = 0.f;
 
@@ -185,7 +220,7 @@ void slGUISlider::findAxisRectFill()
 	}break;
 	}
 	
-	m_axisRectFill.z = m_axisRectFill.x + (axisWidth * D);
+	m_axisRectFill.z = m_axisRectFill.x + (m_axisWidth * D);
 
 	m_controlRect.x = m_buildRect.x + m_axisIndent - (m_controlWidth *0.5f);
 	m_controlRect.y = m_buildRect.y;
@@ -194,4 +229,28 @@ void slGUISlider::findAxisRectFill()
 
 	m_controlRect.x += m_axisRectFill.z - m_axisRectFill.x;
 	m_controlRect.z += m_axisRectFill.z - m_axisRectFill.x;
+}
+
+void slGUISlider::SetMinMaxFloat(double mn, double mx) 
+{
+	m_valueMinFloat = mn; 
+	m_valueMaxFloat = mx; 
+	m_valueFloat = m_valueMinFloat;
+	Rebuild();
+}
+
+void slGUISlider::SetMinMaxUint(uint32_t mn, uint32_t mx) 
+{
+	m_valueMinUint = mn; 
+	m_valueMaxUint = mx; 
+	m_valueUint = m_valueMinUint;
+	Rebuild();
+}
+
+void slGUISlider::SetMinMaxInt(int32_t mn, int32_t mx) 
+{
+	m_valueMinInt = mn;
+	m_valueMaxInt = mx;
+	m_valueInt = m_valueMinInt;
+	Rebuild();
 }

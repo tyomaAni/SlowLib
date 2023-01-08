@@ -26,12 +26,20 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-class ExampleSprite : public DemoExample
+class DemoApp;
+class ExampleBasicsScreenResolution : public DemoExample
 {
+	slCamera* m_camera = 0;
+	slGUIWindow* m_GUIWindow = 0;
+	slGUISlider* m_sliderSize = 0;
+
 public:
-	ExampleSprite();
-	virtual ~ExampleSprite();
+	ExampleBasicsScreenResolution(DemoApp*);
+	virtual ~ExampleBasicsScreenResolution();
 
 	virtual bool Init() override;
 	virtual void Shutdown() override;
+	virtual void OnDraw() override;
+
+	void OnChangeScreenResolution(float m);
 };

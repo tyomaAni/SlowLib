@@ -26,24 +26,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "../DemoApp.h"
-#include "ExampleSprite.h"
-
-ExampleSprite::ExampleSprite()
+class DemoApp;
+class ExampleSceneSprite : public DemoExample
 {
-}
+public:
+	ExampleSceneSprite(DemoApp*);
+	virtual ~ExampleSceneSprite();
 
-ExampleSprite::~ExampleSprite()
-{
-}
-
-
-bool ExampleSprite::Init()
-{
-	return true;
-}
-
-void ExampleSprite::Shutdown()
-{
-}
-
+	virtual bool Init() override;
+	virtual void Shutdown() override;
+	virtual void OnDraw() override;
+};

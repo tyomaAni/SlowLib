@@ -1,7 +1,7 @@
 ﻿/*
 BSD 2-Clause License
 
-Copyright (c) 2022, tyomaAni
+Copyright (c) 2023, tyomaAni
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "DemoApp.h"
-#include "examples/ExampleSprite.h"
+#include "examples/scene/ExampleSceneSprite.h"
+#include "examples/basics/ExampleBasics3DLineAndCamera.h"
+#include "examples/basics/ExampleBasicsScreenResolution.h"
 
 SL_LINK_LIBRARY("slowlib.base");
+
+class MyStaticText : public slGUIStaticText
+{
+public:
+	MyStaticText(slGUIWindow* w, const slVec2f& position, const slVec2f& size) :
+		slGUIStaticText(w, position, size)
+	{
+	}
+	virtual ~MyStaticText() {}
+};
+
+DemoExample::DemoExample(DemoApp* app) 
+	:
+	m_app(app), 
+	m_gs(app->GetGS()) 
+{}
 
 DemoApp::DemoApp()
 {
@@ -57,7 +75,7 @@ bool DemoApp::Init()
 	slFramework::Start(m_frameworkCallback);
 	
 	m_window = slFramework::SummonWindow(m_windowCallback, 800, 600);
-	m_window->SetVisible(true);
+	m_window->SetVisible(true);	
 
 	slArchiveSystem::ZipAdd(slFramework::GetPathA("..\\data\\demo.zip").c_str());
 	m_inputData = slInput::GetData();
@@ -81,18 +99,36 @@ bool DemoApp::Init()
 
 	m_textDrawCallback = slCreate<GUIDrawTextCallback>(m_fontDefault);
 
-	m_windowCallback->OnSize(m_window);
+	m_GUIWindow = slFramework::SummonGUIWindow(slVec2f(300.f, 0.f),
+		slVec2f(300.f, 400.f));
+	m_GUIWindow->SetDrawBG(false);
+	auto staticText = slCreate<MyStaticText>(m_GUIWindow, slVec2f(0.f, 0.f), slVec2f(300.f, 100.f));
+	m_staticTextDescription = staticText;
+	m_staticTextDescription->SetText(U" ");
+
+	static slGUIStyle styleInMenu;
+	styleInMenu = *slFramework::GetGUIStyle(slGUIStyleTheme::Light);
+	styleInMenu.m_staticTextTextColor = ColorWhite;
+	
+	staticText->SetStyle(&styleInMenu);
+	staticText->SetDrawBG(false);
+
+	slFramework::RebuildGUI();
 
 	m_dt = slFramework::GetDeltaTime();
 
 	m_gs->SetClearColor(0.2f, 0.2f, 0.2f, 1.f);
 
+
 	m_currentCategory = &m_rootCategory;
-	AddExample(new ExampleSprite, U"Sprite", "scene/");
-	AddExample(new ExampleSprite, U"Physics", "physics/kinematic");
-	AddExample(new ExampleSprite, U"Demo", "/");
+	AddExample(new ExampleBasics3DLineAndCamera(this), U"3D line and camera", "basics/", U"Basic thing. Add camera and draw something. Use WASDQE");
+	AddExample(new ExampleBasicsScreenResolution(this), U"Screen Resolution", "basics/", U"Change main target size. Use WASDQE");
+	AddExample(new ExampleSceneSprite(this), U"Sprite", "scene/", U"Basic sprite");
+	//AddExample(new ExampleSprite, U"Physics", "physics/kinematic");
+	//AddExample(new ExampleSprite, U"Demo", "/");
 	m_rootCategory.findElements();
 
+	m_windowCallback->OnSize(m_window);
 	return true;
 }
 
@@ -105,14 +141,19 @@ void DemoApp::Run()
 
 		Sleep(1);
 
-		OnDraw();
+		if (m_activeExample)
+			m_activeExample->OnDraw();
+		else
+			OnDraw();
 	}
 }
 
-void DemoApp::AddExample(DemoExample* e, const char32_t* name, const char* category)
+void DemoApp::AddExample(DemoExample* e, const char32_t* name, const char* category,
+	const char32_t* description)
 {
 	m_allExamples.push_back(e);
 	e->m_name = name;
+	e->m_description = description;
 	auto cat = GetCategory(category);
 	if (cat)
 	{
@@ -139,12 +180,14 @@ void DemoApp::OnDraw()
 				--m_currentCategory->m_cursor;
 			else
 				m_currentCategory->m_cursor = m_currentCategory->m_elements.m_size - 1;
+			findDescription();
 		}
 		else if (slInput::IsKeyHit(slInput::KEY_DOWN))
 		{
 			++m_currentCategory->m_cursor;
 			if (m_currentCategory->m_cursor == m_currentCategory->m_elements.m_size)
 				m_currentCategory->m_cursor = 0;
+			findDescription();
 		}
 		else if (slInput::IsKeyHit(slInput::KEY_ENTER))
 		{
@@ -153,12 +196,16 @@ void DemoApp::OnDraw()
 			{
 			case DemoCategory::Element::type_parentDir:
 				m_currentCategory = m_currentCategory->m_parentCategory;
+				findDescription();
 				return;
 			case DemoCategory::Element::type_category:
 				m_currentCategory = el.m_cat;
+				findDescription();
 				return;
 			case DemoCategory::Element::type_example:
-				break;
+				StartExample(el.m_ex);
+				findDescription();
+				return;
 			}
 		}
 		else if (slInput::IsKeyHit(slInput::KEY_RIGHT))
@@ -170,6 +217,7 @@ void DemoApp::OnDraw()
 				break;
 			case DemoCategory::Element::type_category:
 				m_currentCategory = el.m_cat;
+				findDescription();
 				return;
 			case DemoCategory::Element::type_example:
 				break;
@@ -179,6 +227,7 @@ void DemoApp::OnDraw()
 		{
 			if(m_currentCategory->m_parentCategory)
 				m_currentCategory = m_currentCategory->m_parentCategory;
+			findDescription();
 			return;
 		}
 		
@@ -202,7 +251,7 @@ void DemoApp::OnDraw()
 					break;
 				case DemoCategory::Element::type_example:
 					m_drawingText.append(m_currentCategory->m_elements.m_data[i].m_ex->m_name);
-					m_drawingText.append(U"...");
+					//m_drawingText.append(U"*");
 					break;
 			}
 			m_gs->DrawGUIText(m_drawingText.c_str(), m_drawingText.size(), slVec2f(0.f, Y), m_textDrawCallback);
@@ -265,4 +314,40 @@ DemoCategory* DemoApp::FindCategory(DemoCategory* cat, const char* name)
 	}
 
 	return nullptr;
+}
+
+void DemoApp::StopExample()
+{
+	if (m_activeExample)
+	{
+		m_activeExample->Shutdown();
+		m_activeExample = 0;
+	}
+	m_GUIWindow->SetVisible(true);
+}
+
+void DemoApp::StartExample(DemoExample* ex)
+{
+	StopExample();
+
+	if (ex->Init())
+		m_activeExample = ex;
+
+	m_GUIWindow->SetVisible(false);
+}
+
+void DemoApp::findDescription()
+{
+	auto i = m_currentCategory->m_cursor;
+
+	switch (m_currentCategory->m_elements.m_data[i].type)
+	{
+	case DemoCategory::Element::type_parentDir:
+	case DemoCategory::Element::type_category:
+		m_staticTextDescription->SetText(U" ");
+		break;
+	case DemoCategory::Element::type_example:
+		m_staticTextDescription->SetText(m_currentCategory->m_elements.m_data[i].m_ex->m_description.c_str());
+		break;
+	}
 }

@@ -16,6 +16,12 @@
     <Filter Include="Source Files\examples">
       <UniqueIdentifier>{34661ce7-0795-466e-8c57-48f9fce0187c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\examples\scene">
+      <UniqueIdentifier>{b1f13a31-cc24-4ae3-b2b8-f894c13db338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\examples\basics">
+      <UniqueIdentifier>{e2da8a19-7250-453e-ac00-52a435bea13b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\demo\demo.cpp">
@@ -24,8 +30,14 @@
     <ClCompile Include="..\..\src\demo\DemoApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\demo\examples\ExampleSprite.cpp">
-      <Filter>Source Files\examples</Filter>
+    <ClCompile Include="..\..\src\demo\examples\scene\ExampleSceneSprite.cpp">
+      <Filter>Source Files\examples\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasics3DLineAndCamera.cpp">
+      <Filter>Source Files\examples\basics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsScreenResolution.cpp">
+      <Filter>Source Files\examples\basics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

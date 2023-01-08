@@ -47,6 +47,7 @@ public:
 
 class slGUISlider : public slGUIElement
 {
+protected:
 	slGUISliderTextDrawCallback m_sliderTextDrawCallback;
 	float m_controlWidth = 10.f;
 	
@@ -66,6 +67,8 @@ class slGUISlider : public slGUIElement
 	slVec4f m_axisRect;
 	slVec4f m_axisRectFill;
 	float m_axisHeight = 5.f;
+	
+	float m_axisWidth= 0.f;
 	
 	slVec4f m_controlRect;
 	bool m_isClicked = false;
@@ -87,6 +90,8 @@ public:
 	uint32_t* GetUint() { return &m_valueUint; }
 	int32_t* GetInt() { return &m_valueInt; }
 
+	virtual void OnChangeValue() {}
+
 	enum class ValueType
 	{
 		Float,
@@ -95,11 +100,16 @@ public:
 	};
 	ValueType m_valueType = ValueType::Float;
 
-	void SetMinMaxFloat(double mn, double mx) { m_valueMinFloat = mn; m_valueMaxFloat = mx; }
-	void SetMinMaxUint(uint32_t mn, uint32_t mx) { m_valueMinUint = mn; m_valueMaxUint = mx; }
-	void SetMinMaxInt(int32_t mn, int32_t mx) { m_valueMinInt = mn; m_valueMaxInt = mx; }
+	void SetMinMaxFloat(double mn, double mx);
+	void SetMinMaxUint(uint32_t mn, uint32_t mx);
+	void SetMinMaxInt(int32_t mn, int32_t mx);
 
 	bool m_drawText = true;
+	
+	bool m_morePrecise = false;
+	float m_multiplerNormal = 1.f;
+	float m_multiplerSlow = 0.01f;
+	float m_multiplerFast = 100.0f;
 
 	// will call m_text.pop_back(); number of times
 	uint32_t m_truncateFloatByThisNumOfChars = 10;
