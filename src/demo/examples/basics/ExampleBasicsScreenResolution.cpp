@@ -75,6 +75,7 @@ bool ExampleBasicsScreenResolution::Init()
 	m_sliderSize->SetMinMaxFloat(0.125, 1.0);
 	*m_sliderSize->GetFloat() = 1.0;
 	m_sliderSize->SetUserData(this);
+	m_sliderSize->SetDrawTextCallback(m_app->GetTextDrawCallback());
 
 	m_GUIWindow->Rebuild();
 

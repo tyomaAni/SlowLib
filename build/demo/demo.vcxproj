@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\src\demo\demo.cpp" />
     <ClCompile Include="..\..\src\demo\DemoApp.cpp" />
     <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasics3DLineAndCamera.cpp" />
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsMouseAndKeyboard.cpp" />
     <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsScreenResolution.cpp" />
     <ClCompile Include="..\..\src\demo\examples\scene\ExampleSceneSprite.cpp" />
   </ItemGroup>

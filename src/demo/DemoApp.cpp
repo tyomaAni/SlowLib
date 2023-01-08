@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "examples/scene/ExampleSceneSprite.h"
 #include "examples/basics/ExampleBasics3DLineAndCamera.h"
 #include "examples/basics/ExampleBasicsScreenResolution.h"
+#include "examples/basics/ExampleBasicsMouseAndKeyboard.h"
 
 SL_LINK_LIBRARY("slowlib.base");
 
@@ -123,6 +124,7 @@ bool DemoApp::Init()
 	m_currentCategory = &m_rootCategory;
 	AddExample(new ExampleBasics3DLineAndCamera(this), U"3D line and camera", "basics/", U"Basic thing. Add camera and draw something. Use WASDQE");
 	AddExample(new ExampleBasicsScreenResolution(this), U"Screen Resolution", "basics/", U"Change main target size. Use WASDQE");
+	AddExample(new ExampleBasicsMouseAndKeyboard(this), U"Mouse and keyboard", "basics/", U"Show information about keyboard and mouse.");
 	AddExample(new ExampleSceneSprite(this), U"Sprite", "scene/", U"Basic sprite");
 	//AddExample(new ExampleSprite, U"Physics", "physics/kinematic");
 	//AddExample(new ExampleSprite, U"Demo", "/");
