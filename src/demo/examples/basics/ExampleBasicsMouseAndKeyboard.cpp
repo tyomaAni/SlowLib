@@ -154,14 +154,12 @@ void ExampleBasicsMouseAndKeyboard::OnDraw()
 	if(slInput::IsKeyHold(slInput::KEY_UP))
 	{
 		m_text = U"UP";
-		m_text.push_back(m_lastCharacter);
 		m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
 		textPosition.y += lineHeight;
 	}
 	if (slInput::IsKeyHold(slInput::KEY_DOWN))
 	{
 		m_text = U"DOWN";
-		m_text.push_back(m_lastCharacter);
 		m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
 		textPosition.y += lineHeight;
 	}
