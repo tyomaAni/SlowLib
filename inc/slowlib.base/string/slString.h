@@ -171,6 +171,7 @@ public:
 	void append(uint16_t);
 	void append(uint32_t);
 	void append(uint64_t);
+	void append_hex(uint64_t);
 	void append(float);
 	void append(double);
 

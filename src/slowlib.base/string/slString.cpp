@@ -563,6 +563,20 @@ void slString::append(uint64_t i)
 		}
 	}
 }
+
+void slString::append_hex(uint64_t i)
+{
+	char buf[32u];
+	int nob = sprintf_s(buf, 32, "%jx", i);
+	if (nob)
+	{
+		for (int i = 0; i < nob; ++i)
+		{
+			push_back((char32_t)buf[i]);
+		}
+	}
+}
+
 void slString::append(float f)
 {
 	char buf[32u];

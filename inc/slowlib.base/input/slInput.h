@@ -43,8 +43,25 @@ struct slInputData
 	float   mouseWheelDelta = 0.f;
 	//float   mouseWheelDeltaOld = 0.f;
 
-	uint32_t mouseButtonFlags1 = 0;/*MBFL...*/
-	uint32_t mouseButtonFlags2 = 0;/*MBFL... HOLD, DOUBLE*/
+	enum {
+		MBFL_LMBDOWN = 0x1,
+		MBFL_LMBUP = 0x2,
+		MBFL_RMBDOWN = 0x4,
+		MBFL_RMBUP = 0x8,
+		MBFL_MMBDOWN = 0x10,
+		MBFL_MMBUP = 0x20,
+		MBFL_X1MBDOWN = 0x40,
+		MBFL_X1MBUP = 0x80,
+		MBFL_X2MBDOWN = 0x100,
+		MBFL_X2MBUP = 0x200,
+
+		MBFL_LMBHOLD = 0x400,
+		MBFL_RMBHOLD = 0x800,
+		MBFL_MMBHOLD = 0x1000,
+		MBFL_X1MBHOLD = 0x2000,
+		MBFL_X2MBHOLD = 0x4000,
+	};
+	uint32_t mouseButtonFlags = 0;
 
 	//uint32_t LMBClickCount;
 
@@ -57,14 +74,14 @@ struct slInputData
 
 	/*keyboardModifier == KBMOD_SHIFT*/
 	enum {
-		KBMOD_clear = 0x0,
-		KBMOD_CTRL = 0x1,
-		KBMOD_SHIFT = 0x2,
-		KBMOD_ALT = 0x4,
-		KBMOD_CTRLSHIFT = 0x8,
-		KBMOD_CTRLALT = 0x10,
-		KBMOD_SHIFTALT = 0x20,
-		KBMOD_CTRLSHIFTALT = 0x40
+		KBMOD_clear = 0,
+		KBMOD_CTRL,
+		KBMOD_SHIFT,
+		KBMOD_ALT,
+		KBMOD_CTRLSHIFT,
+		KBMOD_CTRLALT,
+		KBMOD_SHIFTALT,
+		KBMOD_CTRLSHIFTALT,
 	};
 
 	uint8_t keyboardModifier = 0; /*KBMOD...*/

@@ -61,8 +61,110 @@ void ExampleBasicsMouseAndKeyboard::OnDraw()
 		m_app->GetWindow()->GetCurrentSize()->x, 
 		m_app->GetWindow()->GetCurrentSize()->y), 0);
 
+	slVec2f textPosition;
+	float lineHeight = 14.f;
+
 	m_app->GetTextDrawCallback()->m_curColor = &m_app->GetTextDrawCallback()->m_colorWhite;
-	//m_gs->DrawGUIText(U"Size multipler", 14, slVec2f(), m_app->GetTextDrawCallback());
+
+	auto inputData = slInput::GetData();
+
+	m_text = U"Mouse position: ";
+	m_text += inputData->mousePosition.x;
+	m_text += U" : ";
+	m_text += inputData->mousePosition.y;
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+
+	m_text = U"Mouse move delta: ";
+	m_text += inputData->mouseMoveDelta.x;
+	m_text += U" : ";
+	m_text += inputData->mouseMoveDelta.y;
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+
+	m_text = U"Mouse wheel delta: ";
+	m_text += inputData->mouseWheelDelta;
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+
+	m_text = U"Mouse flags: ";
+	m_text.append_hex(inputData->mouseButtonFlags);
+	m_text += U" Last was: ";
+	if(m_lastMouseFlags & inputData->MBFL_LMBDOWN)
+		m_text += U"MBFL_LMBDOWN ";
+	if (m_lastMouseFlags & inputData->MBFL_RMBDOWN)
+		m_text += U"MBFL_RMBDOWN ";
+	if (m_lastMouseFlags & inputData->MBFL_MMBDOWN)
+		m_text += U"MBFL_MMBDOWN ";
+	if (m_lastMouseFlags & inputData->MBFL_X1MBDOWN)
+		m_text += U"MBFL_X1MBDOWN ";
+	if (m_lastMouseFlags & inputData->MBFL_X2MBDOWN)
+		m_text += U"MBFL_X2MBDOWN ";
+	if (m_lastMouseFlags & inputData->MBFL_LMBUP)
+		m_text += U"MBFL_LMBUP ";
+	if (m_lastMouseFlags & inputData->MBFL_RMBUP)
+		m_text += U"MBFL_RMBUP ";
+	if (m_lastMouseFlags & inputData->MBFL_MMBUP)
+		m_text += U"MBFL_MMBUP ";
+	if (m_lastMouseFlags & inputData->MBFL_X1MBUP)
+		m_text += U"MBFL_X1MBUP ";
+	if (m_lastMouseFlags & inputData->MBFL_X2MBUP)
+		m_text += U"MBFL_X2MBUP ";
+	if (m_lastMouseFlags & inputData->MBFL_LMBHOLD)
+		m_text += U"MBFL_LMBHOLD ";
+	if (m_lastMouseFlags & inputData->MBFL_RMBHOLD)
+		m_text += U"MBFL_RMBHOLD ";
+	if (m_lastMouseFlags & inputData->MBFL_MMBHOLD)
+		m_text += U"MBFL_MMBHOLD ";
+	if (m_lastMouseFlags & inputData->MBFL_X1MBHOLD)
+		m_text += U"MBFL_X1MBHOLD ";
+	if (m_lastMouseFlags & inputData->MBFL_X2MBHOLD)
+		m_text += U"MBFL_X2MBHOLD ";
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+	
+	m_text = U"Keyboard character: ";
+	m_text.push_back(m_lastCharacter);
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+	if (inputData->character)
+		m_lastCharacter = inputData->character;
+
+	m_text = U"Keyboard modifier: ";
+	if (inputData->keyboardModifier == inputData->KBMOD_ALT)
+		m_text += U"Alt";
+	if (inputData->keyboardModifier == inputData->KBMOD_CTRL)
+		m_text += U"Ctrl";
+	if (inputData->keyboardModifier == inputData->KBMOD_CTRLALT)
+		m_text += U"Ctrl+Alt";
+	if (inputData->keyboardModifier == inputData->KBMOD_CTRLSHIFT)
+		m_text += U"Ctrl+Shift";
+	if (inputData->keyboardModifier == inputData->KBMOD_CTRLSHIFTALT)
+		m_text += U"Ctrl+Shift+Alt";
+	if (inputData->keyboardModifier == inputData->KBMOD_SHIFT)
+		m_text += U"Shift";
+	if (inputData->keyboardModifier == inputData->KBMOD_SHIFTALT)
+		m_text += U"Shift+Alt";
+	m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+	textPosition.y += lineHeight;
+
+	if (inputData->mouseButtonFlags)
+		m_lastMouseFlags = inputData->mouseButtonFlags;
+
+	if(slInput::IsKeyHold(slInput::KEY_UP))
+	{
+		m_text = U"UP";
+		m_text.push_back(m_lastCharacter);
+		m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+		textPosition.y += lineHeight;
+	}
+	if (slInput::IsKeyHold(slInput::KEY_DOWN))
+	{
+		m_text = U"DOWN";
+		m_text.push_back(m_lastCharacter);
+		m_gs->DrawGUIText(m_text.c_str(), m_text.size(), textPosition, m_app->GetTextDrawCallback());
+		textPosition.y += lineHeight;
+	}
 
 	m_gs->EndGUI();
 

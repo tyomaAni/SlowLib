@@ -148,24 +148,7 @@ enum : uint64_t {
 	KBIT_end__,
 };
 
-enum {
-	MBFL_LMBDOWN = 0x1,
-	MBFL_LMBUP = 0x2,
-	MBFL_RMBDOWN = 0x4,
-	MBFL_RMBUP = 0x8,
-	MBFL_MMBDOWN = 0x10,
-	MBFL_MMBUP = 0x20,
-	MBFL_X1MBDOWN = 0x40,
-	MBFL_X1MBUP = 0x80,
-	MBFL_X2MBDOWN = 0x100,
-	MBFL_X2MBUP = 0x200,
 
-	MBFL_LMBHOLD = 0x400,
-	MBFL_RMBHOLD = 0x800,
-	MBFL_MMBHOLD = 0x1000,
-	MBFL_X1MBHOLD = 0x2000,
-	MBFL_X2MBHOLD = 0x4000,
-};
 
 enum {
 	KEYFL_HOLD = 0x1,
@@ -306,7 +289,7 @@ static const uint64_t g_keyToBin[] =
 void slInputUpdatePre(slInputData* id)
 {
 	id->mousePositionOld = id->mousePosition;
-	id->mouseButtonFlags1 = 0;
+	id->mouseButtonFlags &= ~0x3FF;
 	id->mouseWheelDelta = 0;
 	id->character = 0;
 	/// ???
@@ -329,7 +312,7 @@ void slInputUpdatePre(slInputData* id)
 void slInputUpdatePost(slInputData* id)
 {
 	unsigned int ctrl_shift_alt = 0;
-	if (slInput::IsKeyHold(slInput::KEY_ALT) || slInput::IsKeyHold(slInput::KEY_RALT))
+	if (slInput::IsKeyHold(slInput::KEY_LALT) || slInput::IsKeyHold(slInput::KEY_RALT))
 		ctrl_shift_alt |= 1;
 
 	if (slInput::IsKeyHold(slInput::KEY_LSHIFT) || slInput::IsKeyHold(slInput::KEY_RSHIFT))
@@ -463,50 +446,50 @@ bool slInput::IsKeyRelease(uint32_t i)
 		return (g_framework->m_input.keyFlagsRelease[1] & bit);
 }
 
-void slInput::EnableLMBDown() { g_framework->m_input.mouseButtonFlags1 |= MBFL_LMBDOWN; }
-void slInput::EnableLMBHold() { g_framework->m_input.mouseButtonFlags2 |= MBFL_LMBHOLD; }
-void slInput::EnableLMBUp() { g_framework->m_input.mouseButtonFlags1 |= MBFL_LMBUP; }
-void slInput::EnableRMBDown() { g_framework->m_input.mouseButtonFlags1 |= MBFL_RMBDOWN; }
-void slInput::EnableRMBHold() { g_framework->m_input.mouseButtonFlags2 |= MBFL_RMBHOLD; }
-void slInput::EnableRMBUp() { g_framework->m_input.mouseButtonFlags1 |= MBFL_RMBUP; }
-void slInput::EnableMMBDown() { g_framework->m_input.mouseButtonFlags1 |= MBFL_MMBDOWN; }
-void slInput::EnableMMBHold() { g_framework->m_input.mouseButtonFlags2 |= MBFL_MMBHOLD; }
-void slInput::EnableMMBUp() { g_framework->m_input.mouseButtonFlags1 |= MBFL_MMBUP; }
-void slInput::EnableX1MBDown() { g_framework->m_input.mouseButtonFlags1 |= MBFL_X1MBDOWN; }
-void slInput::EnableX1MBHold() { g_framework->m_input.mouseButtonFlags2 |= MBFL_X1MBHOLD; }
-void slInput::EnableX1MBUp() { g_framework->m_input.mouseButtonFlags1 |= MBFL_X1MBUP; }
-void slInput::EnableX2MBDown() { g_framework->m_input.mouseButtonFlags1 |= MBFL_X2MBDOWN; }
-void slInput::EnableX2MBHold() { g_framework->m_input.mouseButtonFlags2 |= MBFL_X2MBHOLD; }
-void slInput::EnableX2MBUp() { g_framework->m_input.mouseButtonFlags1 |= MBFL_X2MBUP; }
+void slInput::EnableLMBDown() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_LMBDOWN; }
+void slInput::EnableLMBHold() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_LMBHOLD; }
+void slInput::EnableLMBUp() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_LMBUP; }
+void slInput::EnableRMBDown() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_RMBDOWN; }
+void slInput::EnableRMBHold() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_RMBHOLD; }
+void slInput::EnableRMBUp() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_RMBUP; }
+void slInput::EnableMMBDown() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_MMBDOWN; }
+void slInput::EnableMMBHold() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_MMBHOLD; }
+void slInput::EnableMMBUp() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_MMBUP; }
+void slInput::EnableX1MBDown() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X1MBDOWN; }
+void slInput::EnableX1MBHold() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X1MBHOLD; }
+void slInput::EnableX1MBUp() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X1MBUP; }
+void slInput::EnableX2MBDown() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X2MBDOWN; }
+void slInput::EnableX2MBHold() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X2MBHOLD; }
+void slInput::EnableX2MBUp() { g_framework->m_input.mouseButtonFlags |= slInputData::MBFL_X2MBUP; }
 
-void slInput::DisableLMBDown() { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_LMBDOWN; }
-void slInput::DisableLMBHold() { g_framework->m_input.mouseButtonFlags2 &= ~MBFL_LMBHOLD; }
-void slInput::DisableLMBUp()   { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_LMBUP; }
-void slInput::DisableRMBDown() { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_RMBDOWN; }
-void slInput::DisableRMBHold() { g_framework->m_input.mouseButtonFlags2 &= ~MBFL_RMBHOLD; }
-void slInput::DisableRMBUp()   { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_RMBUP; }
-void slInput::DisableMMBDown() { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_MMBDOWN; }
-void slInput::DisableMMBHold() { g_framework->m_input.mouseButtonFlags2 &= ~MBFL_MMBHOLD; }
-void slInput::DisableMMBUp()   { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_MMBUP; }
-void slInput::DisableX1MBDown() { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_X1MBDOWN; }
-void slInput::DisableX1MBHold() { g_framework->m_input.mouseButtonFlags2 &= ~MBFL_X1MBHOLD; }
-void slInput::DisableX1MBUp()   { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_X1MBUP; }
-void slInput::DisableX2MBDown() { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_X2MBDOWN; }
-void slInput::DisableX2MBHold() { g_framework->m_input.mouseButtonFlags2 &= ~MBFL_X2MBHOLD; }
-void slInput::DisableX2MBUp()   { g_framework->m_input.mouseButtonFlags1 &= ~MBFL_X2MBUP; }
+void slInput::DisableLMBDown() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_LMBDOWN; }
+void slInput::DisableLMBHold() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_LMBHOLD; }
+void slInput::DisableLMBUp()   { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_LMBUP; }
+void slInput::DisableRMBDown() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_RMBDOWN; }
+void slInput::DisableRMBHold() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_RMBHOLD; }
+void slInput::DisableRMBUp()   { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_RMBUP; }
+void slInput::DisableMMBDown() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_MMBDOWN; }
+void slInput::DisableMMBHold() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_MMBHOLD; }
+void slInput::DisableMMBUp()   { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_MMBUP; }
+void slInput::DisableX1MBDown() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X1MBDOWN; }
+void slInput::DisableX1MBHold() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X1MBHOLD; }
+void slInput::DisableX1MBUp()   { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X1MBUP; }
+void slInput::DisableX2MBDown() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X2MBDOWN; }
+void slInput::DisableX2MBHold() { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X2MBHOLD; }
+void slInput::DisableX2MBUp()   { g_framework->m_input.mouseButtonFlags &= ~slInputData::MBFL_X2MBUP; }
 
-bool slInput::IsLMBHit() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_LMBDOWN) == MBFL_LMBDOWN; }
-bool slInput::IsLMBHold() { return (g_framework->m_input.mouseButtonFlags2 & MBFL_LMBHOLD) == MBFL_LMBHOLD; }
-bool slInput::IsLMBRelease() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_LMBUP) == MBFL_LMBUP; }
-bool slInput::IsRMBHit() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_RMBDOWN) == MBFL_RMBDOWN; }
-bool slInput::IsRMBHold() { return (g_framework->m_input.mouseButtonFlags2 & MBFL_RMBHOLD) == MBFL_RMBHOLD; }
-bool slInput::IsRMBRelease() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_RMBUP) == MBFL_RMBUP; }
-bool slInput::IsMMBHit() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_MMBDOWN) == MBFL_MMBDOWN; }
-bool slInput::IsMMBHold() { return (g_framework->m_input.mouseButtonFlags2 & MBFL_MMBHOLD) == MBFL_MMBHOLD; }
-bool slInput::IsMMBRelease() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_MMBUP) == MBFL_MMBUP; }
-bool slInput::IsX1MBHit() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_X1MBDOWN) == MBFL_X1MBDOWN; }
-bool slInput::IsX1MBHold() { return (g_framework->m_input.mouseButtonFlags2 & MBFL_X1MBHOLD) == MBFL_X1MBHOLD; }
-bool slInput::IsX1MBRelease() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_X1MBUP) == MBFL_X1MBUP; }
-bool slInput::IsX2MBHit() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_X2MBDOWN) == MBFL_X2MBDOWN; }
-bool slInput::IsX2MBHold() { return (g_framework->m_input.mouseButtonFlags2 & MBFL_X2MBHOLD) == MBFL_X2MBHOLD; }
-bool slInput::IsX2MBRelease() { return (g_framework->m_input.mouseButtonFlags1 & MBFL_X2MBUP) == MBFL_X2MBUP; }
+bool slInput::IsLMBHit() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_LMBDOWN) == slInputData::MBFL_LMBDOWN; }
+bool slInput::IsLMBHold() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_LMBHOLD) == slInputData::MBFL_LMBHOLD; }
+bool slInput::IsLMBRelease() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_LMBUP) == slInputData::MBFL_LMBUP; }
+bool slInput::IsRMBHit() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_RMBDOWN) == slInputData::MBFL_RMBDOWN; }
+bool slInput::IsRMBHold() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_RMBHOLD) == slInputData::MBFL_RMBHOLD; }
+bool slInput::IsRMBRelease() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_RMBUP) == slInputData::MBFL_RMBUP; }
+bool slInput::IsMMBHit() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_MMBDOWN) == slInputData::MBFL_MMBDOWN; }
+bool slInput::IsMMBHold() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_MMBHOLD) == slInputData::MBFL_MMBHOLD; }
+bool slInput::IsMMBRelease() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_MMBUP) == slInputData::MBFL_MMBUP; }
+bool slInput::IsX1MBHit() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X1MBDOWN) == slInputData::MBFL_X1MBDOWN; }
+bool slInput::IsX1MBHold() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X1MBHOLD) == slInputData::MBFL_X1MBHOLD; }
+bool slInput::IsX1MBRelease() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X1MBUP) == slInputData::MBFL_X1MBUP; }
+bool slInput::IsX2MBHit() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X2MBDOWN) == slInputData::MBFL_X2MBDOWN; }
+bool slInput::IsX2MBHold() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X2MBHOLD) == slInputData::MBFL_X2MBHOLD; }
+bool slInput::IsX2MBRelease() { return (g_framework->m_input.mouseButtonFlags & slInputData::MBFL_X2MBUP) == slInputData::MBFL_X2MBUP; }

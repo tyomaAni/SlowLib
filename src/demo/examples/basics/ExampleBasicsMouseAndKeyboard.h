@@ -29,6 +29,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class DemoApp;
 class ExampleBasicsMouseAndKeyboard : public DemoExample
 {
+	slString m_text;
+	uint32_t m_lastMouseFlags = 0;
+	char32_t m_lastCharacter = 0;
 public:
 	ExampleBasicsMouseAndKeyboard(DemoApp*);
 	virtual ~ExampleBasicsMouseAndKeyboard();
