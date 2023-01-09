@@ -132,12 +132,12 @@ void slD3D11ShaderSolid::SetData(const slMat4& WVP, const slMat4& W)
 
 void slD3D11ShaderSolid::SetConstants(slMaterial* material) {
 
+	slGSD3D11Texture* _t = m_gs->m_whiteTexture;
 	if (material->m_maps[0].m_texture)
-	{
-		slGSD3D11Texture* _t = (slGSD3D11Texture*)material->m_maps[0].m_texture;
-		m_gs->m_d3d11DevCon->PSSetShaderResources(0, 1, &_t->m_textureResView);
-		m_gs->m_d3d11DevCon->PSSetSamplers(0, 1, &_t->m_samplerState);
-	}
+		_t = (slGSD3D11Texture*)material->m_maps[0].m_texture;
+
+	m_gs->m_d3d11DevCon->PSSetShaderResources(0, 1, &_t->m_textureResView);
+	m_gs->m_d3d11DevCon->PSSetSamplers(0, 1, &_t->m_samplerState);
 
 	{
 		D3D11_MAPPED_SUBRESOURCE mappedResource;

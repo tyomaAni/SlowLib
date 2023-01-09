@@ -42,5 +42,11 @@
     <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsMouseAndKeyboard.cpp">
       <Filter>Source Files\examples\basics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasicsImageAndTexture.cpp">
+      <Filter>Source Files\examples\basics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\demo\examples\basics\ExampleBasics3DModel.cpp">
+      <Filter>Source Files\examples\basics</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

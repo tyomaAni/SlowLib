@@ -955,6 +955,7 @@ void slGSD3D11::SetShader(slShaderType st, uint32_t userIndex)
 	{
 	case slShaderType::Solid:
 		SetActiveShader(m_shaderSolid);
+		m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		break;
 	case slShaderType::BumpMap:
 		break;
@@ -1032,7 +1033,6 @@ void slGSD3D11::Draw()
 	{
 	default:
 	case slMeshVertexType::Triangle:
-		m_d3d11DevCon->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_d3d11DevCon->IASetIndexBuffer(m_currMesh->m_iBuffer, m_currMesh->m_indexType, 0);
 		m_d3d11DevCon->DrawIndexed(m_currMesh->m_meshInfo.m_iCount, 0, 0);
 		break;
